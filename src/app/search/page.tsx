@@ -6,12 +6,13 @@ import type { SearchResponse } from '@/app/api/search/route'
 import styles from './page.module.css'
 
 interface SearchPageProps {
-  searchParams: Promise<{ q?: string; filter?: string; page?: string }>
+  searchParams: Promise<{ q?: string; filter?: string; sort?: string; page?: string }>
 }
 
 async function getSearchResults(
   query: string,
   filter?: string,
+  sort?: string,
   page?: string
 ): Promise<SearchResponse> {
   if (!query) {
@@ -19,6 +20,7 @@ async function getSearchResults(
       results: [],
       query: '',
       filter: null,
+      sort: null,
       total: 0,
       page: 1,
       pageSize: 10,
@@ -29,6 +31,7 @@ async function getSearchResults(
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const params = new URLSearchParams({ q: query })
   if (filter) params.set('filter', filter)
+  if (sort) params.set('sort', sort)
   if (page) params.set('page', page)
 
   const res = await fetch(`${baseUrl}/api/search?${params.toString()}`, {
@@ -40,6 +43,7 @@ async function getSearchResults(
       results: [],
       query,
       filter: null,
+      sort: null,
       total: 0,
       page: 1,
       pageSize: 10,
@@ -54,9 +58,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
   const query = params.q || ''
   const filter = params.filter || null
+  const sort = params.sort || null
   const page = params.page || '1'
 
-  const searchResponse = await getSearchResults(query, filter || undefined, page)
+  const searchResponse = await getSearchResults(query, filter || undefined, sort || undefined, page)
 
   return (
     <main className={styles.main}>
@@ -72,7 +77,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {query ? (
           <>
             <Suspense fallback={null}>
-              <FilterPanel currentFilter={filter} />
+              <FilterPanel currentFilter={filter} currentSort={sort} />
             </Suspense>
             <SearchResults
               results={searchResponse.results}

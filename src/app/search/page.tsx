@@ -3,7 +3,6 @@ import { SearchBar } from '@/components/SearchBar'
 import { SearchResults } from '@/components/SearchResults'
 import { FilterPanel } from '@/components/FilterPanel'
 import type { SearchResponse } from '@/app/api/search/route'
-import type { Classification } from '@/lib/ai-detection'
 import styles from './page.module.css'
 
 interface SearchPageProps {
@@ -73,7 +72,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {query ? (
           <>
             <Suspense fallback={null}>
-              <FilterPanel currentFilter={filter as Classification | null} />
+              <FilterPanel currentFilter={filter} />
             </Suspense>
             <SearchResults
               results={searchResponse.results}

@@ -46,21 +46,33 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Build the where clause
-    const baseWhere = {
-      status: 'analyzed' as const,
-      OR: [
-        { title: { contains: query, mode: 'insensitive' as const } },
-        { description: { contains: query, mode: 'insensitive' as const } },
-        { contentText: { contains: query, mode: 'insensitive' as const } },
-        { url: { contains: query, mode: 'insensitive' as const } },
-      ],
-    }
+    // Build the search conditions
+    const searchConditions = [
+      { title: { contains: query, mode: 'insensitive' as const } },
+      { description: { contains: query, mode: 'insensitive' as const } },
+      { contentText: { contains: query, mode: 'insensitive' as const } },
+      { url: { contains: query, mode: 'insensitive' as const } },
+    ]
 
-    // Add classification filter if specified
-    const whereClause = filter && ['human', 'likely_human', 'unsure', 'likely_ai', 'ai'].includes(filter)
-      ? { ...baseWhere, aiScore: { classification: filter } }
-      : baseWhere
+    // Build the where clause based on filter
+    // 'human' filter = human + likely_human
+    // 'ai' filter = likely_ai + ai
+    const whereClause = filter === 'human'
+      ? {
+          status: 'analyzed' as const,
+          OR: searchConditions,
+          aiScore: { classification: { in: ['human', 'likely_human'] } },
+        }
+      : filter === 'ai'
+        ? {
+            status: 'analyzed' as const,
+            OR: searchConditions,
+            aiScore: { classification: { in: ['likely_ai', 'ai'] } },
+          }
+        : {
+            status: 'analyzed' as const,
+            OR: searchConditions,
+          }
 
     // Get total count for pagination
     const total = await prisma.content.count({ where: whereClause })

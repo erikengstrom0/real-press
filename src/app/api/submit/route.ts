@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
 import { contentExists, createContentFromExtraction } from '@/lib/services/content.service'
+import { analyzeAndStoreScore } from '@/lib/services/ai-detection.service'
 
 const submitSchema = z.object({
   url: z.string().url('Please provide a valid URL'),
@@ -33,10 +34,17 @@ export async function POST(request: NextRequest) {
 
     const content = await createContentFromExtraction(extracted)
 
+    // Run AI detection and store the score
+    const analysisResult = await analyzeAndStoreScore(content.id, extracted.contentText)
+
     return NextResponse.json({
       success: true,
       contentId: content.id,
-      message: 'Content submitted successfully',
+      message: 'Content submitted and analyzed successfully',
+      aiScore: {
+        score: analysisResult.aiScore.compositeScore,
+        classification: analysisResult.aiScore.classification,
+      },
     })
   } catch (error) {
     if (error instanceof ExtractionError) {

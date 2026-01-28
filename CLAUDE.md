@@ -114,7 +114,7 @@ src/
 - Search queries via URL params (`/search?q=query&filter=human`)
 - AI detection runs synchronously on URL submission (MVP)
 - Prisma client uses singleton pattern for serverless compatibility
-- Prisma 7 requires `accelerateUrl` in client config (not `datasourceUrl`)
+- Prisma 7 uses `@prisma/adapter-neon` for Neon database connections
 
 ## Environment Variables
 
@@ -131,9 +131,105 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint | Focus | Status |
 |--------|-------|--------|
 | Sprint 1 | Database + URL submission | ✅ Complete |
-| Sprint 2 | AI detection integration | Pending |
+| Sprint 2 | AI detection integration | ✅ Complete |
 | Sprint 3 | Search with AI badges | Pending |
 | Sprint 4 | Polish + demo ready | Pending |
+
+---
+
+## Sprint Completion Workflow
+
+**At the end of every sprint, follow this workflow:**
+
+### 1. Pre-PR Checklist
+
+Before creating the PR, verify:
+
+- [ ] All sprint tasks are implemented
+- [ ] `npm run type-check` passes with no errors
+- [ ] `npm run lint` passes with no errors
+- [ ] `npm run build` completes successfully
+
+### 2. Manual Testing
+
+Test all features implemented in the sprint:
+
+**Sprint 1 (Database + Submission):**
+- [ ] `/submit` page loads
+- [ ] Can submit a valid URL
+- [ ] Duplicate URL is rejected (409)
+- [ ] Invalid URL shows error
+- [ ] Content appears in database
+
+**Sprint 2 (AI Detection):**
+- [ ] Submitted content gets AI score
+- [ ] Score and classification stored in database
+- [ ] `/api/analyze` returns preview for raw text
+- [ ] Content status updates to 'analyzed'
+
+**Sprint 3 (Search + Badges):**
+- [ ] Search returns results with AI badges
+- [ ] Badge colors match classification
+- [ ] Filter by classification works
+- [ ] Pagination works
+
+**Sprint 4 (Polish):**
+- [ ] Landing page displays correctly
+- [ ] Mobile responsive
+- [ ] Loading states work
+- [ ] Error states display properly
+
+### 3. Create Feature Branch & PR
+
+```bash
+# Create branch for the sprint (if not already on one)
+git checkout -b sprint-N-description
+
+# Stage and commit all changes
+git add .
+git commit -m "Sprint N: Brief description of features"
+
+# Push and create PR
+git push -u origin sprint-N-description
+gh pr create --title "Sprint N: Feature Title" --body "## Summary
+- Feature 1
+- Feature 2
+
+## Testing Done
+- [x] Type check passes
+- [x] Lint passes
+- [x] Build succeeds
+- [x] Manual testing completed
+
+## Test Results
+[Include curl commands or screenshots of tested features]"
+```
+
+### 4. PR Review Checklist
+
+Before merging, ensure:
+
+- [ ] PR description documents all changes
+- [ ] Test results are documented in PR
+- [ ] No console errors in browser
+- [ ] Database schema changes are noted
+- [ ] Environment variable changes are documented
+
+### 5. Merge & Update
+
+After PR is approved:
+
+```bash
+# Merge PR (squash recommended for clean history)
+gh pr merge --squash
+
+# Update local main
+git checkout main
+git pull origin main
+
+# Update CLAUDE.md sprint status
+# Mark sprint as ✅ Complete
+```
 
 ---
 
@@ -176,6 +272,37 @@ Decisions made during development that should persist across sessions.
    - CSS Modules for styling (matching existing SearchBar pattern)
    - Client components use `"use client"` directive
    - Form components handle loading/error/success states internally
+
+### Sprint 2 Decisions (2025-01-28)
+
+1. **Prisma 7 Database Adapter**
+   - Switched from `accelerateUrl` to `@prisma/adapter-neon` for direct Neon connections
+   - Prisma 7 requires either `adapter` or `accelerateUrl` in PrismaClient constructor
+   - Using `@neondatabase/serverless` under the hood
+
+2. **AI Detection Architecture**
+   - Two-provider system: GPTZero API (primary) + Heuristics (fallback)
+   - Composite score combines both with confidence-based weighting
+   - GPTZero weight: 70%, Heuristic weight: 30% (when both available)
+   - Falls back to heuristics-only when GPTZero unavailable
+
+3. **Heuristic Detection Algorithm**
+   - Analyzes: vocabulary diversity, sentence length variation, punctuation variety
+   - Minimum 50 words required for meaningful analysis
+   - Score weights: vocabulary (35%), variation (30%), length (20%), punctuation (15%)
+   - AI-generated text tends to have lower vocabulary diversity and more uniform sentences
+
+4. **Score Classification Thresholds**
+   - `human`: 0.00-0.15 (green)
+   - `likely_human`: 0.15-0.35 (light green)
+   - `unsure`: 0.35-0.65 (yellow)
+   - `likely_ai`: 0.65-0.85 (orange)
+   - `ai`: 0.85-1.00 (red)
+
+5. **API Endpoints**
+   - `/api/submit` - Extracts content AND runs AI detection synchronously
+   - `/api/analyze` - Preview mode (text only) or re-analyze existing content
+   - Content status updated to 'analyzed' after successful detection
 
 ### Future Decisions
 

@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@extractus/article-extractor": "^8.0.20",
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "dotenv": "^17.2.3",
     "next": "^14.2.0",

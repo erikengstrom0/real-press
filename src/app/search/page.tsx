@@ -1,45 +1,97 @@
-import { SearchBar } from "@/components/SearchBar";
-import { SearchResults } from "@/components/SearchResults";
-import type { SearchResult } from "@/app/api/search/route";
+import { Suspense } from 'react'
+import { SearchBar } from '@/components/SearchBar'
+import { SearchResults } from '@/components/SearchResults'
+import { FilterPanel } from '@/components/FilterPanel'
+import type { SearchResponse } from '@/app/api/search/route'
+import type { Classification } from '@/lib/ai-detection'
+import styles from './page.module.css'
 
 interface SearchPageProps {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string; filter?: string; page?: string }>
 }
 
-async function getSearchResults(query: string): Promise<SearchResult[]> {
-  if (!query) return [];
+async function getSearchResults(
+  query: string,
+  filter?: string,
+  page?: string
+): Promise<SearchResponse> {
+  if (!query) {
+    return {
+      results: [],
+      query: '',
+      filter: null,
+      total: 0,
+      page: 1,
+      pageSize: 10,
+      hasMore: false,
+    }
+  }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/search?q=${encodeURIComponent(query)}`, {
-    cache: "no-store",
-  });
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const params = new URLSearchParams({ q: query })
+  if (filter) params.set('filter', filter)
+  if (page) params.set('page', page)
 
-  if (!res.ok) return [];
+  const res = await fetch(`${baseUrl}/api/search?${params.toString()}`, {
+    cache: 'no-store',
+  })
 
-  const data = await res.json();
-  return data.results;
+  if (!res.ok) {
+    return {
+      results: [],
+      query,
+      filter: null,
+      total: 0,
+      page: 1,
+      pageSize: 10,
+      hasMore: false,
+    }
+  }
+
+  return res.json()
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const query = searchParams.q || "";
-  const results = await getSearchResults(query);
+  const params = await searchParams
+  const query = params.q || ''
+  const filter = params.filter || null
+  const page = params.page || '1'
+
+  const searchResponse = await getSearchResults(query, filter || undefined, page)
 
   return (
-    <main style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <header style={{ marginBottom: "2rem" }}>
-        <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <h1 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Real Press</h1>
+    <main className={styles.main}>
+      <header className={styles.header}>
+        <a href="/" className={styles.logo}>
+          Real Press
         </a>
+        <p className={styles.tagline}>Search the Human Web</p>
         <SearchBar defaultValue={query} />
       </header>
 
-      <section>
+      <section className={styles.content}>
         {query ? (
-          <SearchResults results={results} query={query} />
+          <>
+            <Suspense fallback={null}>
+              <FilterPanel currentFilter={filter as Classification | null} />
+            </Suspense>
+            <SearchResults
+              results={searchResponse.results}
+              query={query}
+              total={searchResponse.total}
+              page={searchResponse.page}
+              hasMore={searchResponse.hasMore}
+            />
+          </>
         ) : (
-          <p style={{ color: "#666" }}>Enter a search query to get started.</p>
+          <div className={styles.placeholder}>
+            <p>Enter a search query to find human-written content.</p>
+            <p className={styles.hint}>
+              Each result shows an AI detection score so you can find authentic content.
+            </p>
+          </div>
         )}
       </section>
     </main>
-  );
+  )
 }

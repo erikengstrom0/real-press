@@ -10,9 +10,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@extractus/article-extractor": "^8.0.20",
+    "@prisma/client": "^7.3.0",
+    "dotenv": "^17.2.3",
     "next": "^14.2.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -20,6 +24,7 @@
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
+    "prisma": "^7.3.0",
     "typescript": "^5.4.0"
   }
 }

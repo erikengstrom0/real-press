@@ -149,7 +149,7 @@ export function SubmitForm() {
           )}
           {result.success && result.aiScore && (
             <p className={styles.resultDetail}>
-              AI Score: {(result.aiScore.score * 100).toFixed(1)}% ({result.aiScore.classification})
+              Human Score: {((1 - result.aiScore.score) * 100).toFixed(0)}% ({result.aiScore.classification})
             </p>
           )}
         </div>

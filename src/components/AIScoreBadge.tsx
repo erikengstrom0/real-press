@@ -2,7 +2,7 @@ import type { Classification } from '@/lib/ai-detection'
 import styles from './AIScoreBadge.module.css'
 
 interface AIScoreBadgeProps {
-  score: number
+  score: number // Internal score: 0 = human, 1 = AI
   classification: Classification
   showScore?: boolean
   size?: 'small' | 'medium' | 'large'
@@ -26,7 +26,8 @@ export function AIScoreBadge({
   size = 'medium',
 }: AIScoreBadgeProps) {
   const config = classificationConfig[classification]
-  const percentage = Math.round(score * 100)
+  // Invert score for display: 100% = human, 0% = AI
+  const humanPercentage = Math.round((1 - score) * 100)
 
   return (
     <span
@@ -35,11 +36,11 @@ export function AIScoreBadge({
         color: config.color,
         backgroundColor: config.bgColor,
       }}
-      title={`AI Detection Score: ${percentage}%`}
+      title={`Human Score: ${humanPercentage}%`}
     >
       <span className={styles.dot} style={{ backgroundColor: config.color }} />
       <span className={styles.label}>{config.label}</span>
-      {showScore && <span className={styles.score}>{percentage}%</span>}
+      {showScore && <span className={styles.score}>{humanPercentage}%</span>}
     </span>
   )
 }

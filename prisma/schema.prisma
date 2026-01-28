@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Content {
+  id          String   @id @default(uuid())
+  url         String   @unique
+  domain      String
+  title       String?
+  description String?
+  contentText String   @map("content_text")
+  contentHash String   @map("content_hash")
+  sourceType  String   @default("user_submitted") @map("source_type")
+  status      String   @default("pending")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  aiScore     AiScore?
+
+  @@map("content")
+}
+
+model AiScore {
+  id              String   @id @default(uuid())
+  contentId       String   @unique @map("content_id")
+  compositeScore  Float    @map("composite_score")
+  classification  String   // 'human', 'likely_human', 'unsure', 'likely_ai', 'ai'
+  gptzeroScore    Float?   @map("gptzero_score")
+  heuristicScore  Float?   @map("heuristic_score")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  content         Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("ai_scores")
+}

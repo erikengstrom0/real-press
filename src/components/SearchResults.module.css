@@ -1,0 +1,53 @@
+.results {
+  margin-top: 1rem;
+}
+
+.count {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.link:hover .title {
+  text-decoration: underline;
+}
+
+.title {
+  color: #0070f3;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.description {
+  color: #444;
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.empty {
+  color: #666;
+  padding: 2rem 0;
+}

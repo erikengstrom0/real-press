@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import styles from "./SearchBar.module.css";
 
 interface SearchBarProps {
   defaultValue?: string;
@@ -19,21 +20,17 @@ export function SearchBar({ defaultValue = "" }: SearchBarProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "600px" }}>
+    <form onSubmit={handleSubmit} className={styles.form}>
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search..."
-        style={{
-          width: "100%",
-          padding: "1rem",
-          fontSize: "1rem",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          outline: "none",
-        }}
+        className={styles.input}
       />
+      <button type="submit" className={styles.button} disabled={!query.trim()}>
+        Search
+      </button>
     </form>
   );
 }

@@ -72,6 +72,12 @@
   border: 1px solid #86efac;
 }
 
+.info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
 .error {
   background-color: #fee2e2;
   color: #991b1b;

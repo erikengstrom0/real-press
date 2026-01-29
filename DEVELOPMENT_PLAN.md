@@ -79,18 +79,18 @@ src/components/SubmitForm.module.css
 
 ---
 
-## Sprint 2: AI Detection
+## Sprint 2: AI Detection ✅ COMPLETE
 
 ### Goal
 Every piece of content gets an AI detection score.
 
-### Tasks
-- [ ] GPTZero API integration
-- [ ] Heuristic detection (vocabulary diversity, sentence variation)
-- [ ] Composite score calculation (weighted average)
-- [ ] Score classification (Human → AI spectrum)
-- [ ] Run detection after content submission
-- [ ] Store scores in database
+### Completed Tasks
+- [x] GPTZero API integration
+- [x] Heuristic detection (vocabulary diversity, sentence variation)
+- [x] Composite score calculation (weighted average)
+- [x] Score classification (Human → AI spectrum)
+- [x] Run detection after content submission
+- [x] Store scores in database
 
 ### AI Score Classification
 
@@ -139,17 +139,19 @@ src/lib/services/ai-detection.service.ts
 
 ---
 
-## Sprint 3: Search & Display
+## Sprint 3: Search & Display ✅ COMPLETE
 
 ### Goal
 Working search with AI score badges on results.
 
-### Tasks
-- [ ] Connect `/api/search` to PostgreSQL (full-text search)
-- [ ] Create AIScoreBadge component (color-coded)
-- [ ] Update SearchResults to show AI badges
-- [ ] Add classification filter to search
-- [ ] Basic pagination
+### Completed Tasks
+- [x] Connect `/api/search` to PostgreSQL (full-text search)
+- [x] Create AIScoreBadge component (color-coded)
+- [x] Update SearchResults to show AI badges
+- [x] Add classification filter to search (iOS-style toggles)
+- [x] Sort by Human Score option
+- [x] Basic pagination
+- [x] Inverted score display (100% = human)
 
 ### AIScoreBadge Colors
 
@@ -172,23 +174,30 @@ src/components/FilterPanel.tsx
 
 ---
 
-## Sprint 4: Polish & Demo-Ready
+## Sprint 4: Polish & Demo-Ready ✅ COMPLETE
 
 ### Goal
 Clean, presentable demo for investor meetings.
 
-### Tasks
-- [ ] Landing page messaging (clear value proposition)
-- [ ] Loading states and error handling
-- [ ] Mobile responsive design
+### Completed Tasks
+- [x] Landing page with Real Press branding and value proposition
+- [x] Loading states (LoadingSpinner component)
+- [x] Error handling (ErrorMessage component with retry)
+- [x] Mobile responsive design (768px, 480px breakpoints)
+- [x] Filter toggles update without page refresh
+- [x] Duplicate URL feedback shows existing analysis
+- [x] CSS modules for consistent styling
+
+### Deferred to Post-MVP
 - [ ] Pre-seed database with 50-100 curated URLs
 - [ ] Basic analytics (search count, submissions)
 - [ ] Deploy to Vercel with custom domain
 
 ### Landing Page Copy
-- **Headline:** "Search the Human Web"
-- **Subheadline:** "Real Press shows you which content is written by humans, not AI."
-- **CTA:** "Try a search" / "Submit a URL"
+- **Logo:** "Real Press"
+- **Headline:** "A Search Engine for the Human Web"
+- **Subheadline:** "In an age of AI-generated content, finding authentic human writing is harder than ever..."
+- **CTA:** Search bar + "Submit a URL to analyze" link
 
 ---
 
@@ -228,10 +237,11 @@ Clean, presentable demo for investor meetings.
 ## Verification Checklist
 
 Before demo:
-- [ ] Submit 10+ URLs with varied AI scores
-- [ ] Search works and shows results with badges
-- [ ] Filter by classification works
-- [ ] Mobile responsive
-- [ ] No console errors
+- [x] Submit 10+ URLs with varied AI scores (seeded via Neon MCP)
+- [x] Search works and shows results with badges
+- [x] Filter by classification works (Human Only toggle)
+- [x] Sort by score works (Sort by Score toggle)
+- [x] Mobile responsive (tested at 768px, 480px)
+- [x] No console errors
 - [ ] Page loads in under 2 seconds
 - [ ] Custom domain configured

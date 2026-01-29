@@ -1,41 +1,24 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
 import styles from './FilterPanel.module.css'
 
 interface FilterPanelProps {
   currentFilter: string | null
   currentSort: string | null
+  onFilterChange: (filter: string | null) => void
+  onSortChange: (sort: string | null) => void
 }
 
-export function FilterPanel({ currentFilter, currentSort }: FilterPanelProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  const updateParams = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (value) {
-      params.set(key, value)
-    } else {
-      params.delete(key)
-    }
-
-    // Reset to page 1 when filter/sort changes
-    params.delete('page')
-
-    router.push(`/search?${params.toString()}`)
-  }
-
+export function FilterPanel({ currentFilter, currentSort, onFilterChange, onSortChange }: FilterPanelProps) {
   const isHumanFilterOn = currentFilter === 'human'
   const isSortByScore = currentSort === 'score'
 
   const toggleHumanFilter = () => {
-    updateParams('filter', isHumanFilterOn ? null : 'human')
+    onFilterChange(isHumanFilterOn ? null : 'human')
   }
 
   const toggleSort = () => {
-    updateParams('sort', isSortByScore ? null : 'score')
+    onSortChange(isSortByScore ? null : 'score')
   }
 
   return (

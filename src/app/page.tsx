@@ -6,12 +6,14 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.hero}>
-        <h1 className={styles.title}>
-          Search the <span className={styles.highlight}>Human</span> Web
-        </h1>
+        <h1 className={styles.logo}>Real Press</h1>
+        <h2 className={styles.title}>
+          A Search Engine for the <span className={styles.highlight}>Human</span> Web
+        </h2>
         <p className={styles.subtitle}>
-          Real Press shows you which content is written by humans, not AI.
-          Every result includes a human score so you can find authentic content.
+          In an age of AI-generated content, finding authentic human writing is harder than ever.
+          Real Press analyzes web content and shows you a Human Score for every result,
+          so you can discover genuine voices and original thinking.
         </p>
 
         <div className={styles.searchWrapper}>
@@ -27,7 +29,6 @@ export default function Home() {
 
       <div className={styles.features}>
         <div className={styles.feature}>
-          <div className={styles.featureIcon}>🔍</div>
           <h3 className={styles.featureTitle}>Search Indexed Content</h3>
           <p className={styles.featureDesc}>
             Find articles, blog posts, and web pages that have been analyzed for AI content.
@@ -35,7 +36,6 @@ export default function Home() {
         </div>
 
         <div className={styles.feature}>
-          <div className={styles.featureIcon}>🎯</div>
           <h3 className={styles.featureTitle}>Human Score on Every Result</h3>
           <p className={styles.featureDesc}>
             See at a glance how likely content is human-written with our color-coded badges.
@@ -43,7 +43,6 @@ export default function Home() {
         </div>
 
         <div className={styles.feature}>
-          <div className={styles.featureIcon}>🚀</div>
           <h3 className={styles.featureTitle}>Submit Any URL</h3>
           <p className={styles.featureDesc}>
             Add content to our index instantly. We analyze it and show you the human score.

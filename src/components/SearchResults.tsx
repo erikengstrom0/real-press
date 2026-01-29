@@ -8,9 +8,12 @@ interface SearchResultsProps {
   total: number
   page: number
   hasMore: boolean
+  onPageChange?: (page: number) => void
+  filter?: string | null
+  sort?: string | null
 }
 
-export function SearchResults({ results, query, total, page, hasMore }: SearchResultsProps) {
+export function SearchResults({ results, query, total, page, hasMore, onPageChange, filter, sort }: SearchResultsProps) {
   if (results.length === 0) {
     return (
       <div className={styles.empty}>
@@ -58,7 +61,14 @@ export function SearchResults({ results, query, total, page, hasMore }: SearchRe
       </ul>
 
       {(hasMore || page > 1) && (
-        <Pagination page={page} hasMore={hasMore} query={query} />
+        <Pagination
+          page={page}
+          hasMore={hasMore}
+          query={query}
+          onPageChange={onPageChange}
+          filter={filter}
+          sort={sort}
+        />
       )}
     </div>
   )
@@ -68,18 +78,46 @@ function Pagination({
   page,
   hasMore,
   query,
+  onPageChange,
+  filter,
+  sort,
 }: {
   page: number
   hasMore: boolean
   query: string
+  onPageChange?: (page: number) => void
+  filter?: string | null
+  sort?: string | null
 }) {
-  const prevUrl = page > 1 ? `/search?q=${encodeURIComponent(query)}&page=${page - 1}` : null
-  const nextUrl = hasMore ? `/search?q=${encodeURIComponent(query)}&page=${page + 1}` : null
+  // Build URL with current filter/sort state
+  const buildUrl = (targetPage: number) => {
+    const params = new URLSearchParams({ q: query, page: String(targetPage) })
+    if (filter) params.set('filter', filter)
+    if (sort) params.set('sort', sort)
+    return `/search?${params.toString()}`
+  }
+
+  const handlePrev = (e: React.MouseEvent) => {
+    if (onPageChange && page > 1) {
+      e.preventDefault()
+      onPageChange(page - 1)
+    }
+  }
+
+  const handleNext = (e: React.MouseEvent) => {
+    if (onPageChange && hasMore) {
+      e.preventDefault()
+      onPageChange(page + 1)
+    }
+  }
+
+  const prevUrl = page > 1 ? buildUrl(page - 1) : null
+  const nextUrl = hasMore ? buildUrl(page + 1) : null
 
   return (
     <div className={styles.pagination}>
       {prevUrl ? (
-        <a href={prevUrl} className={styles.pageLink}>
+        <a href={prevUrl} className={styles.pageLink} onClick={handlePrev}>
           ← Previous
         </a>
       ) : (
@@ -87,7 +125,7 @@ function Pagination({
       )}
       <span className={styles.pageNumber}>Page {page}</span>
       {nextUrl ? (
-        <a href={nextUrl} className={styles.pageLink}>
+        <a href={nextUrl} className={styles.pageLink} onClick={handleNext}>
           Next →
         </a>
       ) : (

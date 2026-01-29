@@ -9,6 +9,8 @@ interface SubmissionResult {
   message: string;
   contentId?: string;
   normalizedUrl?: string;
+  title?: string;
+  alreadyExists?: boolean;
   aiScore?: {
     score: number;
     classification: string;
@@ -58,6 +60,18 @@ export function SubmitForm() {
           message: "URL submitted and analyzed successfully!",
           contentId: data.contentId,
           normalizedUrl: normalized.url,
+          aiScore: data.aiScore,
+        });
+        setUrl("");
+      } else if (response.status === 409 && data.exists) {
+        // URL already exists - show the existing analysis
+        setResult({
+          success: true,
+          alreadyExists: true,
+          message: "This URL has already been analyzed.",
+          contentId: data.contentId,
+          normalizedUrl: data.url,
+          title: data.title,
           aiScore: data.aiScore,
         });
         setUrl("");
@@ -138,13 +152,18 @@ export function SubmitForm() {
       {result && (
         <div
           className={`${styles.result} ${
-            result.success ? styles.success : styles.error
+            result.success ? (result.alreadyExists ? styles.info : styles.success) : styles.error
           }`}
         >
           <p>{result.message}</p>
+          {result.success && result.title && (
+            <p className={styles.resultDetail}>
+              <strong>{result.title}</strong>
+            </p>
+          )}
           {result.success && result.normalizedUrl && (
             <p className={styles.resultDetail}>
-              Analyzed: <a href={result.normalizedUrl} target="_blank" rel="noopener noreferrer">{result.normalizedUrl}</a>
+              <a href={result.normalizedUrl} target="_blank" rel="noopener noreferrer">{result.normalizedUrl}</a>
             </p>
           )}
           {result.success && result.aiScore && (

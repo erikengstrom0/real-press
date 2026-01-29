@@ -15,12 +15,20 @@
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
 }
 
+.logo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #22c55e;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
 .title {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: #111827;
   margin: 0 0 1rem 0;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .highlight {
@@ -70,11 +78,6 @@
   padding: 1.5rem;
 }
 
-.featureIcon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
 .featureTitle {
   font-size: 1.1rem;
   font-weight: 600;
@@ -99,8 +102,12 @@
 
 /* Tablet */
 @media (max-width: 768px) {
+  .logo {
+    font-size: 2rem;
+  }
+
   .title {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
   }
 
   .subtitle {
@@ -124,8 +131,12 @@
     padding: 1.5rem 1rem;
   }
 
+  .logo {
+    font-size: 1.75rem;
+  }
+
   .title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .subtitle {
@@ -139,10 +150,6 @@
 
   .features {
     padding: 2rem 1rem;
-  }
-
-  .featureIcon {
-    font-size: 2rem;
   }
 
   .featureTitle {

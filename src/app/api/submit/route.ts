@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
-import { contentExists, createContentFromExtraction } from '@/lib/services/content.service'
+import { getContentByUrl, createContentFromExtraction } from '@/lib/services/content.service'
 import { analyzeAndStoreScore } from '@/lib/services/ai-detection.service'
 import { normalizeUrl } from '@/lib/utils/url'
 
@@ -33,10 +33,21 @@ export async function POST(request: NextRequest) {
 
     const url = normalizeResult.url
 
-    const exists = await contentExists(url)
-    if (exists) {
+    // Check if URL already exists and return its info
+    const existingContent = await getContentByUrl(url)
+    if (existingContent) {
       return NextResponse.json(
-        { error: 'This URL has already been submitted' },
+        {
+          error: 'This URL has already been analyzed',
+          exists: true,
+          contentId: existingContent.id,
+          title: existingContent.title,
+          url: existingContent.url,
+          aiScore: existingContent.aiScore ? {
+            score: existingContent.aiScore.compositeScore,
+            classification: existingContent.aiScore.classification,
+          } : null,
+        },
         { status: 409 }
       )
     }

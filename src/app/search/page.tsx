@@ -1,7 +1,5 @@
-import { Suspense } from 'react'
 import { SearchBar } from '@/components/SearchBar'
-import { SearchResults } from '@/components/SearchResults'
-import { FilterPanel } from '@/components/FilterPanel'
+import { SearchResultsContainer } from '@/components/SearchResultsContainer'
 import type { SearchResponse } from '@/app/api/search/route'
 import styles from './page.module.css'
 
@@ -75,18 +73,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <section className={styles.content}>
         {query ? (
-          <>
-            <Suspense fallback={null}>
-              <FilterPanel currentFilter={filter} currentSort={sort} />
-            </Suspense>
-            <SearchResults
-              results={searchResponse.results}
-              query={query}
-              total={searchResponse.total}
-              page={searchResponse.page}
-              hasMore={searchResponse.hasMore}
-            />
-          </>
+          <SearchResultsContainer
+            initialResults={searchResponse.results}
+            query={query}
+            initialTotal={searchResponse.total}
+            initialPage={searchResponse.page}
+            initialHasMore={searchResponse.hasMore}
+            initialFilter={filter}
+            initialSort={sort}
+          />
         ) : (
           <div className={styles.placeholder}>
             <p>Enter a search query to find human-written content.</p>

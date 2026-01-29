@@ -133,7 +133,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint 1 | Database + URL submission | ✅ Complete |
 | Sprint 2 | AI detection integration | ✅ Complete |
 | Sprint 3 | Search with AI badges | ✅ Complete |
-| Sprint 4 | Polish + demo ready | Pending |
+| Sprint 4 | Polish + demo ready | ✅ Complete |
 
 ---
 
@@ -335,6 +335,53 @@ Decisions made during development that should persist across sessions.
    - Domain shown below title
    - Description truncated to 2 lines
    - AI badge prominently displayed with score
+
+### Sprint 4 Decisions (2025-01-28)
+
+1. **Landing Page Branding**
+   - "Real Press" logo prominently displayed at top
+   - Tagline: "A Search Engine for the Human Web"
+   - Value proposition explains the problem (AI content flooding) and solution
+   - No emojis in feature cards - clean, professional look
+
+2. **Score Display Inversion**
+   - Internal score: 0 = human, 1 = AI (matches GPTZero)
+   - Display score: 100% = human, 0% = AI (user-friendly)
+   - Formula: `humanPercentage = (1 - score) * 100`
+   - Reasoning: Users intuitively expect higher = better
+
+3. **Filter Toggle UX**
+   - iOS-style toggle switches instead of button groups
+   - Two toggles: "Human Only" (filter) and "Sort by Score" (sort)
+   - Results update without page refresh (client-side fetch)
+   - URL updates via `history.replaceState` for bookmarking
+
+4. **Client-Side Search Results**
+   - `SearchResultsContainer` manages filter/sort state
+   - Initial results from server, updates via client fetch
+   - Loading spinner shown during filter changes
+   - Page stays still while results update
+
+5. **Duplicate URL Feedback**
+   - When user submits URL that already exists, show existing analysis
+   - Returns 409 status with `exists: true` flag
+   - Displays title, URL, and Human Score of existing content
+   - Blue info box differentiates from new submission (green)
+
+6. **Loading & Error Components**
+   - `LoadingSpinner`: small/medium/large sizes with optional message
+   - `ErrorMessage`: title, message, and optional retry button
+   - `loading.tsx` and `error.tsx` for search page boundaries
+
+7. **Mobile Responsive Breakpoints**
+   - Tablet: 768px (single column features, smaller text)
+   - Mobile: 480px (compact padding, stacked layout)
+   - All pages tested for responsive behavior
+
+8. **CSS Modules Consistency**
+   - All pages now use CSS modules (removed inline styles from submit page)
+   - Consistent color palette across components
+   - Green (#22c55e) for human/positive, Red (#ef4444) for AI/errors
 
 ### Future Decisions
 

@@ -132,7 +132,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 |--------|-------|--------|
 | Sprint 1 | Database + URL submission | ✅ Complete |
 | Sprint 2 | AI detection integration | ✅ Complete |
-| Sprint 3 | Search with AI badges | Pending |
+| Sprint 3 | Search with AI badges | ✅ Complete |
 | Sprint 4 | Polish + demo ready | Pending |
 
 ---
@@ -303,6 +303,38 @@ Decisions made during development that should persist across sessions.
    - `/api/submit` - Extracts content AND runs AI detection synchronously
    - `/api/analyze` - Preview mode (text only) or re-analyze existing content
    - Content status updated to 'analyzed' after successful detection
+
+### Sprint 3 Decisions (2025-01-28)
+
+1. **Search Implementation**
+   - Case-insensitive search across title, description, content text, and URL
+   - Searches only content with status='analyzed'
+   - Results ordered by creation date (newest first)
+   - Pagination with 10 results per page
+
+2. **Classification Filter**
+   - Filter by AI classification: human, likely_human, unsure, likely_ai, ai
+   - Filter applied via query parameter: `/search?q=query&filter=human`
+   - "All Results" option shows unfiltered results
+   - Filter resets to page 1 when changed
+
+3. **AIScoreBadge Component**
+   - Color-coded badges: green (human) → red (AI)
+   - Three sizes: small, medium, large
+   - Optional score percentage display
+   - Dot indicator matches classification color
+
+4. **URL Normalization**
+   - Accepts flexible input: `example.com`, `www.example.com`, `https://example.com`
+   - Automatically adds `https://` if protocol missing
+   - Blocks dangerous protocols (javascript:, data:, etc.)
+   - Real-time validation feedback in submit form
+
+5. **Search Results Display**
+   - Title links to original URL (opens in new tab)
+   - Domain shown below title
+   - Description truncated to 2 lines
+   - AI badge prominently displayed with score
 
 ### Future Decisions
 

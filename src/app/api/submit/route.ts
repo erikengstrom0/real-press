@@ -3,15 +3,17 @@ import { z } from 'zod'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
 import { contentExists, createContentFromExtraction } from '@/lib/services/content.service'
 import { analyzeAndStoreScore } from '@/lib/services/ai-detection.service'
+import { normalizeUrl } from '@/lib/utils/url'
 
 const submitSchema = z.object({
-  url: z.string().url('Please provide a valid URL'),
+  url: z.string().min(1, 'Please enter a URL'),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
+    // Basic validation - check that url field exists
     const validation = submitSchema.safeParse(body)
     if (!validation.success) {
       return NextResponse.json(
@@ -20,7 +22,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { url } = validation.data
+    // Normalize the URL (add https:// if missing, etc.)
+    const normalizeResult = normalizeUrl(validation.data.url)
+    if (!normalizeResult.success) {
+      return NextResponse.json(
+        { error: `${normalizeResult.error}. ${normalizeResult.hint}` },
+        { status: 400 }
+      )
+    }
+
+    const url = normalizeResult.url
 
     const exists = await contentExists(url)
     if (exists) {

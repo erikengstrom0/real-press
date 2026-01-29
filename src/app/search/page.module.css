@@ -1,0 +1,47 @@
+.main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.logo:hover {
+  color: #0070f3;
+}
+
+.tagline {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 1rem 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.placeholder {
+  color: #666;
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.placeholder p {
+  margin: 0;
+}
+
+.hint {
+  margin-top: 0.5rem !important;
+  font-size: 0.9rem;
+}

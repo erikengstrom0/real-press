@@ -134,6 +134,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint 2 | AI detection integration | ✅ Complete |
 | Sprint 3 | Search with AI badges | ✅ Complete |
 | Sprint 4 | Polish + demo ready | ✅ Complete |
+| Sprint 5 | Vercel deployment | 🚀 In Progress |
 
 ---
 

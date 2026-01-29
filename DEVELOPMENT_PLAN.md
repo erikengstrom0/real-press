@@ -191,13 +191,40 @@ Clean, presentable demo for investor meetings.
 ### Deferred to Post-MVP
 - [ ] Pre-seed database with 50-100 curated URLs
 - [ ] Basic analytics (search count, submissions)
-- [ ] Deploy to Vercel with custom domain
 
 ### Landing Page Copy
 - **Logo:** "Real Press"
 - **Headline:** "A Search Engine for the Human Web"
 - **Subheadline:** "In an age of AI-generated content, finding authentic human writing is harder than ever..."
 - **CTA:** Search bar + "Submit a URL to analyze" link
+
+---
+
+## Sprint 5: Vercel Deployment 🚀 IN PROGRESS
+
+### Goal
+Deploy the MVP to production for investor demos.
+
+### Tasks
+- [ ] Create vercel.json configuration
+- [ ] Create .env.example for documentation
+- [ ] Deploy to Vercel
+- [ ] Configure environment variables in Vercel dashboard
+- [ ] Test production deployment
+- [ ] Configure custom domain (optional)
+
+### Environment Variables Required
+```
+DATABASE_URL         - Neon PostgreSQL connection string
+GPTZERO_API_KEY      - GPTZero API key for AI detection
+NEXT_PUBLIC_APP_URL  - Production URL (e.g., https://realpress.app)
+```
+
+### Deployment Steps
+1. Run `vercel` to link project and deploy preview
+2. Add environment variables in Vercel dashboard
+3. Run `vercel --prod` to deploy to production
+4. Configure custom domain in Vercel settings
 
 ---
 

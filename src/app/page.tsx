@@ -1,30 +1,59 @@
 import { SearchBar } from "@/components/SearchBar";
 import Link from "next/link";
+import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <main
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        padding: "2rem",
-      }}
-    >
-      <h1 style={{ fontSize: "3rem", marginBottom: "2rem" }}>Real Press</h1>
-      <SearchBar />
-      <Link
-        href="/submit"
-        style={{
-          marginTop: "1.5rem",
-          color: "#0070f3",
-          textDecoration: "none",
-        }}
-      >
-        Submit a URL
-      </Link>
+    <main className={styles.main}>
+      <div className={styles.hero}>
+        <h1 className={styles.title}>
+          Search the <span className={styles.highlight}>Human</span> Web
+        </h1>
+        <p className={styles.subtitle}>
+          Real Press shows you which content is written by humans, not AI.
+          Every result includes a human score so you can find authentic content.
+        </p>
+
+        <div className={styles.searchWrapper}>
+          <SearchBar />
+        </div>
+
+        <div className={styles.actions}>
+          <Link href="/submit" className={styles.submitLink}>
+            or submit a URL to analyze
+          </Link>
+        </div>
+      </div>
+
+      <div className={styles.features}>
+        <div className={styles.feature}>
+          <div className={styles.featureIcon}>🔍</div>
+          <h3 className={styles.featureTitle}>Search Indexed Content</h3>
+          <p className={styles.featureDesc}>
+            Find articles, blog posts, and web pages that have been analyzed for AI content.
+          </p>
+        </div>
+
+        <div className={styles.feature}>
+          <div className={styles.featureIcon}>🎯</div>
+          <h3 className={styles.featureTitle}>Human Score on Every Result</h3>
+          <p className={styles.featureDesc}>
+            See at a glance how likely content is human-written with our color-coded badges.
+          </p>
+        </div>
+
+        <div className={styles.feature}>
+          <div className={styles.featureIcon}>🚀</div>
+          <h3 className={styles.featureTitle}>Submit Any URL</h3>
+          <p className={styles.featureDesc}>
+            Add content to our index instantly. We analyze it and show you the human score.
+          </p>
+        </div>
+      </div>
+
+      <footer className={styles.footer}>
+        <p>Real Press — Finding authentic content in the age of AI</p>
+      </footer>
     </main>
   );
 }

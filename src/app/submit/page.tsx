@@ -1,5 +1,6 @@
 import { SubmitForm } from "@/components/SubmitForm";
 import Link from "next/link";
+import styles from "./page.module.css";
 
 export const metadata = {
   title: "Submit URL - Real Press",
@@ -8,40 +9,13 @@ export const metadata = {
 
 export default function SubmitPage() {
   return (
-    <main
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        padding: "2rem",
-      }}
-    >
-      <Link
-        href="/"
-        style={{
-          position: "absolute",
-          top: "1rem",
-          left: "1rem",
-          color: "#0070f3",
-          textDecoration: "none",
-        }}
-      >
+    <main className={styles.main}>
+      <Link href="/" className={styles.backLink}>
         &larr; Back to Home
       </Link>
 
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>
-        Submit a URL
-      </h1>
-      <p
-        style={{
-          color: "#666",
-          marginBottom: "2rem",
-          textAlign: "center",
-          maxWidth: "500px",
-        }}
-      >
+      <h1 className={styles.title}>Submit a URL</h1>
+      <p className={styles.description}>
         Add content to Real Press for AI detection analysis. We&apos;ll extract
         the article and score it on the Human to AI spectrum.
       </p>

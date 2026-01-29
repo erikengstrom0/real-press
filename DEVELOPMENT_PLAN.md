@@ -191,6 +191,7 @@ Clean, presentable demo for investor meetings.
 ### Deferred to Post-MVP
 - [ ] Pre-seed database with 50-100 curated URLs
 - [ ] Basic analytics (search count, submissions)
+- [ ] GPTZero API key setup (currently using heuristic-only detection)
 
 ### Landing Page Copy
 - **Logo:** "Real Press"
@@ -258,6 +259,18 @@ NEXT_PUBLIC_APP_URL  - Production URL (e.g., https://realpress.app)
 5. **Submit URL** - "Users can submit any URL to be analyzed"
 6. **Show score** - "Within seconds, we detect if it's human or AI"
 7. **The pitch** - "As AI floods the internet, Real Press helps users find authentic content"
+
+---
+
+## Known Gaps & Limitations
+
+Track items that need attention but aren't blocking the demo:
+
+| Gap | Impact | Priority | Notes |
+|-----|--------|----------|-------|
+| GPTZero API key not configured | AI detection uses heuristics only (less accurate) | Medium | Get key from gptzero.me, add to Vercel env vars |
+| ML Service not deployed | Image/video detection unavailable | Low | Text detection works fine for MVP |
+| No custom domain | Using Vercel default domain | Low | Configure after deployment works |
 
 ---
 

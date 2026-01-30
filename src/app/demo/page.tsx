@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { AIScoreBadge } from '@/components/AIScoreBadge'
 import type { Classification } from '@/lib/ai-detection'
 
@@ -149,6 +150,9 @@ export default function DemoPage() {
         </div>
       </section>
 
+      {/* Form Controls */}
+      <FormControlsSection />
+
       {/* Rules & Dividers */}
       <section style={{ marginBottom: '3rem' }}>
         <h2 className="h3">Rules & Dividers</h2>
@@ -251,5 +255,271 @@ function ColorSwatch({ name, hex, dark = false }: { name: string; hex: string; d
       </div>
       <p className="caption" style={{ marginTop: '0.5rem', fontSize: '0.65rem' }}>{name}</p>
     </div>
+  )
+}
+
+function FormControlsSection() {
+  const [humanOnly, setHumanOnly] = useState(false)
+  const [sortByScore, setSortByScore] = useState(false)
+  const [selectedSort, setSelectedSort] = useState('date')
+
+  return (
+    <section style={{ marginBottom: '3rem' }}>
+      <h2 className="h3">Form Controls</h2>
+      <div className="rule-double" />
+
+      <h3 className="h5" style={{ marginTop: '1.5rem' }}>Toggle Switches</h3>
+      <p className="small text-muted" style={{ marginBottom: '1rem' }}>
+        Used for filtering options like &quot;Human Only&quot; content filter.
+      </p>
+
+      <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+        {/* Human Only Toggle */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          padding: '0.75rem 1rem',
+          backgroundColor: 'var(--color-cream)',
+          border: '1px solid var(--color-charcoal-muted)',
+        }}>
+          <span style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 500,
+            color: 'var(--color-charcoal)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}>
+            Human Only
+          </span>
+          <button
+            onClick={() => setHumanOnly(!humanOnly)}
+            style={{
+              position: 'relative',
+              width: '48px',
+              height: '26px',
+              border: '2px solid',
+              borderColor: humanOnly ? 'var(--color-accent-primary)' : 'var(--color-charcoal-muted)',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              padding: 0,
+              backgroundColor: humanOnly ? 'var(--color-accent-secondary)' : 'var(--color-paper-dark)',
+              transition: 'all 150ms ease',
+            }}
+            role="switch"
+            aria-checked={humanOnly}
+          >
+            <span style={{
+              position: 'absolute',
+              top: '2px',
+              left: humanOnly ? '24px' : '2px',
+              width: '18px',
+              height: '18px',
+              backgroundColor: humanOnly ? 'var(--color-accent-primary)' : 'var(--color-cream)',
+              border: '1px solid',
+              borderColor: humanOnly ? 'var(--color-accent-primary)' : 'var(--color-charcoal-muted)',
+              borderRadius: '2px',
+              transition: 'left 150ms ease',
+            }} />
+          </button>
+        </div>
+
+        {/* Sort by Score Toggle */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          padding: '0.75rem 1rem',
+          backgroundColor: 'var(--color-cream)',
+          border: '1px solid var(--color-charcoal-muted)',
+        }}>
+          <span style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 500,
+            color: 'var(--color-charcoal)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}>
+            Sort by Score
+          </span>
+          <button
+            onClick={() => setSortByScore(!sortByScore)}
+            style={{
+              position: 'relative',
+              width: '48px',
+              height: '26px',
+              border: '2px solid',
+              borderColor: sortByScore ? 'var(--color-accent-primary)' : 'var(--color-charcoal-muted)',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              padding: 0,
+              backgroundColor: sortByScore ? 'var(--color-accent-secondary)' : 'var(--color-paper-dark)',
+              transition: 'all 150ms ease',
+            }}
+            role="switch"
+            aria-checked={sortByScore}
+          >
+            <span style={{
+              position: 'absolute',
+              top: '2px',
+              left: sortByScore ? '24px' : '2px',
+              width: '18px',
+              height: '18px',
+              backgroundColor: sortByScore ? 'var(--color-accent-primary)' : 'var(--color-cream)',
+              border: '1px solid',
+              borderColor: sortByScore ? 'var(--color-accent-primary)' : 'var(--color-charcoal-muted)',
+              borderRadius: '2px',
+              transition: 'left 150ms ease',
+            }} />
+          </button>
+        </div>
+      </div>
+
+      {/* Toggle States Display */}
+      <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+        <div style={{
+          padding: '0.5rem 1rem',
+          backgroundColor: humanOnly ? 'rgba(36, 148, 69, 0.1)' : 'var(--color-paper-dark)',
+          border: '1px solid',
+          borderColor: humanOnly ? 'var(--color-accent-primary)' : 'var(--color-charcoal-muted)',
+          borderRadius: '4px',
+        }}>
+          <span className="small">Human Only: <strong>{humanOnly ? 'ON' : 'OFF'}</strong></span>
+        </div>
+        <div style={{
+          padding: '0.5rem 1rem',
+          backgroundColor: sortByScore ? 'rgba(36, 148, 69, 0.1)' : 'var(--color-paper-dark)',
+          border: '1px solid',
+          borderColor: sortByScore ? 'var(--color-accent-primary)' : 'var(--color-charcoal-muted)',
+          borderRadius: '4px',
+        }}>
+          <span className="small">Sort by Score: <strong>{sortByScore ? 'ON' : 'OFF'}</strong></span>
+        </div>
+      </div>
+
+      <h3 className="h5" style={{ marginTop: '2rem' }}>Dropdown / Select</h3>
+      <p className="small text-muted" style={{ marginBottom: '1rem' }}>
+        Used for sorting options and other selections.
+      </p>
+
+      <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', marginTop: '1rem', alignItems: 'flex-end' }}>
+        {/* Sort Dropdown */}
+        <div>
+          <label style={{
+            display: 'block',
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 500,
+            color: 'var(--color-charcoal)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '0.5rem',
+          }}>
+            Sort Results
+          </label>
+          <select
+            value={selectedSort}
+            onChange={(e) => setSelectedSort(e.target.value)}
+            style={{
+              padding: '0.75rem 2.5rem 0.75rem 1rem',
+              fontFamily: 'var(--font-body)',
+              fontSize: 'var(--text-base)',
+              color: 'var(--color-charcoal)',
+              backgroundColor: 'var(--color-cream)',
+              border: '2px solid var(--color-charcoal-muted)',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              appearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232D2A26' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.75rem center',
+              minWidth: '200px',
+            }}
+          >
+            <option value="date">Date (Newest First)</option>
+            <option value="date-asc">Date (Oldest First)</option>
+            <option value="score">Human Score (High to Low)</option>
+            <option value="score-asc">Human Score (Low to High)</option>
+            <option value="relevance">Relevance</option>
+          </select>
+        </div>
+
+        {/* Filter Dropdown */}
+        <div>
+          <label style={{
+            display: 'block',
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 500,
+            color: 'var(--color-charcoal)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '0.5rem',
+          }}>
+            Filter by Classification
+          </label>
+          <select
+            style={{
+              padding: '0.75rem 2.5rem 0.75rem 1rem',
+              fontFamily: 'var(--font-body)',
+              fontSize: 'var(--text-base)',
+              color: 'var(--color-charcoal)',
+              backgroundColor: 'var(--color-cream)',
+              border: '2px solid var(--color-charcoal-muted)',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              appearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232D2A26' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.75rem center',
+              minWidth: '200px',
+            }}
+          >
+            <option value="all">All Results</option>
+            <option value="human">Human Only</option>
+            <option value="likely_human">Likely Human</option>
+            <option value="unsure">Unsure</option>
+            <option value="likely_ai">Likely AI</option>
+            <option value="ai">AI Generated</option>
+          </select>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '1rem' }}>
+        <p className="small text-muted">
+          Selected sort: <strong>{selectedSort}</strong>
+        </p>
+      </div>
+
+      <h3 className="h5" style={{ marginTop: '2rem' }}>Text Input</h3>
+      <div style={{ maxWidth: '400px', marginTop: '1rem' }}>
+        <label style={{
+          display: 'block',
+          fontFamily: 'var(--font-body)',
+          fontSize: 'var(--text-sm)',
+          fontWeight: 500,
+          color: 'var(--color-charcoal)',
+          marginBottom: '0.5rem',
+        }}>
+          Search Query
+        </label>
+        <input
+          type="text"
+          placeholder="Enter search terms..."
+          style={{
+            width: '100%',
+            padding: '0.75rem 1rem',
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--text-base)',
+            color: 'var(--color-charcoal)',
+            backgroundColor: 'var(--color-cream)',
+            border: '2px solid var(--color-charcoal-muted)',
+            borderRadius: '4px',
+          }}
+        />
+      </div>
+    </section>
   )
 }

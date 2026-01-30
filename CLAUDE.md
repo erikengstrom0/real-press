@@ -38,21 +38,27 @@ npx prisma studio      # Open database GUI
 ## Architecture
 
 ```
-┌────────────────────────────────────────────────┐
-│                   FRONTEND                      │
-│  Home (/) │ Search (/search) │ Submit (/submit)│
-│  Components: SearchBar, SearchResults, AIBadge │
-└────────────────────────────────────────────────┘
-                       │
-┌────────────────────────────────────────────────┐
-│                   API ROUTES                    │
-│  /api/search │ /api/submit │ /api/analyze      │
-└────────────────────────────────────────────────┘
-                       │
-┌────────────────────────────────────────────────┐
-│                   SERVICES                      │
-│  PostgreSQL (Neon) │ GPTZero API │ Heuristics  │
-└────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Next.js (Real Press)                      │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │              Multi-Modal Orchestrator                   │ │
+│  │  detectMultiModalContent(text, images, video)          │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                            │                                 │
+│  ┌─────────────┬───────────┼───────────┬─────────────────┐ │
+│  │   Text      │   Image   │   Video   │   Provider      │ │
+│  │  Providers  │  Provider │  Provider │   Registry      │ │
+│  │ GPTZero     │   Local   │  (Frames) │                 │ │
+│  │ Heuristics  │           │           │                 │ │
+│  └─────────────┴───────────┴───────────┴─────────────────┘ │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTP
+┌──────────────────────────▼──────────────────────────────────┐
+│              Python ML Service (FastAPI)                     │
+│  - POST /api/detect/image   (CNNDetection model)            │
+│  - POST /api/extract-frames (video → frames)                │
+│  - GET  /health                                              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Tech Stack
@@ -60,9 +66,11 @@ npx prisma studio      # Open database GUI
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript with strict mode
 - **Database**: PostgreSQL via Neon (Prisma 7 ORM)
-- **AI Detection**: GPTZero API + custom heuristics
+- **AI Detection**: Multi-modal (text, image, video)
+  - Text: GPTZero API + custom heuristics
+  - Image/Video: Python ML service (CNNDetection)
 - **Styling**: CSS Modules
-- **Hosting**: Vercel
+- **Hosting**: Vercel (Next.js) + Docker (ML Service)
 
 ## Directory Structure
 
@@ -88,13 +96,34 @@ src/
     ├── services/
     │   ├── content.service.ts
     │   ├── extraction.service.ts
-    │   └── ai-detection.service.ts (Sprint 2)
-    └── ai-detection/         # Sprint 2
-        ├── index.ts
-        ├── composite-score.ts
+    │   ├── ai-detection.service.ts
+    │   └── media-extraction.service.ts  # Extract images/videos from URLs
+    └── ai-detection/
+        ├── index.ts              # Multi-modal orchestrator
+        ├── composite-score.ts    # Score calculation
+        ├── provider-registry.ts  # Provider management
+        ├── types.ts              # Type definitions
         └── providers/
-            ├── gptzero.provider.ts
-            └── heuristic.provider.ts
+            ├── base.provider.ts       # Abstract base class
+            ├── gptzero.provider.ts    # Text: GPTZero API
+            ├── heuristic.provider.ts  # Text: Heuristics
+            ├── image-local.provider.ts # Image: ML service
+            └── video.provider.ts      # Video: Frame analysis
+
+ml-service/                    # Python ML Service
+├── app/
+│   ├── main.py               # FastAPI app
+│   ├── config.py
+│   ├── models/
+│   │   ├── base.py           # Base detector interface
+│   │   └── cnn_detector.py   # CNNDetection wrapper
+│   └── routers/
+│       ├── image.py          # POST /api/detect/image
+│       ├── video.py          # POST /api/extract-frames
+│       └── health.py         # GET /health
+├── requirements.txt
+├── Dockerfile
+└── docker-compose.yml
 ```
 
 ## AI Score Classification
@@ -119,8 +148,18 @@ src/
 ## Environment Variables
 
 ```bash
+# Database
 DATABASE_URL="postgresql://..."     # Neon connection string (prisma+postgres:// format)
-GPTZERO_API_KEY="..."               # GPTZero API key (Sprint 2)
+
+# AI Detection - Text
+GPTZERO_API_KEY="..."               # GPTZero API key
+
+# AI Detection - Image/Video (ML Service)
+ML_SERVICE_URL="http://localhost:8000"  # Python ML service URL
+PROVIDER_IMAGE_ENABLED="true"       # Enable image detection
+PROVIDER_VIDEO_ENABLED="true"       # Enable video detection
+
+# App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
@@ -383,6 +422,49 @@ Decisions made during development that should persist across sessions.
    - All pages now use CSS modules (removed inline styles from submit page)
    - Consistent color palette across components
    - Green (#22c55e) for human/positive, Red (#ef4444) for AI/errors
+
+### Multi-Modal Detection Decisions (2025-01-28)
+
+1. **Provider Architecture**
+   - Abstract `BaseProvider` class for all detection providers
+   - `ProviderRegistry` for dynamic provider management
+   - Each provider declares supported content types
+   - Providers return `null` when unavailable or on error
+
+2. **Multi-Modal Scoring System**
+   - Unified 0-100 scoring (100 = human, 0 = AI)
+   - Internally 0.0-1.0 (0 = human, 1 = AI), display inverts
+   - Confidence-based weighting for composite scores
+   - Base weights: Text (50%), Image (35%), Video (15%)
+
+3. **Image Detection**
+   - Python ML service using CNNDetection model
+   - ResNet50 backbone for feature extraction
+   - Confidence calculated from score distance from 0.5
+   - Supports URL or base64 input
+
+4. **Video Detection**
+   - Frame extraction via ML service (max 20 frames)
+   - Each frame analyzed with image detector
+   - Variance-adjusted confidence (high variance = low confidence)
+   - Batched processing with concurrency limit
+
+5. **Database Schema Extensions**
+   - `ContentMedia` model for images/videos
+   - `MediaScore` model for per-media scores
+   - `AiScore` extended with per-type scores and confidence
+   - `analyzedTypes` array tracks which types were analyzed
+
+6. **API Changes**
+   - `/api/submit` accepts `imageUrls`, `videoUrl`, `extractMedia`
+   - `/api/analyze` supports multi-modal preview
+   - Backwards compatible with text-only requests
+
+7. **ML Service Design**
+   - FastAPI with async endpoints
+   - Docker deployment with docker-compose
+   - Health check endpoint for monitoring
+   - CPU-friendly (no GPU required for MVP)
 
 ### Future Decisions
 

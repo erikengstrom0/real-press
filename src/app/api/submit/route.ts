@@ -2,11 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
 import { getContentByUrl, createContentFromExtraction } from '@/lib/services/content.service'
-import { analyzeAndStoreScore } from '@/lib/services/ai-detection.service'
+import {
+  analyzeAndStoreScore,
+  analyzeMultiModalAndStore,
+} from '@/lib/services/ai-detection.service'
 import { normalizeUrl } from '@/lib/utils/url'
+import {
+  extractMediaFromUrl,
+  filterRelevantImages,
+} from '@/lib/services/media-extraction.service'
 
 const submitSchema = z.object({
   url: z.string().min(1, 'Please enter a URL'),
+  // Optional: explicit image URLs to analyze
+  imageUrls: z.array(z.string().url()).optional(),
+  // Optional: explicit video URL to analyze
+  videoUrl: z.string().url().optional(),
+  // Whether to extract and analyze media from the page
+  extractMedia: z.boolean().optional().default(false),
 })
 
 export async function POST(request: NextRequest) {
@@ -56,18 +69,80 @@ export async function POST(request: NextRequest) {
 
     const content = await createContentFromExtraction(extracted)
 
-    // Run AI detection and store the score
-    const analysisResult = await analyzeAndStoreScore(content.id, extracted.contentText)
+    // Collect media to analyze
+    const images: Array<{ url?: string; base64?: string }> = []
+    let videoUrl: string | undefined
 
-    return NextResponse.json({
-      success: true,
-      contentId: content.id,
-      message: 'Content submitted and analyzed successfully',
-      aiScore: {
-        score: analysisResult.aiScore.compositeScore,
-        classification: analysisResult.aiScore.classification,
-      },
-    })
+    // Add explicit image URLs if provided
+    if (validation.data.imageUrls) {
+      for (const imgUrl of validation.data.imageUrls) {
+        images.push({ url: imgUrl })
+      }
+    }
+
+    // Add explicit video URL if provided
+    if (validation.data.videoUrl) {
+      videoUrl = validation.data.videoUrl
+    }
+
+    // Extract media from page if requested
+    if (validation.data.extractMedia) {
+      const extractedMedia = await extractMediaFromUrl(url)
+      const relevantImages = filterRelevantImages(extractedMedia.images, 5)
+
+      for (const img of relevantImages) {
+        // Don't add duplicates
+        if (!images.some((i) => i.url === img.url)) {
+          images.push(img)
+        }
+      }
+
+      // Use extracted video if no explicit video provided
+      if (!videoUrl && extractedMedia.video) {
+        videoUrl = extractedMedia.video.url
+      }
+    }
+
+    // Determine if we need multi-modal analysis
+    const hasMedia = images.length > 0 || videoUrl
+
+    let analysisResult
+
+    if (hasMedia) {
+      // Run multi-modal AI detection
+      analysisResult = await analyzeMultiModalAndStore(content.id, {
+        text: extracted.contentText,
+        images: images.length > 0 ? images : undefined,
+        videoUrl,
+      })
+
+      return NextResponse.json({
+        success: true,
+        contentId: content.id,
+        message: 'Content submitted and analyzed successfully',
+        aiScore: {
+          score: analysisResult.aiScore.compositeScore,
+          classification: analysisResult.aiScore.classification,
+          analyzedTypes: analysisResult.aiScore.analyzedTypes,
+          textScore: analysisResult.aiScore.textScore,
+          imageScore: analysisResult.aiScore.imageScore,
+          videoScore: analysisResult.aiScore.videoScore,
+        },
+      })
+    } else {
+      // Run text-only AI detection (backwards compatible)
+      analysisResult = await analyzeAndStoreScore(content.id, extracted.contentText)
+
+      return NextResponse.json({
+        success: true,
+        contentId: content.id,
+        message: 'Content submitted and analyzed successfully',
+        aiScore: {
+          score: analysisResult.aiScore.compositeScore,
+          classification: analysisResult.aiScore.classification,
+        },
+      })
+    }
   } catch (error) {
     if (error instanceof ExtractionError) {
       return NextResponse.json(

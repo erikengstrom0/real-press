@@ -10,4 +10,6 @@
  */
 export type * from './models/Content'
 export type * from './models/AiScore'
+export type * from './models/ContentMedia'
+export type * from './models/MediaScore'
 export type * from './commonInputTypes'

@@ -30,12 +30,24 @@ export type AiScoreAvgAggregateOutputType = {
   compositeScore: number | null
   gptzeroScore: number | null
   heuristicScore: number | null
+  textScore: number | null
+  textConfidence: number | null
+  imageScore: number | null
+  imageConfidence: number | null
+  videoScore: number | null
+  videoConfidence: number | null
 }
 
 export type AiScoreSumAggregateOutputType = {
   compositeScore: number | null
   gptzeroScore: number | null
   heuristicScore: number | null
+  textScore: number | null
+  textConfidence: number | null
+  imageScore: number | null
+  imageConfidence: number | null
+  videoScore: number | null
+  videoConfidence: number | null
 }
 
 export type AiScoreMinAggregateOutputType = {
@@ -46,6 +58,12 @@ export type AiScoreMinAggregateOutputType = {
   gptzeroScore: number | null
   heuristicScore: number | null
   createdAt: Date | null
+  textScore: number | null
+  textConfidence: number | null
+  imageScore: number | null
+  imageConfidence: number | null
+  videoScore: number | null
+  videoConfidence: number | null
 }
 
 export type AiScoreMaxAggregateOutputType = {
@@ -56,6 +74,12 @@ export type AiScoreMaxAggregateOutputType = {
   gptzeroScore: number | null
   heuristicScore: number | null
   createdAt: Date | null
+  textScore: number | null
+  textConfidence: number | null
+  imageScore: number | null
+  imageConfidence: number | null
+  videoScore: number | null
+  videoConfidence: number | null
 }
 
 export type AiScoreCountAggregateOutputType = {
@@ -66,6 +90,13 @@ export type AiScoreCountAggregateOutputType = {
   gptzeroScore: number
   heuristicScore: number
   createdAt: number
+  textScore: number
+  textConfidence: number
+  imageScore: number
+  imageConfidence: number
+  videoScore: number
+  videoConfidence: number
+  analyzedTypes: number
   _all: number
 }
 
@@ -74,12 +105,24 @@ export type AiScoreAvgAggregateInputType = {
   compositeScore?: true
   gptzeroScore?: true
   heuristicScore?: true
+  textScore?: true
+  textConfidence?: true
+  imageScore?: true
+  imageConfidence?: true
+  videoScore?: true
+  videoConfidence?: true
 }
 
 export type AiScoreSumAggregateInputType = {
   compositeScore?: true
   gptzeroScore?: true
   heuristicScore?: true
+  textScore?: true
+  textConfidence?: true
+  imageScore?: true
+  imageConfidence?: true
+  videoScore?: true
+  videoConfidence?: true
 }
 
 export type AiScoreMinAggregateInputType = {
@@ -90,6 +133,12 @@ export type AiScoreMinAggregateInputType = {
   gptzeroScore?: true
   heuristicScore?: true
   createdAt?: true
+  textScore?: true
+  textConfidence?: true
+  imageScore?: true
+  imageConfidence?: true
+  videoScore?: true
+  videoConfidence?: true
 }
 
 export type AiScoreMaxAggregateInputType = {
@@ -100,6 +149,12 @@ export type AiScoreMaxAggregateInputType = {
   gptzeroScore?: true
   heuristicScore?: true
   createdAt?: true
+  textScore?: true
+  textConfidence?: true
+  imageScore?: true
+  imageConfidence?: true
+  videoScore?: true
+  videoConfidence?: true
 }
 
 export type AiScoreCountAggregateInputType = {
@@ -110,6 +165,13 @@ export type AiScoreCountAggregateInputType = {
   gptzeroScore?: true
   heuristicScore?: true
   createdAt?: true
+  textScore?: true
+  textConfidence?: true
+  imageScore?: true
+  imageConfidence?: true
+  videoScore?: true
+  videoConfidence?: true
+  analyzedTypes?: true
   _all?: true
 }
 
@@ -207,6 +269,13 @@ export type AiScoreGroupByOutputType = {
   gptzeroScore: number | null
   heuristicScore: number | null
   createdAt: Date
+  textScore: number | null
+  textConfidence: number | null
+  imageScore: number | null
+  imageConfidence: number | null
+  videoScore: number | null
+  videoConfidence: number | null
+  analyzedTypes: string[]
   _count: AiScoreCountAggregateOutputType | null
   _avg: AiScoreAvgAggregateOutputType | null
   _sum: AiScoreSumAggregateOutputType | null
@@ -240,6 +309,13 @@ export type AiScoreWhereInput = {
   gptzeroScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   heuristicScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   createdAt?: Prisma.DateTimeFilter<"AiScore"> | Date | string
+  textScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  textConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  imageScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  imageConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  videoScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  videoConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  analyzedTypes?: Prisma.StringNullableListFilter<"AiScore">
   content?: Prisma.XOR<Prisma.ContentScalarRelationFilter, Prisma.ContentWhereInput>
 }
 
@@ -251,6 +327,13 @@ export type AiScoreOrderByWithRelationInput = {
   gptzeroScore?: Prisma.SortOrderInput | Prisma.SortOrder
   heuristicScore?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  textScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  textConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  analyzedTypes?: Prisma.SortOrder
   content?: Prisma.ContentOrderByWithRelationInput
 }
 
@@ -265,6 +348,13 @@ export type AiScoreWhereUniqueInput = Prisma.AtLeast<{
   gptzeroScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   heuristicScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   createdAt?: Prisma.DateTimeFilter<"AiScore"> | Date | string
+  textScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  textConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  imageScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  imageConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  videoScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  videoConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
+  analyzedTypes?: Prisma.StringNullableListFilter<"AiScore">
   content?: Prisma.XOR<Prisma.ContentScalarRelationFilter, Prisma.ContentWhereInput>
 }, "id" | "contentId">
 
@@ -276,6 +366,13 @@ export type AiScoreOrderByWithAggregationInput = {
   gptzeroScore?: Prisma.SortOrderInput | Prisma.SortOrder
   heuristicScore?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  textScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  textConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  analyzedTypes?: Prisma.SortOrder
   _count?: Prisma.AiScoreCountOrderByAggregateInput
   _avg?: Prisma.AiScoreAvgOrderByAggregateInput
   _max?: Prisma.AiScoreMaxOrderByAggregateInput
@@ -294,6 +391,13 @@ export type AiScoreScalarWhereWithAggregatesInput = {
   gptzeroScore?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
   heuristicScore?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AiScore"> | Date | string
+  textScore?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
+  textConfidence?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
+  imageScore?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
+  imageConfidence?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
+  videoScore?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
+  videoConfidence?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
+  analyzedTypes?: Prisma.StringNullableListFilter<"AiScore">
 }
 
 export type AiScoreCreateInput = {
@@ -303,6 +407,13 @@ export type AiScoreCreateInput = {
   gptzeroScore?: number | null
   heuristicScore?: number | null
   createdAt?: Date | string
+  textScore?: number | null
+  textConfidence?: number | null
+  imageScore?: number | null
+  imageConfidence?: number | null
+  videoScore?: number | null
+  videoConfidence?: number | null
+  analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
   content: Prisma.ContentCreateNestedOneWithoutAiScoreInput
 }
 
@@ -314,6 +425,13 @@ export type AiScoreUncheckedCreateInput = {
   gptzeroScore?: number | null
   heuristicScore?: number | null
   createdAt?: Date | string
+  textScore?: number | null
+  textConfidence?: number | null
+  imageScore?: number | null
+  imageConfidence?: number | null
+  videoScore?: number | null
+  videoConfidence?: number | null
+  analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
 }
 
 export type AiScoreUpdateInput = {
@@ -323,6 +441,13 @@ export type AiScoreUpdateInput = {
   gptzeroScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heuristicScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  textScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  textConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
   content?: Prisma.ContentUpdateOneRequiredWithoutAiScoreNestedInput
 }
 
@@ -334,6 +459,13 @@ export type AiScoreUncheckedUpdateInput = {
   gptzeroScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heuristicScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  textScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  textConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
 }
 
 export type AiScoreCreateManyInput = {
@@ -344,6 +476,13 @@ export type AiScoreCreateManyInput = {
   gptzeroScore?: number | null
   heuristicScore?: number | null
   createdAt?: Date | string
+  textScore?: number | null
+  textConfidence?: number | null
+  imageScore?: number | null
+  imageConfidence?: number | null
+  videoScore?: number | null
+  videoConfidence?: number | null
+  analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
 }
 
 export type AiScoreUpdateManyMutationInput = {
@@ -353,6 +492,13 @@ export type AiScoreUpdateManyMutationInput = {
   gptzeroScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heuristicScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  textScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  textConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
 }
 
 export type AiScoreUncheckedUpdateManyInput = {
@@ -363,11 +509,26 @@ export type AiScoreUncheckedUpdateManyInput = {
   gptzeroScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heuristicScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  textScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  textConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
 }
 
 export type AiScoreNullableScalarRelationFilter = {
   is?: Prisma.AiScoreWhereInput | null
   isNot?: Prisma.AiScoreWhereInput | null
+}
+
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type AiScoreCountOrderByAggregateInput = {
@@ -378,12 +539,25 @@ export type AiScoreCountOrderByAggregateInput = {
   gptzeroScore?: Prisma.SortOrder
   heuristicScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  textScore?: Prisma.SortOrder
+  textConfidence?: Prisma.SortOrder
+  imageScore?: Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrder
+  videoScore?: Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrder
+  analyzedTypes?: Prisma.SortOrder
 }
 
 export type AiScoreAvgOrderByAggregateInput = {
   compositeScore?: Prisma.SortOrder
   gptzeroScore?: Prisma.SortOrder
   heuristicScore?: Prisma.SortOrder
+  textScore?: Prisma.SortOrder
+  textConfidence?: Prisma.SortOrder
+  imageScore?: Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrder
+  videoScore?: Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrder
 }
 
 export type AiScoreMaxOrderByAggregateInput = {
@@ -394,6 +568,12 @@ export type AiScoreMaxOrderByAggregateInput = {
   gptzeroScore?: Prisma.SortOrder
   heuristicScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  textScore?: Prisma.SortOrder
+  textConfidence?: Prisma.SortOrder
+  imageScore?: Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrder
+  videoScore?: Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrder
 }
 
 export type AiScoreMinOrderByAggregateInput = {
@@ -404,12 +584,24 @@ export type AiScoreMinOrderByAggregateInput = {
   gptzeroScore?: Prisma.SortOrder
   heuristicScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  textScore?: Prisma.SortOrder
+  textConfidence?: Prisma.SortOrder
+  imageScore?: Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrder
+  videoScore?: Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrder
 }
 
 export type AiScoreSumOrderByAggregateInput = {
   compositeScore?: Prisma.SortOrder
   gptzeroScore?: Prisma.SortOrder
   heuristicScore?: Prisma.SortOrder
+  textScore?: Prisma.SortOrder
+  textConfidence?: Prisma.SortOrder
+  imageScore?: Prisma.SortOrder
+  imageConfidence?: Prisma.SortOrder
+  videoScore?: Prisma.SortOrder
+  videoConfidence?: Prisma.SortOrder
 }
 
 export type AiScoreCreateNestedOneWithoutContentInput = {
@@ -444,6 +636,10 @@ export type AiScoreUncheckedUpdateOneWithoutContentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AiScoreUpdateToOneWithWhereWithoutContentInput, Prisma.AiScoreUpdateWithoutContentInput>, Prisma.AiScoreUncheckedUpdateWithoutContentInput>
 }
 
+export type AiScoreCreateanalyzedTypesInput = {
+  set: string[]
+}
+
 export type FloatFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -460,6 +656,11 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type AiScoreUpdateanalyzedTypesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 export type AiScoreCreateWithoutContentInput = {
   id?: string
   compositeScore: number
@@ -467,6 +668,13 @@ export type AiScoreCreateWithoutContentInput = {
   gptzeroScore?: number | null
   heuristicScore?: number | null
   createdAt?: Date | string
+  textScore?: number | null
+  textConfidence?: number | null
+  imageScore?: number | null
+  imageConfidence?: number | null
+  videoScore?: number | null
+  videoConfidence?: number | null
+  analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
 }
 
 export type AiScoreUncheckedCreateWithoutContentInput = {
@@ -476,6 +684,13 @@ export type AiScoreUncheckedCreateWithoutContentInput = {
   gptzeroScore?: number | null
   heuristicScore?: number | null
   createdAt?: Date | string
+  textScore?: number | null
+  textConfidence?: number | null
+  imageScore?: number | null
+  imageConfidence?: number | null
+  videoScore?: number | null
+  videoConfidence?: number | null
+  analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
 }
 
 export type AiScoreCreateOrConnectWithoutContentInput = {
@@ -501,6 +716,13 @@ export type AiScoreUpdateWithoutContentInput = {
   gptzeroScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heuristicScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  textScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  textConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
 }
 
 export type AiScoreUncheckedUpdateWithoutContentInput = {
@@ -510,6 +732,13 @@ export type AiScoreUncheckedUpdateWithoutContentInput = {
   gptzeroScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   heuristicScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  textScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  textConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  imageConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
 }
 
 
@@ -522,6 +751,13 @@ export type AiScoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   gptzeroScore?: boolean
   heuristicScore?: boolean
   createdAt?: boolean
+  textScore?: boolean
+  textConfidence?: boolean
+  imageScore?: boolean
+  imageConfidence?: boolean
+  videoScore?: boolean
+  videoConfidence?: boolean
+  analyzedTypes?: boolean
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiScore"]>
 
@@ -533,6 +769,13 @@ export type AiScoreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   gptzeroScore?: boolean
   heuristicScore?: boolean
   createdAt?: boolean
+  textScore?: boolean
+  textConfidence?: boolean
+  imageScore?: boolean
+  imageConfidence?: boolean
+  videoScore?: boolean
+  videoConfidence?: boolean
+  analyzedTypes?: boolean
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiScore"]>
 
@@ -544,6 +787,13 @@ export type AiScoreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   gptzeroScore?: boolean
   heuristicScore?: boolean
   createdAt?: boolean
+  textScore?: boolean
+  textConfidence?: boolean
+  imageScore?: boolean
+  imageConfidence?: boolean
+  videoScore?: boolean
+  videoConfidence?: boolean
+  analyzedTypes?: boolean
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiScore"]>
 
@@ -555,9 +805,16 @@ export type AiScoreSelectScalar = {
   gptzeroScore?: boolean
   heuristicScore?: boolean
   createdAt?: boolean
+  textScore?: boolean
+  textConfidence?: boolean
+  imageScore?: boolean
+  imageConfidence?: boolean
+  videoScore?: boolean
+  videoConfidence?: boolean
+  analyzedTypes?: boolean
 }
 
-export type AiScoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "contentId" | "compositeScore" | "classification" | "gptzeroScore" | "heuristicScore" | "createdAt", ExtArgs["result"]["aiScore"]>
+export type AiScoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "contentId" | "compositeScore" | "classification" | "gptzeroScore" | "heuristicScore" | "createdAt" | "textScore" | "textConfidence" | "imageScore" | "imageConfidence" | "videoScore" | "videoConfidence" | "analyzedTypes", ExtArgs["result"]["aiScore"]>
 export type AiScoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }
@@ -581,6 +838,13 @@ export type $AiScorePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     gptzeroScore: number | null
     heuristicScore: number | null
     createdAt: Date
+    textScore: number | null
+    textConfidence: number | null
+    imageScore: number | null
+    imageConfidence: number | null
+    videoScore: number | null
+    videoConfidence: number | null
+    analyzedTypes: string[]
   }, ExtArgs["result"]["aiScore"]>
   composites: {}
 }
@@ -1012,6 +1276,13 @@ export interface AiScoreFieldRefs {
   readonly gptzeroScore: Prisma.FieldRef<"AiScore", 'Float'>
   readonly heuristicScore: Prisma.FieldRef<"AiScore", 'Float'>
   readonly createdAt: Prisma.FieldRef<"AiScore", 'DateTime'>
+  readonly textScore: Prisma.FieldRef<"AiScore", 'Float'>
+  readonly textConfidence: Prisma.FieldRef<"AiScore", 'Float'>
+  readonly imageScore: Prisma.FieldRef<"AiScore", 'Float'>
+  readonly imageConfidence: Prisma.FieldRef<"AiScore", 'Float'>
+  readonly videoScore: Prisma.FieldRef<"AiScore", 'Float'>
+  readonly videoConfidence: Prisma.FieldRef<"AiScore", 'Float'>
+  readonly analyzedTypes: Prisma.FieldRef<"AiScore", 'String[]'>
 }
     
 

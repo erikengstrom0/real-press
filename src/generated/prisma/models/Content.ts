@@ -223,6 +223,7 @@ export type ContentWhereInput = {
   status?: Prisma.StringFilter<"Content"> | string
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
   aiScore?: Prisma.XOR<Prisma.AiScoreNullableScalarRelationFilter, Prisma.AiScoreWhereInput> | null
+  media?: Prisma.ContentMediaListRelationFilter
 }
 
 export type ContentOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type ContentOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   aiScore?: Prisma.AiScoreOrderByWithRelationInput
+  media?: Prisma.ContentMediaOrderByRelationAggregateInput
 }
 
 export type ContentWhereUniqueInput = Prisma.AtLeast<{
@@ -254,6 +256,7 @@ export type ContentWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Content"> | string
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
   aiScore?: Prisma.XOR<Prisma.AiScoreNullableScalarRelationFilter, Prisma.AiScoreWhereInput> | null
+  media?: Prisma.ContentMediaListRelationFilter
 }, "id" | "url">
 
 export type ContentOrderByWithAggregationInput = {
@@ -300,6 +303,7 @@ export type ContentCreateInput = {
   status?: string
   createdAt?: Date | string
   aiScore?: Prisma.AiScoreCreateNestedOneWithoutContentInput
+  media?: Prisma.ContentMediaCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateInput = {
@@ -314,6 +318,7 @@ export type ContentUncheckedCreateInput = {
   status?: string
   createdAt?: Date | string
   aiScore?: Prisma.AiScoreUncheckedCreateNestedOneWithoutContentInput
+  media?: Prisma.ContentMediaUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentUpdateInput = {
@@ -328,6 +333,7 @@ export type ContentUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiScore?: Prisma.AiScoreUpdateOneWithoutContentNestedInput
+  media?: Prisma.ContentMediaUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateInput = {
@@ -342,6 +348,7 @@ export type ContentUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   aiScore?: Prisma.AiScoreUncheckedUpdateOneWithoutContentNestedInput
+  media?: Prisma.ContentMediaUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateManyInput = {
@@ -453,6 +460,20 @@ export type ContentUpdateOneRequiredWithoutAiScoreNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutAiScoreInput, Prisma.ContentUpdateWithoutAiScoreInput>, Prisma.ContentUncheckedUpdateWithoutAiScoreInput>
 }
 
+export type ContentCreateNestedOneWithoutMediaInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutMediaInput, Prisma.ContentUncheckedCreateWithoutMediaInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutMediaInput
+  connect?: Prisma.ContentWhereUniqueInput
+}
+
+export type ContentUpdateOneRequiredWithoutMediaNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutMediaInput, Prisma.ContentUncheckedCreateWithoutMediaInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutMediaInput
+  upsert?: Prisma.ContentUpsertWithoutMediaInput
+  connect?: Prisma.ContentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutMediaInput, Prisma.ContentUpdateWithoutMediaInput>, Prisma.ContentUncheckedUpdateWithoutMediaInput>
+}
+
 export type ContentCreateWithoutAiScoreInput = {
   id?: string
   url: string
@@ -464,6 +485,7 @@ export type ContentCreateWithoutAiScoreInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  media?: Prisma.ContentMediaCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutAiScoreInput = {
@@ -477,6 +499,7 @@ export type ContentUncheckedCreateWithoutAiScoreInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  media?: Prisma.ContentMediaUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutAiScoreInput = {
@@ -506,6 +529,7 @@ export type ContentUpdateWithoutAiScoreInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  media?: Prisma.ContentMediaUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutAiScoreInput = {
@@ -519,8 +543,110 @@ export type ContentUncheckedUpdateWithoutAiScoreInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  media?: Prisma.ContentMediaUncheckedUpdateManyWithoutContentNestedInput
 }
 
+export type ContentCreateWithoutMediaInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  aiScore?: Prisma.AiScoreCreateNestedOneWithoutContentInput
+}
+
+export type ContentUncheckedCreateWithoutMediaInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  aiScore?: Prisma.AiScoreUncheckedCreateNestedOneWithoutContentInput
+}
+
+export type ContentCreateOrConnectWithoutMediaInput = {
+  where: Prisma.ContentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentCreateWithoutMediaInput, Prisma.ContentUncheckedCreateWithoutMediaInput>
+}
+
+export type ContentUpsertWithoutMediaInput = {
+  update: Prisma.XOR<Prisma.ContentUpdateWithoutMediaInput, Prisma.ContentUncheckedUpdateWithoutMediaInput>
+  create: Prisma.XOR<Prisma.ContentCreateWithoutMediaInput, Prisma.ContentUncheckedCreateWithoutMediaInput>
+  where?: Prisma.ContentWhereInput
+}
+
+export type ContentUpdateToOneWithWhereWithoutMediaInput = {
+  where?: Prisma.ContentWhereInput
+  data: Prisma.XOR<Prisma.ContentUpdateWithoutMediaInput, Prisma.ContentUncheckedUpdateWithoutMediaInput>
+}
+
+export type ContentUpdateWithoutMediaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aiScore?: Prisma.AiScoreUpdateOneWithoutContentNestedInput
+}
+
+export type ContentUncheckedUpdateWithoutMediaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aiScore?: Prisma.AiScoreUncheckedUpdateOneWithoutContentNestedInput
+}
+
+
+/**
+ * Count Type ContentCountOutputType
+ */
+
+export type ContentCountOutputType = {
+  media: number
+}
+
+export type ContentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  media?: boolean | ContentCountOutputTypeCountMediaArgs
+}
+
+/**
+ * ContentCountOutputType without action
+ */
+export type ContentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentCountOutputType
+   */
+  select?: Prisma.ContentCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ContentCountOutputType without action
+ */
+export type ContentCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentMediaWhereInput
+}
 
 
 export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -535,6 +661,8 @@ export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   createdAt?: boolean
   aiScore?: boolean | Prisma.Content$aiScoreArgs<ExtArgs>
+  media?: boolean | Prisma.Content$mediaArgs<ExtArgs>
+  _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["content"]>
 
 export type ContentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -579,6 +707,8 @@ export type ContentSelectScalar = {
 export type ContentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "domain" | "title" | "description" | "contentText" | "contentHash" | "sourceType" | "status" | "createdAt", ExtArgs["result"]["content"]>
 export type ContentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   aiScore?: boolean | Prisma.Content$aiScoreArgs<ExtArgs>
+  media?: boolean | Prisma.Content$mediaArgs<ExtArgs>
+  _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 export type ContentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -587,6 +717,7 @@ export type $ContentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Content"
   objects: {
     aiScore: Prisma.$AiScorePayload<ExtArgs> | null
+    media: Prisma.$ContentMediaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -994,6 +1125,7 @@ readonly fields: ContentFieldRefs;
 export interface Prisma__ContentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   aiScore<T extends Prisma.Content$aiScoreArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$aiScoreArgs<ExtArgs>>): Prisma.Prisma__AiScoreClient<runtime.Types.Result.GetResult<Prisma.$AiScorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  media<T extends Prisma.Content$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1437,6 +1569,30 @@ export type Content$aiScoreArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.AiScoreInclude<ExtArgs> | null
   where?: Prisma.AiScoreWhereInput
+}
+
+/**
+ * Content.media
+ */
+export type Content$mediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentMedia
+   */
+  select?: Prisma.ContentMediaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentMedia
+   */
+  omit?: Prisma.ContentMediaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentMediaInclude<ExtArgs> | null
+  where?: Prisma.ContentMediaWhereInput
+  orderBy?: Prisma.ContentMediaOrderByWithRelationInput | Prisma.ContentMediaOrderByWithRelationInput[]
+  cursor?: Prisma.ContentMediaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentMediaScalarFieldEnum | Prisma.ContentMediaScalarFieldEnum[]
 }
 
 /**

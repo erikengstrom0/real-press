@@ -12,9 +12,39 @@
  */
 
 import type { ProviderResult, HeuristicMetrics } from '../types'
+import { BaseProvider, type ProviderInput, type ProviderCapabilities } from './base.provider'
 
 const MIN_WORDS_FOR_ANALYSIS = 50
 
+/**
+ * Heuristic Provider Class
+ * Extends BaseProvider for multi-modal architecture compatibility
+ */
+export class HeuristicProvider extends BaseProvider {
+  readonly name = 'heuristic'
+  readonly capabilities: ProviderCapabilities = {
+    contentTypes: ['text'],
+  }
+
+  isAvailable(): boolean {
+    // Heuristics are always available - no external dependencies
+    return true
+  }
+
+  async analyze(input: ProviderInput): Promise<ProviderResult | null> {
+    if (input.type !== 'text' || !input.text) {
+      return null
+    }
+    const result = await analyzeWithHeuristics(input.text)
+    return {
+      score: result.score,
+      confidence: result.confidence,
+      metadata: { metrics: result.metrics },
+    }
+  }
+}
+
+// Legacy function export for backwards compatibility
 export async function analyzeWithHeuristics(text: string): Promise<ProviderResult & { metrics: HeuristicMetrics }> {
   const cleanText = text.trim()
   const words = tokenizeWords(cleanText)

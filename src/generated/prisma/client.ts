@@ -49,3 +49,13 @@ export type Content = Prisma.ContentModel
  * 
  */
 export type AiScore = Prisma.AiScoreModel
+/**
+ * Model ContentMedia
+ * 
+ */
+export type ContentMedia = Prisma.ContentMediaModel
+/**
+ * Model MediaScore
+ * 
+ */
+export type MediaScore = Prisma.MediaScoreModel

@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react";
 import styles from "./SubmitForm.module.css";
 import { normalizeUrl } from "@/lib/utils/url";
+import { AIScoreBadge } from "./AIScoreBadge";
+import type { Classification } from "@/lib/ai-detection";
 
 interface SubmissionResult {
   success: boolean;
@@ -167,9 +169,14 @@ export function SubmitForm() {
             </p>
           )}
           {result.success && result.aiScore && (
-            <p className={styles.resultDetail}>
-              Human Score: {((1 - result.aiScore.score) * 100).toFixed(0)}% ({result.aiScore.classification})
-            </p>
+            <div className={styles.resultDetail} style={{ marginTop: '1rem' }}>
+              <AIScoreBadge
+                score={result.aiScore.score}
+                classification={result.aiScore.classification as Classification}
+                showScore
+                size="large"
+              />
+            </div>
           )}
         </div>
       )}

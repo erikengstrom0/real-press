@@ -466,6 +466,47 @@ Decisions made during development that should persist across sessions.
    - Health check endpoint for monitoring
    - CPU-friendly (no GPU required for MVP)
 
-### Future Decisions
+### Design System Decisions (2026-01-29)
 
-*(Add decisions here as they are made in future sprints)*
+1. **1920s-30s Retro Newspaper Aesthetic**
+   - Typography: Caudex (headlines) + Lato (body)
+   - Color palette: warm paper tones, muted colors
+   - Square corners instead of rounded (4px max)
+   - Removed paper texture (too noisy for screens)
+
+2. **Color Palette**
+   - Primary: `#249445` (Medium Jungle Green)
+   - Secondary: `#9CE7B3` (Celadon - light green)
+   - Gold: `#F3D653` (Royal Gold - highlights)
+   - Sky: `#C9E0F8` (Pale Sky - info states)
+   - Neutrals: Paper (#F5F2ED), Cream (#FAF8F5), Charcoal (#2D2A26), Ink (#1A1816)
+
+3. **AI Score Stamp Design**
+   - Rubber stamp aesthetic with random imperfections
+   - Random rotation (-3° to 3°), opacity (0.85-1.0), position shift
+   - Uneven pressure shadows for authenticity
+   - Color-coded: Human (green) → Unsure (grey) → AI (muted red)
+   - Three sizes: small, medium, large
+
+4. **Stamp Variations Utility**
+   - `src/lib/utils/stamp-variations.ts` generates random stamp styles
+   - `getStampStyles()` returns inline CSS for random variations
+   - `getStampClass()` maps classification to CSS class
+   - Applied via `useMemo` to persist across re-renders
+
+5. **CSS Architecture**
+   - Global design tokens in `globals.css` (CSS custom properties)
+   - Component styles use CSS Modules importing design tokens
+   - All components updated to use `var(--color-*)`, `var(--font-*)`, etc.
+   - Removed hardcoded colors (e.g., `#0070f3` → `var(--color-accent-primary)`)
+
+6. **Demo/Style Guide Page**
+   - `/demo` route shows all design system elements
+   - Color swatches, stamps, typography, buttons, cards
+   - Sample search results with all classifications
+   - Useful for testing and demonstrating the design
+
+7. **Toggle Switch Styling**
+   - Retro style: square corners, border-based design
+   - Uses `--color-accent-secondary` for on state
+   - Matches newspaper aesthetic (not iOS-style)

@@ -201,18 +201,28 @@ Clean, presentable demo for investor meetings.
 
 ---
 
-## Sprint 5: Vercel Deployment 🚀 IN PROGRESS
+## Sprint 5: Vercel Deployment & Design System 🚀 IN PROGRESS
 
 ### Goal
-Deploy the MVP to production for investor demos.
+Deploy the MVP to production for investor demos with polished visual design.
 
-### Tasks
-- [ ] Create vercel.json configuration
-- [ ] Create .env.example for documentation
+### Completed Tasks
+- [x] Create vercel.json configuration
+- [x] Create .env.example for documentation
+- [x] Update app URL to real.press domain
+- [x] Add multi-modal AI detection (image/video support)
+- [x] Implement 1920s-30s retro newspaper design system
+- [x] Create rubber stamp AI score badges with random variations
+- [x] Update all components to use design system CSS variables
+- [x] Create `/demo` style guide page
+- [x] Remove paper texture (too noisy)
+- [x] Update toggle switches to match retro aesthetic
+
+### Remaining Tasks
 - [ ] Deploy to Vercel
 - [ ] Configure environment variables in Vercel dashboard
 - [ ] Test production deployment
-- [ ] Configure custom domain (optional)
+- [ ] Configure custom domain (real.press)
 
 ### Environment Variables Required
 ```

@@ -3,8 +3,8 @@
   align-items: center;
   gap: 1.5rem;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb;
-  border-radius: 10px;
+  background-color: var(--color-cream);
+  border: var(--border-thin) solid var(--color-charcoal-muted);
 }
 
 .control {
@@ -14,60 +14,73 @@
 }
 
 .label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-charcoal);
   user-select: none;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
 }
 
 .divider {
-  width: 1px;
+  width: var(--border-thin);
   height: 24px;
-  background-color: #e5e7eb;
+  background-color: var(--color-charcoal-muted);
 }
 
-/* iOS-style toggle switch */
+/* Retro newspaper-style toggle switch */
 .toggle {
   position: relative;
-  width: 51px;
-  height: 31px;
-  border-radius: 31px;
-  border: none;
+  width: 48px;
+  height: 26px;
+  border: var(--border-medium) solid var(--color-charcoal-muted);
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all var(--transition-fast);
   padding: 0;
+  background-color: var(--color-paper-dark);
 }
 
 .toggleOff {
-  background-color: #e5e7eb;
+  background-color: var(--color-paper-dark);
+  border-color: var(--color-charcoal-muted);
 }
 
 .toggleOn {
-  background-color: #22c55e;
+  background-color: var(--color-accent-secondary);
+  border-color: var(--color-accent-primary);
 }
 
 .toggleKnob {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 27px;
-  height: 27px;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
+  width: 18px;
+  height: 18px;
+  background-color: var(--color-cream);
+  border: var(--border-thin) solid var(--color-charcoal-muted);
+  border-radius: 2px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
 }
 
 .toggleOn .toggleKnob {
-  transform: translateX(20px);
+  transform: translateX(22px);
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
 }
 
 /* Hover states */
 .toggle:hover {
-  opacity: 0.9;
+  border-color: var(--color-charcoal);
+}
+
+.toggleOn:hover {
+  border-color: var(--color-accent-primary);
 }
 
 .toggle:focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
 }

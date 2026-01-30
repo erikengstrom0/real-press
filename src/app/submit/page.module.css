@@ -5,41 +5,45 @@
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
+  background-color: var(--color-paper);
 }
 
 .backLink {
   position: absolute;
   top: 1.5rem;
   left: 1.5rem;
-  color: #0070f3;
+  color: var(--color-accent-primary);
   text-decoration: none;
-  font-size: 0.95rem;
-  transition: color 0.2s;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
 }
 
 .backLink:hover {
-  color: #0060df;
+  color: var(--color-ink);
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #111827;
+  font-family: var(--font-headline);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
   margin: 0 0 0.5rem 0;
 }
 
 .description {
-  color: #6b7280;
+  font-family: var(--font-body);
+  color: var(--color-charcoal-light);
   margin: 0 0 2rem 0;
   text-align: center;
   max-width: 500px;
-  line-height: 1.6;
+  line-height: var(--leading-relaxed);
 }
 
 /* Tablet */
 @media (max-width: 768px) {
   .title {
-    font-size: 2rem;
+    font-size: var(--text-3xl);
   }
 
   .backLink {
@@ -56,10 +60,10 @@
   }
 
   .title {
-    font-size: 1.75rem;
+    font-size: var(--text-2xl);
   }
 
   .description {
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
   }
 }

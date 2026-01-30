@@ -23,6 +23,7 @@ model Content {
   createdAt   DateTime @default(now()) @map("created_at")
 
   aiScore     AiScore?
+  media       ContentMedia[]
 
   @@map("content")
 }
@@ -36,7 +37,42 @@ model AiScore {
   heuristicScore  Float?   @map("heuristic_score")
   createdAt       DateTime @default(now()) @map("created_at")
 
+  // Multi-modal scoring fields
+  textScore       Float?   @map("text_score")
+  textConfidence  Float?   @map("text_confidence")
+  imageScore      Float?   @map("image_score")
+  imageConfidence Float?   @map("image_confidence")
+  videoScore      Float?   @map("video_score")
+  videoConfidence Float?   @map("video_confidence")
+  analyzedTypes   String[] @default([]) @map("analyzed_types")
+
   content         Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@map("ai_scores")
+}
+
+model ContentMedia {
+  id        String   @id @default(uuid())
+  contentId String   @map("content_id")
+  type      String   // 'image' | 'video'
+  url       String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  content    Content     @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  mediaScore MediaScore?
+
+  @@map("content_media")
+}
+
+model MediaScore {
+  id           String   @id @default(uuid())
+  mediaId      String   @unique @map("media_id")
+  score        Float
+  confidence   Float
+  providerName String   @map("provider_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  media        ContentMedia @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@map("media_scores")
 }

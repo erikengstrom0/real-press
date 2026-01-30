@@ -8,6 +8,7 @@
  */
 
 import type { ProviderResult } from '../types'
+import { BaseProvider, type ProviderInput, type ProviderCapabilities } from './base.provider'
 
 const GPTZERO_API_URL = 'https://api.gptzero.me/v2/predict/text'
 const MIN_CHARS_FOR_API = 250
@@ -25,6 +26,29 @@ interface GPTZeroResponse {
   }>
 }
 
+/**
+ * GPTZero Provider Class
+ * Extends BaseProvider for multi-modal architecture compatibility
+ */
+export class GPTZeroProvider extends BaseProvider {
+  readonly name = 'gptzero'
+  readonly capabilities: ProviderCapabilities = {
+    contentTypes: ['text'],
+  }
+
+  isAvailable(): boolean {
+    return isGPTZeroConfigured()
+  }
+
+  async analyze(input: ProviderInput): Promise<ProviderResult | null> {
+    if (input.type !== 'text' || !input.text) {
+      return null
+    }
+    return analyzeWithGPTZero(input.text)
+  }
+}
+
+// Legacy function export for backwards compatibility
 export async function analyzeWithGPTZero(text: string): Promise<ProviderResult | null> {
   const apiKey = process.env.GPTZERO_API_KEY
 

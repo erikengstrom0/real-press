@@ -191,13 +191,51 @@ Clean, presentable demo for investor meetings.
 ### Deferred to Post-MVP
 - [ ] Pre-seed database with 50-100 curated URLs
 - [ ] Basic analytics (search count, submissions)
-- [ ] Deploy to Vercel with custom domain
+- [ ] GPTZero API key setup (currently using heuristic-only detection)
 
 ### Landing Page Copy
 - **Logo:** "Real Press"
 - **Headline:** "A Search Engine for the Human Web"
 - **Subheadline:** "In an age of AI-generated content, finding authentic human writing is harder than ever..."
 - **CTA:** Search bar + "Submit a URL to analyze" link
+
+---
+
+## Sprint 5: Vercel Deployment & Design System 🚀 IN PROGRESS
+
+### Goal
+Deploy the MVP to production for investor demos with polished visual design.
+
+### Completed Tasks
+- [x] Create vercel.json configuration
+- [x] Create .env.example for documentation
+- [x] Update app URL to real.press domain
+- [x] Add multi-modal AI detection (image/video support)
+- [x] Implement 1920s-30s retro newspaper design system
+- [x] Create rubber stamp AI score badges with random variations
+- [x] Update all components to use design system CSS variables
+- [x] Create `/demo` style guide page
+- [x] Remove paper texture (too noisy)
+- [x] Update toggle switches to match retro aesthetic
+
+### Remaining Tasks
+- [ ] Deploy to Vercel
+- [ ] Configure environment variables in Vercel dashboard
+- [ ] Test production deployment
+- [ ] Configure custom domain (real.press)
+
+### Environment Variables Required
+```
+DATABASE_URL         - Neon PostgreSQL connection string
+GPTZERO_API_KEY      - GPTZero API key for AI detection
+NEXT_PUBLIC_APP_URL  - Production URL (e.g., https://realpress.app)
+```
+
+### Deployment Steps
+1. Run `vercel` to link project and deploy preview
+2. Add environment variables in Vercel dashboard
+3. Run `vercel --prod` to deploy to production
+4. Configure custom domain in Vercel settings
 
 ---
 
@@ -231,6 +269,18 @@ Clean, presentable demo for investor meetings.
 5. **Submit URL** - "Users can submit any URL to be analyzed"
 6. **Show score** - "Within seconds, we detect if it's human or AI"
 7. **The pitch** - "As AI floods the internet, Real Press helps users find authentic content"
+
+---
+
+## Known Gaps & Limitations
+
+Track items that need attention but aren't blocking the demo:
+
+| Gap | Impact | Priority | Notes |
+|-----|--------|----------|-------|
+| GPTZero API key not configured | AI detection uses heuristics only (less accurate) | Medium | Get key from gptzero.me, add to Vercel env vars |
+| ML Service not deployed | Image/video detection unavailable | Low | Text detection works fine for MVP |
+| No custom domain | Using Vercel default domain | Low | Configure after deployment works |
 
 ---
 

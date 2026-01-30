@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  ml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ML_HOST=0.0.0.0
+      - ML_PORT=8000
+      - ML_DEVICE=cpu
+      - ML_DEBUG=false
+      - ML_MODEL_NAME=cnn_detection
+      - ML_MAX_IMAGE_SIZE_MB=10
+      - ML_MAX_VIDEO_DURATION_SECONDS=300
+      - ML_MAX_FRAMES_PER_VIDEO=20
+    volumes:
+      # Mount custom model weights if available
+      - ./weights:/app/weights:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # Optional: GPU-enabled service
+  # Uncomment if you have NVIDIA GPU support
+  # ml-service-gpu:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8001:8000"
+  #   environment:
+  #     - ML_DEVICE=cuda
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]

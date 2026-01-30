@@ -52,7 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Content: 'Content',
-  AiScore: 'AiScore'
+  AiScore: 'AiScore',
+  ContentMedia: 'ContentMedia',
+  MediaScore: 'MediaScore'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -94,10 +96,40 @@ export const AiScoreScalarFieldEnum = {
   classification: 'classification',
   gptzeroScore: 'gptzeroScore',
   heuristicScore: 'heuristicScore',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  textScore: 'textScore',
+  textConfidence: 'textConfidence',
+  imageScore: 'imageScore',
+  imageConfidence: 'imageConfidence',
+  videoScore: 'videoScore',
+  videoConfidence: 'videoConfidence',
+  analyzedTypes: 'analyzedTypes'
 } as const
 
 export type AiScoreScalarFieldEnum = (typeof AiScoreScalarFieldEnum)[keyof typeof AiScoreScalarFieldEnum]
+
+
+export const ContentMediaScalarFieldEnum = {
+  id: 'id',
+  contentId: 'contentId',
+  type: 'type',
+  url: 'url',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentMediaScalarFieldEnum = (typeof ContentMediaScalarFieldEnum)[keyof typeof ContentMediaScalarFieldEnum]
+
+
+export const MediaScoreScalarFieldEnum = {
+  id: 'id',
+  mediaId: 'mediaId',
+  score: 'score',
+  confidence: 'confidence',
+  providerName: 'providerName',
+  createdAt: 'createdAt'
+} as const
+
+export type MediaScoreScalarFieldEnum = (typeof MediaScoreScalarFieldEnum)[keyof typeof MediaScoreScalarFieldEnum]
 
 
 export const SortOrder = {

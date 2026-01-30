@@ -2,27 +2,35 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  background-color: var(--color-paper);
+  min-height: 100vh;
 }
 
 .header {
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: var(--border-thick) solid var(--color-charcoal);
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-accent-primary);
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .logo:hover {
-  color: #0070f3;
+  color: var(--color-ink);
 }
 
 .tagline {
-  color: #666;
-  font-size: 0.9rem;
+  font-family: var(--font-body);
+  color: var(--color-charcoal-muted);
+  font-size: var(--text-sm);
   margin: 0.25rem 0 1rem 0;
+  font-style: italic;
 }
 
 .content {
@@ -32,7 +40,7 @@
 }
 
 .placeholder {
-  color: #666;
+  color: var(--color-charcoal-muted);
   text-align: center;
   padding: 3rem 0;
 }
@@ -43,5 +51,5 @@
 
 .hint {
   margin-top: 0.5rem !important;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }

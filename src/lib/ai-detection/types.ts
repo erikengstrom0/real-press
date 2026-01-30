@@ -6,6 +6,11 @@
 
 export type Classification = 'human' | 'likely_human' | 'unsure' | 'likely_ai' | 'ai'
 
+/**
+ * Content types supported by the multi-modal detection system
+ */
+export type ContentType = 'text' | 'image' | 'video'
+
 export interface DetectionResult {
   score: number
   classification: Classification
@@ -36,4 +41,51 @@ export interface HeuristicMetrics {
   punctuationVariety: number
   paragraphCount: number
   wordCount: number
+}
+
+/**
+ * Multi-Modal Input Types
+ */
+export interface ImageInput {
+  url?: string
+  base64?: string
+}
+
+export interface VideoInput {
+  url: string
+}
+
+export interface MultiModalInput {
+  text?: string
+  images?: ImageInput[]
+  video?: VideoInput
+}
+
+/**
+ * Score for a single content type
+ */
+export interface ContentTypeScore {
+  type: ContentType
+  score: number
+  confidence: number
+  providerName: string
+  metadata?: Record<string, unknown>
+}
+
+/**
+ * Result from multi-modal analysis
+ */
+export interface MultiModalResult {
+  compositeScore: number
+  classification: Classification
+  contentScores: ContentTypeScore[]
+  analyzedTypes: ContentType[]
+  metadata?: {
+    textScore?: number
+    textConfidence?: number
+    imageScore?: number
+    imageConfidence?: number
+    videoScore?: number
+    videoConfidence?: number
+  }
 }

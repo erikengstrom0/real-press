@@ -385,7 +385,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Content: 'Content',
-  AiScore: 'AiScore'
+  AiScore: 'AiScore',
+  ContentMedia: 'ContentMedia',
+  MediaScore: 'MediaScore'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -401,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "content" | "aiScore"
+    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -553,6 +555,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ContentMedia: {
+      payload: Prisma.$ContentMediaPayload<ExtArgs>
+      fields: Prisma.ContentMediaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentMediaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentMediaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>
+        }
+        findFirst: {
+          args: Prisma.ContentMediaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentMediaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>
+        }
+        findMany: {
+          args: Prisma.ContentMediaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>[]
+        }
+        create: {
+          args: Prisma.ContentMediaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>
+        }
+        createMany: {
+          args: Prisma.ContentMediaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ContentMediaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>[]
+        }
+        delete: {
+          args: Prisma.ContentMediaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>
+        }
+        update: {
+          args: Prisma.ContentMediaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentMediaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentMediaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ContentMediaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>[]
+        }
+        upsert: {
+          args: Prisma.ContentMediaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentMediaPayload>
+        }
+        aggregate: {
+          args: Prisma.ContentMediaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentMedia>
+        }
+        groupBy: {
+          args: Prisma.ContentMediaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentMediaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentMediaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentMediaCountAggregateOutputType> | number
+        }
+      }
+    }
+    MediaScore: {
+      payload: Prisma.$MediaScorePayload<ExtArgs>
+      fields: Prisma.MediaScoreFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MediaScoreFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MediaScoreFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>
+        }
+        findFirst: {
+          args: Prisma.MediaScoreFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MediaScoreFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>
+        }
+        findMany: {
+          args: Prisma.MediaScoreFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>[]
+        }
+        create: {
+          args: Prisma.MediaScoreCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>
+        }
+        createMany: {
+          args: Prisma.MediaScoreCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MediaScoreCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>[]
+        }
+        delete: {
+          args: Prisma.MediaScoreDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>
+        }
+        update: {
+          args: Prisma.MediaScoreUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>
+        }
+        deleteMany: {
+          args: Prisma.MediaScoreDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MediaScoreUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MediaScoreUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>[]
+        }
+        upsert: {
+          args: Prisma.MediaScoreUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaScorePayload>
+        }
+        aggregate: {
+          args: Prisma.MediaScoreAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMediaScore>
+        }
+        groupBy: {
+          args: Prisma.MediaScoreGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MediaScoreGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MediaScoreCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MediaScoreCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -615,10 +765,40 @@ export const AiScoreScalarFieldEnum = {
   classification: 'classification',
   gptzeroScore: 'gptzeroScore',
   heuristicScore: 'heuristicScore',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  textScore: 'textScore',
+  textConfidence: 'textConfidence',
+  imageScore: 'imageScore',
+  imageConfidence: 'imageConfidence',
+  videoScore: 'videoScore',
+  videoConfidence: 'videoConfidence',
+  analyzedTypes: 'analyzedTypes'
 } as const
 
 export type AiScoreScalarFieldEnum = (typeof AiScoreScalarFieldEnum)[keyof typeof AiScoreScalarFieldEnum]
+
+
+export const ContentMediaScalarFieldEnum = {
+  id: 'id',
+  contentId: 'contentId',
+  type: 'type',
+  url: 'url',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentMediaScalarFieldEnum = (typeof ContentMediaScalarFieldEnum)[keyof typeof ContentMediaScalarFieldEnum]
+
+
+export const MediaScoreScalarFieldEnum = {
+  id: 'id',
+  mediaId: 'mediaId',
+  score: 'score',
+  confidence: 'confidence',
+  providerName: 'providerName',
+  createdAt: 'createdAt'
+} as const
+
+export type MediaScoreScalarFieldEnum = (typeof MediaScoreScalarFieldEnum)[keyof typeof MediaScoreScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -803,6 +983,8 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   content?: Prisma.ContentOmit
   aiScore?: Prisma.AiScoreOmit
+  contentMedia?: Prisma.ContentMediaOmit
+  mediaScore?: Prisma.MediaScoreOmit
 }
 
 /* Types for Logging */

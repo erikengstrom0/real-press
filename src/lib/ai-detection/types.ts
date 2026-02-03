@@ -30,6 +30,8 @@ export interface CompositeResult {
   heuristicScore: number
   metadata?: {
     gptzeroAvailable: boolean
+    huggingfaceAvailable?: boolean
+    primaryProvider?: string | null
     heuristicMetrics?: HeuristicMetrics
   }
 }

@@ -48,7 +48,8 @@ npx prisma studio      # Open database GUI
 │  ┌─────────────┬───────────┼───────────┬─────────────────┐ │
 │  │   Text      │   Image   │   Video   │   Provider      │ │
 │  │  Providers  │  Provider │  Provider │   Registry      │ │
-│  │ GPTZero     │   Local   │  (Frames) │                 │ │
+│  │ HuggingFace │   Local   │  (Frames) │                 │ │
+│  │ GPTZero     │           │           │                 │ │
 │  │ Heuristics  │           │           │                 │ │
 │  └─────────────┴───────────┴───────────┴─────────────────┘ │
 └──────────────────────────┬──────────────────────────────────┘
@@ -67,7 +68,7 @@ npx prisma studio      # Open database GUI
 - **Language**: TypeScript with strict mode
 - **Database**: PostgreSQL via Neon (Prisma 7 ORM)
 - **AI Detection**: Multi-modal (text, image, video)
-  - Text: GPTZero API + custom heuristics
+  - Text: Hugging Face (free, primary) + GPTZero API (paid, optional) + custom heuristics
   - Image/Video: Python ML service (CNNDetection)
 - **Styling**: CSS Modules
 - **Hosting**: Vercel (Next.js) + Docker (ML Service)
@@ -151,8 +152,9 @@ ml-service/                    # Python ML Service
 # Database
 DATABASE_URL="postgresql://..."     # Neon connection string (prisma+postgres:// format)
 
-# AI Detection - Text
-GPTZERO_API_KEY="..."               # GPTZero API key
+# AI Detection - Text (Hugging Face is FREE and primary)
+HUGGINGFACE_API_TOKEN="..."         # Optional: for higher rate limits (works without)
+GPTZERO_API_KEY="..."               # Optional: paid backup ($45/month)
 
 # AI Detection - Image/Video (ML Service)
 ML_SERVICE_URL="http://localhost:8000"  # Python ML service URL
@@ -510,3 +512,28 @@ Decisions made during development that should persist across sessions.
    - Retro style: square corners, border-based design
    - Uses `--color-accent-secondary` for on state
    - Matches newspaper aesthetic (not iOS-style)
+
+### AI Detection Provider Decisions (2026-02-02)
+
+1. **Hugging Face as Primary Text Provider**
+   - GPTZero API costs $45/month - too expensive for MVP
+   - Hugging Face Inference API is FREE (rate-limited, but sufficient)
+   - Uses `roberta-base-openai-detector` model by default
+   - Works without API token (token optional for higher rate limits)
+
+2. **Provider Priority**
+   - Primary: Hugging Face (free, always available)
+   - Secondary: GPTZero (paid, when GPTZERO_API_KEY is set)
+   - Fallback: Heuristics (always runs as baseline)
+   - Composite score combines API result + heuristics
+
+3. **New Provider File**
+   - `src/lib/ai-detection/providers/huggingface.provider.ts`
+   - Follows same pattern as GPTZero provider
+   - Handles model loading delays with retry logic
+   - Handles rate limiting gracefully
+
+4. **Environment Variables**
+   - `HUGGINGFACE_API_TOKEN` - Optional, for higher rate limits
+   - `HUGGINGFACE_MODEL` - Optional, defaults to roberta-base-openai-detector
+   - `GPTZERO_API_KEY` - Optional, only if you want paid backup

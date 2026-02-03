@@ -1,24 +1,59 @@
-# ML Service Dockerfile
-FROM python:3.11-slim
+# ML Service Dockerfile - Optimized for Railway
+# Multi-stage build to reduce final image size
 
-# Set working directory
+# ============================================
+# Stage 1: Builder - Install dependencies
+# ============================================
+FROM python:3.11-slim AS builder
+
 WORKDIR /app
 
-# Install system dependencies for OpenCV and image processing
-RUN apt-get update && apt-get install -y \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libgl1 \
-    ffmpeg \
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Download static ffmpeg binary (much smaller than apt-get install ffmpeg)
+# This avoids pulling in 700MB+ of X11, Mesa, GTK, LLVM dependencies
+RUN curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | \
+    tar xJ --strip-components=1 -C /usr/local/bin/ --wildcards '*/ffmpeg' '*/ffprobe'
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy and install Python dependencies
+# Using CPU-only PyTorch to reduce size from ~2GB to ~200MB
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
+    -r requirements.txt
+
+# ============================================
+# Stage 2: Runtime - Minimal production image
+# ============================================
+FROM python:3.11-slim AS runtime
+
+WORKDIR /app
+
+# Install only minimal runtime dependencies for OpenCV headless
+# Note: opencv-python-headless doesn't need libgl1 or X11 libs
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libglib2.0-0 \
+    libgomp1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy static ffmpeg from builder (just 2 binaries, ~80MB vs 700MB+ with apt)
+COPY --from=builder /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
+COPY --from=builder /usr/local/bin/ffprobe /usr/local/bin/ffprobe
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy application code
 COPY app/ ./app/
@@ -31,8 +66,8 @@ USER mluser
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://localhost:8000/health')" || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 
 # Run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -2,15 +2,17 @@
  * AI Detection Module
  *
  * Orchestrates AI detection using multiple providers:
- * 1. GPTZero API (primary, when available)
- * 2. Heuristic analysis (fallback, always available)
- * 3. Image detection via ML service
- * 4. Video detection via frame analysis
+ * 1. Hugging Face (primary, free, always available)
+ * 2. GPTZero API (secondary, when configured)
+ * 3. Heuristic analysis (fallback, always available)
+ * 4. Image detection via ML service
+ * 5. Video detection via frame analysis
  *
  * Results are combined into a composite score with classification.
  */
 
 import { analyzeWithGPTZero, isGPTZeroConfigured } from './providers/gptzero.provider'
+import { analyzeWithHuggingFace, isHuggingFaceAvailable } from './providers/huggingface.provider'
 import { analyzeWithHeuristics } from './providers/heuristic.provider'
 import { localImageProvider } from './providers/image-local.provider'
 import { videoProvider } from './providers/video.provider'
@@ -46,9 +48,11 @@ export {
   aggregateImageScores,
 } from './composite-score'
 export { isGPTZeroConfigured }
+export { isHuggingFaceAvailable }
 
 export interface DetectionOptions {
   skipGPTZero?: boolean
+  skipHuggingFace?: boolean
   skipImages?: boolean
   skipVideo?: boolean
 }
@@ -56,6 +60,11 @@ export interface DetectionOptions {
 /**
  * Legacy text-only detection function
  * Maintains backwards compatibility with existing code
+ *
+ * Provider priority:
+ * 1. Hugging Face (free, always available)
+ * 2. GPTZero (paid, when configured)
+ * 3. Heuristics (always runs as baseline)
  */
 export async function detectAIContent(
   text: string,
@@ -64,20 +73,37 @@ export async function detectAIContent(
   // Always run heuristic analysis
   const heuristicResult = await analyzeWithHeuristics(text)
 
-  // Run GPTZero if configured and not skipped
+  // Try Hugging Face first (free, always available)
+  let huggingfaceResult = null
+  if (!options.skipHuggingFace && isHuggingFaceAvailable()) {
+    huggingfaceResult = await analyzeWithHuggingFace(text)
+  }
+
+  // Run GPTZero if configured and not skipped (as secondary/validation)
   let gptzeroResult = null
   if (!options.skipGPTZero && isGPTZeroConfigured()) {
     gptzeroResult = await analyzeWithGPTZero(text)
   }
 
+  // Use Hugging Face as primary, fall back to GPTZero
+  const primaryApiResult = huggingfaceResult || gptzeroResult
+  const primaryProviderName = huggingfaceResult ? 'huggingface' : (gptzeroResult ? 'gptzero' : null)
+
   // Calculate composite score
   const result = calculateCompositeScore({
-    gptzeroScore: gptzeroResult?.score ?? null,
-    gptzeroConfidence: gptzeroResult?.confidence ?? null,
+    gptzeroScore: primaryApiResult?.score ?? null,
+    gptzeroConfidence: primaryApiResult?.confidence ?? null,
     heuristicScore: heuristicResult.score,
     heuristicConfidence: heuristicResult.confidence,
     heuristicMetrics: heuristicResult.metrics,
   })
+
+  // Add provider info to metadata
+  if (result.metadata) {
+    result.metadata.primaryProvider = primaryProviderName
+    result.metadata.huggingfaceAvailable = huggingfaceResult !== null
+    result.metadata.gptzeroAvailable = gptzeroResult !== null
+  }
 
   return result
 }
@@ -95,11 +121,24 @@ async function analyzeText(
 
   const result = await detectAIContent(text, options)
 
+  // Determine provider name and confidence based on what was used
+  const primaryProvider = result.metadata?.primaryProvider as string | null
+  let providerName = 'heuristic'
+  let confidence = 0.6
+
+  if (primaryProvider === 'huggingface') {
+    providerName = 'huggingface+heuristic'
+    confidence = 0.8
+  } else if (primaryProvider === 'gptzero') {
+    providerName = 'gptzero+heuristic'
+    confidence = 0.85
+  }
+
   return {
     type: 'text',
     score: result.compositeScore,
-    confidence: result.gptzeroScore !== null ? 0.85 : 0.6, // Higher confidence with GPTZero
-    providerName: result.gptzeroScore !== null ? 'gptzero+heuristic' : 'heuristic',
+    confidence,
+    providerName,
     metadata: result.metadata,
   }
 }

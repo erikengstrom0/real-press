@@ -32,9 +32,9 @@ async function getSearchResults(
   if (page) params.set('page', page)
 
   // Use absolute URL for server-side fetch (required in Next.js server components)
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  // Prefer NEXT_PUBLIC_APP_URL (custom domain) over VERCEL_URL (deployment URL)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
   const res = await fetch(`${baseUrl}/api/search?${params.toString()}`, {
     cache: 'no-store',

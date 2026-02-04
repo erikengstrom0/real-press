@@ -1,14 +1,12 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "Dockerfile"
-# Use buildkit for faster multi-stage builds
 dockerfileContext = "."
 
 [deploy]
 healthcheckPath = "/health"
-healthcheckTimeout = 120
-startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+# Increased timeout for PyTorch model loading on cold start
+healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-# Give more time for PyTorch model loading
 numReplicas = 1

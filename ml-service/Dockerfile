@@ -62,12 +62,15 @@ COPY app/ ./app/
 RUN useradd -m -u 1000 mluser && chown -R mluser:mluser /app
 USER mluser
 
-# Expose port
+# Expose port (Railway will override with $PORT)
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+# Set default port (Railway overrides this with $PORT env var)
+ENV PORT=8000
 
-# Run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Health check uses $PORT for dynamic port support
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
+    CMD python -c "import os; import urllib.request; urllib.request.urlopen(f'http://localhost:{os.environ.get(\"PORT\", 8000)}/health')" || exit 1
+
+# Run the application - use shell form to allow $PORT expansion
+CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT

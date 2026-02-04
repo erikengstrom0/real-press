@@ -2,6 +2,7 @@
 Configuration for the ML service.
 """
 
+import os
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -11,7 +12,8 @@ class Settings(BaseSettings):
 
     # Server settings
     host: str = "0.0.0.0"
-    port: int = 8000
+    # Railway sets PORT env var directly (no prefix), so we read it separately
+    port: int = int(os.environ.get("PORT", "8000"))
     debug: bool = False
 
     # Model settings

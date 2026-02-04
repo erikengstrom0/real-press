@@ -63,8 +63,61 @@ export async function extractContent(url: string): Promise<ExtractedContent> {
     if (error instanceof ExtractionError) {
       throw error
     }
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    // Detect HTTP error codes and provide user-friendly messages
+    if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
+      throw new ExtractionError(
+        `This website (${domain}) has blocked automated access. Sites like Reddit, Twitter/X, and LinkedIn use anti-bot protection that prevents content extraction. Try submitting a blog post, news article, or other publicly accessible page instead.`,
+        url
+      )
+    }
+
+    if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+      throw new ExtractionError(
+        `This content requires authentication to access. Real Press can only analyze publicly accessible pages. Try a different URL that doesn't require login.`,
+        url
+      )
+    }
+
+    if (errorMessage.includes('404') || errorMessage.includes('Not Found')) {
+      throw new ExtractionError(
+        `The page was not found (404). Please check that the URL is correct and the page still exists.`,
+        url
+      )
+    }
+
+    if (errorMessage.includes('429') || errorMessage.includes('Too Many Requests')) {
+      throw new ExtractionError(
+        `This website is rate-limiting our requests. Please wait a moment and try again, or try a different website.`,
+        url
+      )
+    }
+
+    if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
+      throw new ExtractionError(
+        `The website is experiencing server issues and couldn't respond. Please try again later.`,
+        url
+      )
+    }
+
+    if (errorMessage.includes('ENOTFOUND') || errorMessage.includes('getaddrinfo')) {
+      throw new ExtractionError(
+        `Could not find the website. Please check that the URL is spelled correctly.`,
+        url
+      )
+    }
+
+    if (errorMessage.includes('ETIMEDOUT') || errorMessage.includes('timeout')) {
+      throw new ExtractionError(
+        `The website took too long to respond. Please try again or try a different URL.`,
+        url
+      )
+    }
+
     throw new ExtractionError(
-      `Failed to extract content: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      `Failed to extract content: ${errorMessage}`,
       url
     )
   }

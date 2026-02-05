@@ -85,7 +85,12 @@ src/
 │   └── api/
 │       ├── search/route.ts   # Search endpoint
 │       ├── submit/route.ts   # Submission endpoint
-│       └── analyze/route.ts  # AI detection endpoint (Sprint 2)
+│       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
+│       └── admin/
+│           ├── crawl/worker/route.ts  # Job worker (Vercel Cron target)
+│           ├── crawl/jobs/route.ts    # Job queue management
+│           ├── crawl/seeds/route.ts   # Seed list import
+│           └── content/[id]/route.ts  # Content inspection
 ├── components/
 │   ├── SearchBar.tsx
 │   ├── SearchResults.tsx
@@ -98,7 +103,14 @@ src/
     │   ├── content.service.ts
     │   ├── extraction.service.ts
     │   ├── ai-detection.service.ts
-    │   └── media-extraction.service.ts  # Extract images/videos from URLs
+    │   ├── media-extraction.service.ts  # Extract images/videos from URLs
+    │   ├── crawl-job.service.ts         # Job queue management
+    │   ├── crawl-worker.service.ts      # Job processing
+    │   ├── domain-rate-limit.service.ts # Per-domain rate limiting
+    │   ├── content-analysis.service.ts  # Stylometric analysis
+    │   ├── metadata-extraction.service.ts # HTML metadata extraction
+    │   ├── topic-extraction.service.ts  # Topic classification
+    │   └── author.service.ts            # Author tracking
     └── ai-detection/
         ├── index.ts              # Multi-modal orchestrator
         ├── composite-score.ts    # Score calculation
@@ -647,6 +659,60 @@ Decisions made during development that should persist across sessions.
    - Published date: Open Graph, Schema.org, Dublin Core, time elements
    - Author: meta tags, Schema.org, byline patterns
    - Site info: og:site_name, canonical URL, og:type
+
+### Web Scraper Testing & HuggingFace Fixes (2026-02-04)
+
+1. **Scraper Local Testing Completed**
+   - Tested full scraper pipeline: job queue → content extraction → metadata → AI detection → topics
+   - All components verified working: author extraction, published dates, reading level, topics
+   - Sample result: "Back to Basics" by Joel Spolsky classified as "human" with 0.097 composite score
+
+2. **HuggingFace API Migration**
+   - Old endpoint `api-inference.huggingface.co` deprecated (returns 410)
+   - New endpoint: `router.huggingface.co/hf-inference/models/{model}`
+   - Updated in `src/lib/ai-detection/providers/huggingface.provider.ts`
+
+3. **HuggingFace Token Authentication**
+   - New router endpoint requires API token (old endpoint worked without)
+   - Token created and saved to `.env`: `HUGGINGFACE_API_TOKEN`
+   - Token also saved to Claude memory: `~/.claude/projects/-Users-erikengstrom/memory/MEMORY.md`
+
+4. **Text Truncation Bug Fix**
+   - RoBERTa model has 514 token limit (~4 chars/token average)
+   - Old truncation: 5000 chars → caused "tensor size mismatch" errors
+   - Fixed truncation: 1800 chars → safely fits within token limit
+   - Error message: "The expanded size of the tensor (1184) must match the existing size (514)"
+
+5. **Commit Created: `78fa44e`**
+   - "Add web scraper system with metadata extraction and topic classification"
+   - 20 files changed, 2383 insertions
+   - Pushed to `main` branch
+
+6. **Scraper Admin API Endpoints**
+   - `POST /api/admin/crawl/worker` - Process batch of jobs (Vercel Cron target)
+   - `GET/POST /api/admin/crawl/jobs` - List/create crawl jobs
+   - `GET/POST /api/admin/crawl/seeds` - List/import seed URL lists
+   - `GET /api/admin/content/[id]` - Get content with full metadata
+
+7. **Testing Commands**
+   ```bash
+   # Import seed URLs
+   curl -X POST http://localhost:3000/api/admin/crawl/seeds -H 'Content-Type: application/json' -d '{"file": "tech-essays"}'
+
+   # Run worker batch
+   curl -X POST http://localhost:3000/api/admin/crawl/worker -H 'Content-Type: application/json' -d '{"batchSize": 5}'
+
+   # Check job stats
+   curl "http://localhost:3000/api/admin/crawl/jobs?stats=true"
+
+   # View content with metadata
+   curl "http://localhost:3000/api/admin/content/{id}"
+   ```
+
+8. **Production Deployment Next Steps**
+   - Schema already pushed to Neon (verified in sync)
+   - Add `CRON_SECRET` env var in Vercel for worker authentication
+   - Set up Vercel Cron to trigger `/api/admin/crawl/worker` periodically
 
 ---
 

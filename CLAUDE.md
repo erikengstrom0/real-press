@@ -755,6 +755,48 @@ Decisions made during development that should persist across sessions.
    3. Enable and save
    ```
 
+### Styling & Cross-Browser Fixes (2026-02-05)
+
+1. **Home Page Left-Justified Layout**
+   - Changed from center-justified to left-justified layout
+   - Max-width constrained to 900px for readability
+   - Title "Real Press" uses masthead-style bold ink lines (above/below)
+   - Double-line dividers between sections (matching demo page style)
+
+2. **Home Page Color Usage**
+   - Feature cards have colored top borders: green, gold, light sky
+   - Card hover changes background to Light Ghost (#F7F3F7)
+   - Footer tagline glows Light Sky on hover
+   - Title size matches Style Guide (--text-6xl)
+
+3. **SearchBar Keyboard Support**
+   - Added explicit `onKeyDown` handler for Enter key
+   - Added native form fallback with `action="/search"` and `method="get"`
+   - Changed input to `type="search"` with `name="q"`
+   - Fixed cross-browser compatibility (Brave, Safari)
+
+4. **AI Score Badge Cross-Browser Fixes**
+   - Removed `filter: blur()` from stamp variations (caused invisible text in Safari/Brave)
+   - Removed complex SVG `mask-image` from `::after` pseudo-element
+   - Simplified `::before` glow effect (removed blur filter)
+   - Commented out random rotation (kept position/opacity/pressure variations)
+
+5. **Search Results Spacing**
+   - Symmetric padding (1.25rem) around each result item
+   - Hover box extends beyond content with negative margins
+   - Divider lines have equal spacing above and below (0.75rem each)
+   - Border moved to top of subsequent items for balanced spacing
+
+6. **Filter Panel Mobile Responsive**
+   - Controls stack vertically on mobile (<480px)
+   - Labels and toggles justified at opposite ends
+   - Divider becomes horizontal line between controls
+   - Reduced font size and padding for mobile
+
+7. **Favicon**
+   - Created `src/app/icon.svg` with green "R" in serif font
+   - Uses accent-primary green (#249445) on paper background (#F5F2ED)
+
 ---
 
 ## Future TODOs

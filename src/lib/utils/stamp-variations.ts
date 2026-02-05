@@ -43,11 +43,13 @@ export function getStampStyles(variation?: StampVariation): React.CSSProperties 
   const pressureShadow = getPressureShadow(v.pressureSkew);
 
   return {
-    '--stamp-rotation': `${v.rotation}deg`,
+    // '--stamp-rotation': `${v.rotation}deg`,
     '--stamp-opacity': v.opacity,
-    transform: `rotate(${v.rotation}deg) translate(${v.translateX}px, ${v.translateY}px)`,
+    // Rotation commented out - keeping other random variations
+    // transform: `rotate(${v.rotation}deg) translate(${v.translateX}px, ${v.translateY}px)`,
+    transform: `translate(${v.translateX}px, ${v.translateY}px)`,
     opacity: v.opacity,
-    filter: v.inkBleed > 0.5 ? `blur(${v.inkBleed * 0.1}px)` : undefined,
+    // Removed blur filter - causes text rendering issues in Safari/Brave
     boxShadow: pressureShadow,
   } as React.CSSProperties;
 }

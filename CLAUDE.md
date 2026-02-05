@@ -712,7 +712,48 @@ Decisions made during development that should persist across sessions.
 8. **Production Deployment Next Steps**
    - Schema already pushed to Neon (verified in sync)
    - Add `CRON_SECRET` env var in Vercel for worker authentication
-   - Set up Vercel Cron to trigger `/api/admin/crawl/worker` periodically
+   - Set up external cron (cron-job.org) to trigger `/api/admin/crawl/worker` every 5 min
+
+### Scraper Cron Deployment (2026-02-05)
+
+1. **External Cron Service (cron-job.org)**
+   - Vercel Hobby limits cron to 1x/day - insufficient for scraper
+   - Using free external cron service: https://cron-job.org
+   - Configure job to call `POST https://www.real.press/api/admin/crawl/worker`
+   - Add header: `Authorization: Bearer <CRON_SECRET>`
+   - Recommended schedule: every 5 minutes (`*/5 * * * *`)
+
+2. **CRON_SECRET Authentication**
+   - Worker endpoint validates `Authorization` header against `CRON_SECRET` env var
+   - Falls back to allowing requests when `CRON_SECRET` not set (dev mode)
+   - `CRON_SECRET` set in Vercel environment variables
+
+3. **Build Script Fix**
+   - Added `prisma generate` to build script: `"build": "prisma generate && next build"`
+   - Added `postinstall` script as backup: `"postinstall": "prisma generate"`
+   - Required because generated Prisma files are gitignored (correct for generated code)
+   - Ensures new schema models (CrawlJob, Author, Topic, etc.) are generated on deploy
+
+4. **Environment Variables**
+   - `CRON_SECRET` - Secure token for worker authentication (set in Vercel)
+   - Generated with `openssl rand -hex 32`
+
+5. **Cron Worker Behavior**
+   - Processes 5 jobs per batch by default
+   - Max concurrency of 3 parallel job processing
+   - 60 second max duration (Vercel function limit)
+   - Returns processed/failed counts for monitoring
+
+6. **External Cron Setup Instructions**
+   ```
+   1. Go to https://cron-job.org and create free account
+   2. Create new cron job:
+      - URL: https://www.real.press/api/admin/crawl/worker
+      - Method: POST
+      - Schedule: Every 5 minutes
+      - Headers: Authorization: Bearer <your-CRON_SECRET>
+   3. Enable and save
+   ```
 
 ---
 

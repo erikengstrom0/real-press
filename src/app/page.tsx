@@ -6,7 +6,9 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.hero}>
-        <h1 className={styles.logo}>Real Press</h1>
+        <div className={styles.logoWrapper}>
+          <h1 className={styles.logo}>Real Press</h1>
+        </div>
         <h2 className={styles.title}>
           A Search Engine for the <span className={styles.highlight}>Human</span> Web
         </h2>
@@ -27,6 +29,7 @@ export default function Home() {
         </div>
       </div>
 
+      <div className={styles.featuresDivider} />
       <div className={styles.features}>
         <div className={styles.feature}>
           <h3 className={styles.featureTitle}>Search Indexed Content</h3>
@@ -50,8 +53,9 @@ export default function Home() {
         </div>
       </div>
 
+      <div className={styles.footerDivider} />
       <footer className={styles.footer}>
-        <p>Real Press — Finding authentic content in the age of AI</p>
+        <p className={styles.footerText}>Real Press — Finding authentic content in the age of AI</p>
       </footer>
     </main>
   );

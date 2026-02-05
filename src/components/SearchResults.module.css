@@ -17,24 +17,20 @@
 }
 
 .item {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: var(--border-thin) solid var(--color-charcoal-muted);
-  transition: all var(--transition-base);
+  padding: 1.25rem;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  transition: background-color var(--transition-base);
 }
 
-.item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
+.item + .item {
+  border-top: var(--border-thin) solid var(--color-charcoal-muted);
+  margin-top: 0.75rem;
+  padding-top: calc(1.25rem + 0.75rem);
 }
 
 .item:hover {
   background-color: var(--color-cream);
-  margin-left: -1rem;
-  margin-right: -1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
 
 .header {

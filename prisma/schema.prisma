@@ -22,9 +22,53 @@ model Content {
   status      String   @default("pending")
   createdAt   DateTime @default(now()) @map("created_at")
 
+  // Publication metadata
+  publishedAt       DateTime? @map("published_at")
+  author            String?
+  language          String?   @default("en")
+
+  // Content metrics
+  wordCount         Int?      @map("word_count")
+  sentenceCount     Int?      @map("sentence_count")
+  paragraphCount    Int?      @map("paragraph_count")
+  readingLevel      Float?    @map("reading_level")
+  linkCount         Int?      @map("link_count")
+  externalLinkCount Int?      @map("external_link_count")
+  imageCount        Int?      @map("image_count")
+  hasVideo          Boolean   @default(false) @map("has_video")
+
+  // Stylometric analysis
+  vocabularyDiversity     Float? @map("vocabulary_diversity")
+  avgSentenceLength       Float? @map("avg_sentence_length")
+  sentenceLengthVariance  Float? @map("sentence_length_variance")
+  punctuationDiversity    Float? @map("punctuation_diversity")
+  repetitionScore         Float? @map("repetition_score")
+
+  // Advanced NLP metrics
+  sentimentScore            Float? @map("sentiment_score")
+  namedEntityDensity        Float? @map("named_entity_density")
+  temporalReferenceDensity  Float? @map("temporal_reference_density")
+
+  // Source provenance
+  canonicalUrl  String? @map("canonical_url")
+  siteName      String? @map("site_name")
+  ogType        String? @map("og_type")
+  schemaType    String? @map("schema_type")
+
+  // Historical tracking
+  contentVersions Json[] @default([]) @map("content_versions")
+  scoreHistory    Json[] @default([]) @map("score_history")
+
+  // Relations
   aiScore     AiScore?
   media       ContentMedia[]
+  authorRef   Author?        @relation(fields: [authorId], references: [id])
+  authorId    String?        @map("author_id")
+  topics      ContentTopic[]
 
+  @@index([domain])
+  @@index([publishedAt])
+  @@index([authorId])
   @@map("content")
 }
 
@@ -75,4 +119,217 @@ model MediaScore {
   media        ContentMedia @relation(fields: [mediaId], references: [id], onDelete: Cascade)
 
   @@map("media_scores")
+}
+
+// ============================================
+// WEB SCRAPER MODELS
+// ============================================
+
+model CrawlJob {
+  id          String      @id @default(uuid())
+  url         String
+  urlHash     String      @unique @map("url_hash")
+  domain      String
+  priority    Int         @default(0)
+  status      CrawlStatus @default(PENDING)
+  sourceType  String      @default("discovered") @map("source_type")
+
+  // Retry handling
+  attempts    Int         @default(0)
+  maxAttempts Int         @default(3) @map("max_attempts")
+  lastError   String?     @map("last_error")
+
+  // Scheduling
+  scheduledAt DateTime    @default(now()) @map("scheduled_at")
+  startedAt   DateTime?   @map("started_at")
+  completedAt DateTime?   @map("completed_at")
+
+  // Result linking
+  contentId   String?     @unique @map("content_id")
+
+  // Metadata (RSS entry data, sitemap priority, etc.)
+  metadata    Json?
+
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@index([status, scheduledAt])
+  @@index([domain, status])
+  @@index([priority, scheduledAt])
+  @@map("crawl_jobs")
+}
+
+enum CrawlStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  DEAD_LETTER
+  CANCELLED
+}
+
+model CrawlDomain {
+  id              String    @id @default(uuid())
+  domain          String    @unique
+
+  // Rate limiting
+  crawlDelayMs    Int       @default(1000) @map("crawl_delay_ms")
+  maxConcurrent   Int       @default(2) @map("max_concurrent")
+  requestsInWindow Int      @default(0) @map("requests_in_window")
+  windowStart     DateTime  @default(now()) @map("window_start")
+
+  // robots.txt cache
+  robotsTxt       String?   @map("robots_txt")
+  robotsFetchedAt DateTime? @map("robots_fetched_at")
+
+  // Configuration
+  isAllowed       Boolean   @default(true) @map("is_allowed")
+  isPriority      Boolean   @default(false) @map("is_priority")
+
+  // Discovery sources
+  rssUrl          String?   @map("rss_url")
+  sitemapUrl      String?   @map("sitemap_url")
+
+  // Stats
+  totalCrawled    Int       @default(0) @map("total_crawled")
+  totalFailed     Int       @default(0) @map("total_failed")
+  avgAiScore      Float?    @map("avg_ai_score")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("crawl_domains")
+}
+
+model CrawlSource {
+  id            String          @id @default(uuid())
+  type          CrawlSourceType
+  url           String          @unique
+  domain        String
+  name          String?
+
+  // Scheduling
+  isActive      Boolean         @default(true) @map("is_active")
+  checkInterval Int             @default(3600) @map("check_interval")
+  lastCheckAt   DateTime?       @map("last_check_at")
+  nextCheckAt   DateTime?       @map("next_check_at")
+
+  // Stats
+  totalUrls     Int             @default(0) @map("total_urls")
+  newUrlsFound  Int             @default(0) @map("new_urls_found")
+
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  @@index([nextCheckAt, isActive])
+  @@map("crawl_sources")
+}
+
+enum CrawlSourceType {
+  RSS
+  ATOM
+  SITEMAP
+}
+
+model CrawlMetric {
+  id            String    @id @default(uuid())
+  date          DateTime  @db.Date
+  hour          Int
+
+  // Job metrics
+  jobsCreated   Int       @default(0) @map("jobs_created")
+  jobsCompleted Int       @default(0) @map("jobs_completed")
+  jobsFailed    Int       @default(0) @map("jobs_failed")
+
+  // Timing metrics (ms)
+  avgExtractTime  Float?  @map("avg_extract_time")
+  avgDetectTime   Float?  @map("avg_detect_time")
+  avgTotalTime    Float?  @map("avg_total_time")
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@unique([date, hour])
+  @@map("crawl_metrics")
+}
+
+// ============================================
+// AUTHOR & TOPIC MODELS
+// ============================================
+
+model Author {
+  id           String    @id @default(uuid())
+  name         String
+  normalizedName String  @unique @map("normalized_name")
+  domain       String?
+
+  // Stats
+  articleCount Int       @default(0) @map("article_count")
+  avgScore     Float?    @map("avg_score")
+
+  // Tracking
+  firstSeen    DateTime  @default(now()) @map("first_seen")
+  lastSeen     DateTime  @default(now()) @map("last_seen")
+
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  content      Content[]
+
+  @@index([domain])
+  @@index([avgScore])
+  @@map("authors")
+}
+
+model Topic {
+  id           String    @id @default(uuid())
+  name         String
+  slug         String    @unique
+
+  // Stats
+  articleCount Int       @default(0) @map("article_count")
+  avgScore     Float?    @map("avg_score")
+
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  content      ContentTopic[]
+
+  @@map("topics")
+}
+
+model ContentTopic {
+  id        String   @id @default(uuid())
+  contentId String   @map("content_id")
+  topicId   String   @map("topic_id")
+  relevance Float    @default(1.0)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, topicId])
+  @@index([topicId])
+  @@map("content_topics")
+}
+
+model DomainStats {
+  id           String   @id @default(uuid())
+  domain       String
+  date         DateTime @db.Date
+
+  // Daily stats
+  articleCount Int      @default(0) @map("article_count")
+  avgScore     Float?   @map("avg_score")
+  minScore     Float?   @map("min_score")
+  maxScore     Float?   @map("max_score")
+
+  // Top topics for this domain on this date
+  topTopics    String[] @default([]) @map("top_topics")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([domain, date])
+  @@index([date])
+  @@map("domain_stats")
 }

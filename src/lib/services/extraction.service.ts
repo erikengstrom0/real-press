@@ -8,6 +8,7 @@ export interface ExtractedContent {
   description: string | null
   contentText: string
   contentHash: string
+  html?: string
 }
 
 export class ExtractionError extends Error {
@@ -28,6 +29,21 @@ function extractDomain(url: string): string {
 
 function generateContentHash(content: string): string {
   return createHash('sha256').update(content).digest('hex')
+}
+
+export async function fetchHtml(url: string): Promise<string> {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'RealPressBot/1.0 (https://real.press)',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  }
+
+  return response.text()
 }
 
 export async function extractContent(url: string): Promise<ExtractedContent> {

@@ -1,0 +1,22 @@
+{
+  "name": "Tech Essays",
+  "description": "Thoughtful essays about technology, startups, and programming from respected writers",
+  "priority": 5,
+  "urls": [
+    "https://paulgraham.com/greatwork.html",
+    "https://paulgraham.com/think.html",
+    "https://paulgraham.com/hwh.html",
+    "https://paulgraham.com/ds.html",
+    "https://paulgraham.com/users.html",
+    "https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/",
+    "https://www.joelonsoftware.com/2002/01/06/fire-and-motion/",
+    "https://blog.codinghorror.com/the-best-code-is-no-code-at-all/",
+    "https://blog.codinghorror.com/quantity-always-trumps-quality/",
+    "https://martinfowler.com/bliki/TechnicalDebt.html",
+    "https://www.kalzumeus.com/2011/10/28/dont-call-yourself-a-programmer/",
+    "https://www.kalzumeus.com/2012/01/23/salary-negotiation/",
+    "https://danluu.com/sounds-easy/",
+    "https://danluu.com/p95-hierarchical/",
+    "https://steveyegge.medium.com/the-last-day-f083a87d0a3c"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Science Writing",
+  "description": "Science journalism and explanatory articles from reputable sources",
+  "priority": 3,
+  "urls": [
+    "https://nautil.us/the-case-against-reality-237842/",
+    "https://nautil.us/chaos-makes-the-multiverse-unnecessary-236799/",
+    "https://www.quantamagazine.org/what-is-a-particle-20201112/",
+    "https://www.quantamagazine.org/the-useless-perspective-that-transformed-mathematics-20200609/",
+    "https://aeon.co/essays/why-is-it-so-hard-to-study-human-trafficking",
+    "https://aeon.co/essays/the-voice-in-your-head-is-you-but-its-not-only-you",
+    "https://www.theatlantic.com/magazine/archive/2020/04/capitalisms-addiction-problem/606769/",
+    "https://www.newyorker.com/magazine/2021/12/20/the-disconnect-between-water-and-thirst",
+    "https://longreads.com/2019/05/07/the-friendship-that-made-google-huge/",
+    "https://www.wired.com/story/mirrorworld-ar-next-big-tech-platform/"
+  ]
+}

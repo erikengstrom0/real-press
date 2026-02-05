@@ -175,7 +175,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint 2 | AI detection integration | ✅ Complete |
 | Sprint 3 | Search with AI badges | ✅ Complete |
 | Sprint 4 | Polish + demo ready | ✅ Complete |
-| Sprint 5 | Vercel deployment | 🚀 In Progress |
+| Sprint 5 | Production deployment | ✅ Complete |
 
 ---
 
@@ -537,3 +537,128 @@ Decisions made during development that should persist across sessions.
    - `HUGGINGFACE_API_TOKEN` - Optional, for higher rate limits
    - `HUGGINGFACE_MODEL` - Optional, defaults to roberta-base-openai-detector
    - `GPTZERO_API_KEY` - Optional, only if you want paid backup
+
+### Sprint 5 Deployment Decisions (2026-02-04)
+
+1. **Docker Optimization for Railway**
+   - Multi-stage build to reduce image size (~3GB → ~500MB)
+   - CPU-only PyTorch from pytorch.org/whl/cpu (~200MB vs ~2GB full CUDA)
+   - Static ffmpeg binary from johnvansickle.com (~80MB vs ~727MB with apt)
+   - Shell form CMD (`CMD uvicorn ... --port $PORT`) for dynamic PORT expansion
+   - Created `.dockerignore` to speed up builds
+
+2. **Railway Health Check Configuration**
+   - Railway sets `PORT` env var directly (no prefix), so read via `os.environ.get("PORT", "8000")`
+   - Pydantic's `env_prefix = "ML_"` doesn't apply to Railway's PORT injection
+   - Extended `healthcheckTimeout` to 300s for PyTorch cold start model loading
+   - Created `railway.toml` with deployment config (builder, healthcheck, restart policy)
+
+3. **Custom Domain Setup (ml.real.press)**
+   - Added CNAME record in Cloudflare: `ml` → `real-press-production.up.railway.app`
+   - CRITICAL: Use "DNS only" (gray cloud), not "Proxied" (orange cloud)
+   - Railway SSL provisioning requires direct DNS, not Cloudflare proxy
+   - Custom domain added via Railway dashboard (Settings → Networking → Custom Domains)
+
+4. **Vercel Configuration**
+   - `NEXT_PUBLIC_APP_URL` must be set to custom domain (https://www.real.press)
+   - Server-side fetch prioritizes `NEXT_PUBLIC_APP_URL` over `VERCEL_URL`
+   - `VERCEL_URL` points to deployment URL (real-press-xxx.vercel.app), not custom domain
+   - This fixes search API calls failing in production
+
+5. **Database Schema Sync**
+   - Run `npx prisma db push` after any Prisma schema changes
+   - Production database schema must match `prisma/schema.prisma`
+   - Error "column does not exist" indicates schema mismatch
+   - Prisma migrate is for development; db push is for quick sync
+
+6. **User-Friendly Extraction Errors**
+   - Added comprehensive HTTP error handling in `extraction.service.ts`
+   - 403 Forbidden: Explains anti-bot protection (Reddit, Twitter/X, LinkedIn)
+   - 401 Unauthorized: Content requires login
+   - 404 Not Found: Page doesn't exist
+   - 429 Too Many Requests: Rate limiting
+   - 5xx Server Errors: Website issues
+   - DNS errors (ENOTFOUND): URL spelling issues
+   - Timeout errors: Website response time
+
+7. **Environment Variables Added**
+   - `NEXT_PUBLIC_APP_URL` - Custom domain for Vercel (https://www.real.press)
+   - `ML_SERVICE_URL` - ML service URL (https://ml.real.press)
+   - `DATABASE_URL` - Neon connection string (in Vercel env vars)
+
+### Web Scraper Architecture Decisions (2026-02-04)
+
+1. **Two Separate Flows**
+   - **User submissions**: Stay synchronous (immediate feedback)
+   - **Web scraper**: Async queue for background discovery
+   - Both flows share the same Content + AiScore tables
+   - User submissions do NOT go through CrawlJob queue
+
+2. **MVP Queue Technology**
+   - PostgreSQL-backed queue (no new infrastructure)
+   - Vercel Cron triggers worker every minute
+   - Upgrade path to Redis/BullMQ when volume grows
+
+3. **Database Models for Scraper**
+   - `CrawlJob`: Queue with status (PENDING → PROCESSING → COMPLETED/FAILED)
+   - `Domain`: Per-domain rate limiting, robots.txt cache
+   - `CrawlSource`: RSS feeds and sitemaps to monitor
+   - `CrawlMetric`: Hourly aggregates for observability
+
+4. **Rate Limiting Strategy**
+   - Per-domain throttling (respect robots.txt)
+   - Configurable crawl delay per domain
+   - Exponential backoff for retries
+   - Dead letter queue for permanent failures
+
+### Content Metadata Architecture (2026-02-04)
+
+1. **Extended Content Model**
+   - Publication: publishedAt, author, language
+   - Metrics: wordCount, sentenceCount, paragraphCount, readingLevel
+   - Links: linkCount, externalLinkCount, imageCount, hasVideo
+   - Stylometric: vocabularyDiversity, avgSentenceLength, sentenceLengthVariance, punctuationDiversity, repetitionScore
+   - NLP: sentimentScore, namedEntityDensity, temporalReferenceDensity
+   - Provenance: canonicalUrl, siteName, ogType, schemaType
+   - History: contentVersions[], scoreHistory[]
+
+2. **New Tables for Analysis**
+   - `Author`: Track authors across articles with avgScore
+   - `Topic`: Taxonomy-based topic classification
+   - `ContentTopic`: Many-to-many content-topic relations
+   - `DomainStats`: Time-series domain analytics
+
+3. **Content Analysis Service**
+   - Flesch-Kincaid reading level calculation
+   - Vocabulary diversity (type-token ratio)
+   - Sentence length variance (coefficient of variation)
+   - Repetition detection (n-gram analysis)
+   - Sentiment analysis (positive/negative word lexicon)
+   - Named entity density (pattern-based extraction)
+   - Temporal reference density (date/time patterns)
+
+4. **Topic Extraction**
+   - Predefined taxonomy with 16 topics (technology, AI, startup, etc.)
+   - Keyword matching with unigrams, bigrams, trigrams
+   - Relevance scoring based on match density
+   - Up to 5 topics per article
+
+5. **Metadata Extraction from HTML**
+   - Published date: Open Graph, Schema.org, Dublin Core, time elements
+   - Author: meta tags, Schema.org, byline patterns
+   - Site info: og:site_name, canonical URL, og:type
+
+---
+
+## Future TODOs
+
+### High Priority (Pre-Funding)
+- [ ] **User submission rate limiting** - Protect against abuse/spam
+- [ ] **Malicious submission protection** - Validate URLs, block known bad actors
+- [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
+
+### Post-Funding Scale
+- [ ] Migrate scraper queue from PostgreSQL to Redis/BullMQ
+- [ ] Deploy dedicated worker on Railway (vs Vercel Cron)
+- [ ] Bloom filter for fast URL deduplication
+- [ ] OpenTelemetry metrics and Grafana dashboards

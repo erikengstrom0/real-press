@@ -1,0 +1,21 @@
+{
+  "name": "Personal Blogs",
+  "description": "Personal essays and reflections from individual bloggers - likely human-written",
+  "priority": 5,
+  "urls": [
+    "https://www.raptitude.com/2010/07/your-lifestyle-has-already-been-designed/",
+    "https://www.raptitude.com/2019/11/how-to-do-things-you-dont-want-to-do/",
+    "https://markmanson.net/not-giving-a-fuck",
+    "https://waitbutwhy.com/2013/10/why-procrastinators-procrastinate.html",
+    "https://waitbutwhy.com/2014/06/taming-mammoth-let-peoples-opinions-run-life.html",
+    "https://zenhabits.net/the-only-way-to-become-remarkably-good-at-something/",
+    "https://zenhabits.net/creative-habit/",
+    "https://jamesclear.com/continuous-improvement",
+    "https://jamesclear.com/goals-systems",
+    "https://sive.rs/kimo",
+    "https://sive.rs/obvious",
+    "https://sive.rs/hellyeah",
+    "https://moretothat.com/travel-is-no-cure-for-the-mind/",
+    "https://moretothat.com/the-nothingness-of-money/"
+  ]
+}

@@ -16,7 +16,8 @@ import { BaseProvider, type ProviderInput, type ProviderCapabilities } from './b
 
 // Default to the base model (faster, still accurate)
 const DEFAULT_MODEL = 'openai-community/roberta-base-openai-detector'
-const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models'
+// Updated to new router endpoint (api-inference.huggingface.co is deprecated as of 2025)
+const HUGGINGFACE_API_URL = 'https://router.huggingface.co/hf-inference/models'
 const MIN_CHARS_FOR_API = 50
 const REQUEST_TIMEOUT_MS = 30000
 const MAX_RETRIES = 2
@@ -77,8 +78,9 @@ export async function analyzeWithHuggingFace(
     return null
   }
 
-  // Truncate very long text (model has token limits)
-  const truncatedText = text.slice(0, 5000)
+  // Truncate very long text (RoBERTa model has 514 token limit, ~4 chars/token average)
+  // Using 1800 chars to stay safely under 514 tokens with some margin
+  const truncatedText = text.slice(0, 1800)
 
   const apiToken = process.env.HUGGINGFACE_API_TOKEN
 

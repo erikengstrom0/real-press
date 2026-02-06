@@ -43,107 +43,103 @@ export interface NormalizedFeedItem {
 }
 
 /**
- * Parse XML string to DOM
+ * Extract text between XML tags using regex (Node.js compatible)
  */
-function parseXML(xmlString: string): Document {
-  // Use browser DOMParser if available, otherwise basic regex parsing
-  if (typeof DOMParser !== 'undefined') {
-    const parser = new DOMParser()
-    return parser.parseFromString(xmlString, 'text/xml')
+function extractTag(xml: string, tag: string): string {
+  // Handle namespaced tags like dc:creator
+  const tagPattern = tag.replace(':', '\\:')
+  const regex = new RegExp(`<${tagPattern}[^>]*>([\\s\\S]*?)<\\/${tagPattern}>`, 'i')
+  const match = xml.match(regex)
+  // Strip CDATA wrappers if present
+  const content = match?.[1]?.trim() || ''
+  return content.replace(/^<!\[CDATA\[([\s\S]*)\]\]>$/, '$1').trim()
+}
+
+/**
+ * Extract href attribute from link tag
+ */
+function extractLinkHref(xml: string): string {
+  // Try alternate link first
+  const altMatch = xml.match(/<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i)
+  if (altMatch) return altMatch[1]
+
+  // Try any link with href
+  const hrefMatch = xml.match(/<link[^>]*href=["']([^"']+)["']/i)
+  if (hrefMatch) return hrefMatch[1]
+
+  // Try link content
+  const contentMatch = xml.match(/<link[^>]*>([^<]+)<\/link>/i)
+  if (contentMatch) return contentMatch[1].trim()
+
+  return ''
+}
+
+/**
+ * Parse RSS 2.0 feed using regex (Node.js compatible)
+ */
+function parseRSS2(xml: string, feedUrl: string): RSSFeed {
+  const items: RSSItem[] = []
+
+  // Extract items
+  const itemRegex = /<item>([\s\S]*?)<\/item>/gi
+  let itemMatch
+  while ((itemMatch = itemRegex.exec(xml)) !== null) {
+    const itemXml = itemMatch[1]
+    items.push({
+      title: extractTag(itemXml, 'title'),
+      link: extractTag(itemXml, 'link') || extractLinkHref(itemXml),
+      description: extractTag(itemXml, 'description'),
+      pubDate: extractTag(itemXml, 'pubDate'),
+      author: extractTag(itemXml, 'author') || extractTag(itemXml, 'dc:creator') || undefined,
+      categories: [],
+      guid: extractTag(itemXml, 'guid'),
+      content: extractTag(itemXml, 'content:encoded') || extractTag(itemXml, 'description'),
+    })
   }
 
-  // Fallback for Node.js environments - use basic parsing
-  throw new Error('DOMParser not available - use server-side XML parser')
-}
-
-/**
- * Extract text content from an element
- */
-function getText(element: Element | null): string {
-  if (!element) return ''
-  return element.textContent?.trim() || ''
-}
-
-/**
- * Parse RSS 2.0 feed
- */
-function parseRSS2(doc: Document, feedUrl: string): RSSFeed {
-  const channel = doc.querySelector('channel')
-  if (!channel) throw new Error('Invalid RSS feed: no channel element')
-
-  const items: RSSItem[] = []
-  const itemElements = channel.querySelectorAll('item')
-
-  itemElements.forEach((item) => {
-    items.push({
-      title: getText(item.querySelector('title')),
-      link: getText(item.querySelector('link')),
-      description: getText(item.querySelector('description')),
-      pubDate: getText(item.querySelector('pubDate')),
-      author:
-        getText(item.querySelector('author')) ||
-        getText(item.querySelector('dc\\:creator')) ||
-        undefined,
-      categories: Array.from(item.querySelectorAll('category')).map((c) => getText(c)),
-      guid: getText(item.querySelector('guid')),
-      content:
-        getText(item.querySelector('content\\:encoded')) ||
-        getText(item.querySelector('description')),
-    })
-  })
+  // Extract channel info
+  const channelMatch = xml.match(/<channel>([\s\S]*?)<item>/i)
+  const channelXml = channelMatch?.[1] || xml
 
   return {
-    title: getText(channel.querySelector('title')),
-    link: getText(channel.querySelector('link')) || feedUrl,
-    description: getText(channel.querySelector('description')),
-    language: getText(channel.querySelector('language')) || undefined,
-    lastBuildDate: getText(channel.querySelector('lastBuildDate')) || undefined,
+    title: extractTag(channelXml, 'title'),
+    link: extractTag(channelXml, 'link') || feedUrl,
+    description: extractTag(channelXml, 'description'),
+    language: extractTag(channelXml, 'language') || undefined,
+    lastBuildDate: extractTag(channelXml, 'lastBuildDate') || undefined,
     items,
   }
 }
 
 /**
- * Parse Atom feed
+ * Parse Atom feed using regex (Node.js compatible)
  */
-function parseAtom(doc: Document, feedUrl: string): RSSFeed {
-  const feed = doc.querySelector('feed')
-  if (!feed) throw new Error('Invalid Atom feed: no feed element')
-
+function parseAtom(xml: string, feedUrl: string): RSSFeed {
   const items: RSSItem[] = []
-  const entryElements = feed.querySelectorAll('entry')
 
-  entryElements.forEach((entry) => {
-    const link =
-      entry.querySelector('link[rel="alternate"]')?.getAttribute('href') ||
-      entry.querySelector('link')?.getAttribute('href') ||
-      ''
-
+  // Extract entries
+  const entryRegex = /<entry>([\s\S]*?)<\/entry>/gi
+  let entryMatch
+  while ((entryMatch = entryRegex.exec(xml)) !== null) {
+    const entryXml = entryMatch[1]
     items.push({
-      title: getText(entry.querySelector('title')),
-      link,
-      description:
-        getText(entry.querySelector('summary')) || getText(entry.querySelector('content')),
-      pubDate: getText(entry.querySelector('published')) || getText(entry.querySelector('updated')),
-      author: getText(entry.querySelector('author name')),
-      categories: Array.from(entry.querySelectorAll('category')).map(
-        (c) => c.getAttribute('term') || getText(c)
-      ),
-      guid: getText(entry.querySelector('id')),
-      content: getText(entry.querySelector('content')),
+      title: extractTag(entryXml, 'title'),
+      link: extractLinkHref(entryXml),
+      description: extractTag(entryXml, 'summary') || extractTag(entryXml, 'content'),
+      pubDate: extractTag(entryXml, 'published') || extractTag(entryXml, 'updated'),
+      author: extractTag(entryXml, 'name'), // Inside <author>
+      categories: [],
+      guid: extractTag(entryXml, 'id'),
+      content: extractTag(entryXml, 'content'),
     })
-  })
-
-  const feedLink =
-    feed.querySelector('link[rel="alternate"]')?.getAttribute('href') ||
-    feed.querySelector('link')?.getAttribute('href') ||
-    feedUrl
+  }
 
   return {
-    title: getText(feed.querySelector('title')),
-    link: feedLink,
-    description: getText(feed.querySelector('subtitle')),
-    language: feed.getAttribute('xml:lang') || undefined,
-    lastBuildDate: getText(feed.querySelector('updated')) || undefined,
+    title: extractTag(xml, 'title'),
+    link: extractLinkHref(xml) || feedUrl,
+    description: extractTag(xml, 'subtitle'),
+    language: undefined,
+    lastBuildDate: extractTag(xml, 'updated') || undefined,
     items,
   }
 }
@@ -164,13 +160,12 @@ export async function fetchFeed(feedUrl: string): Promise<RSSFeed> {
   }
 
   const xml = await response.text()
-  const doc = parseXML(xml)
 
-  // Detect feed type and parse accordingly
-  if (doc.querySelector('feed')) {
-    return parseAtom(doc, feedUrl)
-  } else if (doc.querySelector('rss') || doc.querySelector('channel')) {
-    return parseRSS2(doc, feedUrl)
+  // Detect feed type and parse accordingly (regex-based, Node.js compatible)
+  if (xml.includes('<feed') && xml.includes('<entry')) {
+    return parseAtom(xml, feedUrl)
+  } else if (xml.includes('<rss') || xml.includes('<channel>')) {
+    return parseRSS2(xml, feedUrl)
   } else {
     throw new Error('Unknown feed format')
   }

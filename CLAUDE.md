@@ -797,6 +797,34 @@ Decisions made during development that should persist across sessions.
    - Created `src/app/icon.svg` with green "R" in serif font
    - Uses accent-primary green (#249445) on paper background (#F5F2ED)
 
+### Admin Route Protection (2026-02-05)
+
+1. **Middleware-Based Authentication**
+   - Created `src/middleware.ts` to protect `/admin/*` and `/api/admin/*` routes
+   - Matches paths and checks for valid authentication before allowing access
+   - Public routes remain unprotected: `/`, `/search`, `/submit`, `/demo`
+
+2. **Authentication Methods**
+   - Authorization header: `Bearer <ADMIN_SECRET>`
+   - Cookie: `admin_token=<ADMIN_SECRET>`
+   - Query param: `?admin_token=<ADMIN_SECRET>` (for initial access, sets cookie)
+
+3. **Login Page**
+   - Created `/admin/login` page for token-based authentication
+   - Validates token by testing against admin API endpoint
+   - Sets cookie on successful authentication for 7 days
+   - Redirects to originally requested page after login
+
+4. **Cron Worker Compatibility**
+   - Worker endpoint (`/api/admin/crawl/worker`) accepts `CRON_SECRET` separately
+   - Allows external cron service to trigger worker without admin access
+   - CRON_SECRET and ADMIN_SECRET should be different values
+
+5. **Environment Variables**
+   - `ADMIN_SECRET` - Token for admin panel access (set in Vercel)
+   - `CRON_SECRET` - Token for cron worker (already configured)
+   - Both should be generated with `openssl rand -hex 32`
+
 ---
 
 ## Future TODOs

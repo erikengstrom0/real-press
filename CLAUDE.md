@@ -200,7 +200,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 
 ## Sprint Completion Workflow
 
-**At the end of every sprint, follow this workflow:**
+**MANDATORY: At the end of every sprint, you MUST follow ALL steps in this workflow. Do NOT skip any step.**
 
 ### 1. Pre-PR Checklist
 
@@ -240,7 +240,49 @@ Test all features implemented in the sprint:
 - [ ] Loading states work
 - [ ] Error states display properly
 
-### 3. Create Feature Branch & PR
+### 3. Update Documentation (MANDATORY)
+
+**You MUST complete ALL of the following documentation updates before creating the PR:**
+
+#### 3a. Update Decisions Log
+- Add a new section under "Decisions Log" for this sprint
+- Document every technical decision made during the sprint
+- Include rationale, alternatives considered, and why the chosen approach was picked
+- Follow the existing format (see previous sprint decisions for examples)
+
+#### 3b. Update Future TODOs
+- Review and update the "Future TODOs" section
+- Mark completed items as `[x]`
+- Add any new TODOs discovered during the sprint
+- Categorize by priority: High Priority (Pre-Funding) vs Post-Funding Scale
+- Remove items that are no longer relevant
+
+#### 3c. Document Gaps and Known Limitations
+- Add any gaps, limitations, or technical debt discovered during the sprint to the "Future TODOs" section
+- Be specific: describe what the gap is, why it exists, and what would be needed to close it
+- Tag items that are intentional trade-offs vs things that should be fixed
+
+#### 3d. Update System Diagrams (MANDATORY if architecture changed)
+If the sprint introduced changes to data flows, services, API routes, database schema, external integrations, or service communication:
+- **Update `docs/system-diagram.md`** — Update all affected sections (service list, API endpoints, data flows, database schema, etc.)
+- **Update `docs/system-diagram.drawio`** — Update the draw.io visual diagrams (all 3 pages: System Architecture, User Submission Flow, AI Detection Pipeline). Add new pages if needed for new flows. This file is in draw.io XML format and can be edited at [app.diagrams.net](https://app.diagrams.net) or with the draw.io VS Code extension.
+- **Export SVGs** — After updating the `.drawio` file, export each page as SVG to `docs/` (e.g., `docs/system-architecture.svg`, `docs/submission-flow.svg`, `docs/ai-pipeline.svg`). SVGs render natively on GitHub in PRs, READMEs, and file browsing. To export: open the `.drawio` file in [app.diagrams.net](https://app.diagrams.net) → File → Export as → SVG for each page.
+- Even if changes are minor (e.g., a new API route or a new database column), update the diagrams to keep them accurate
+- If unsure whether changes warrant a diagram update, update them anyway — stale diagrams are worse than over-updating
+
+**Diagram files:**
+| File | Format | Purpose |
+|------|--------|---------|
+| `docs/system-diagram.md` | Markdown + ASCII | Text-based diagrams, full detail, always readable |
+| `docs/system-diagram.drawio` | draw.io XML | Editable visual diagrams (install [draw.io GitHub app](https://github.com/apps/draw-io-app) for in-repo viewing) |
+| `docs/*.svg` | SVG exports | Visual diagrams that render natively on GitHub |
+
+#### 3e. Update CLAUDE.md Sprint Status
+- Update the sprint table to mark the current sprint as `✅ Complete`
+- Update the Release History table with a new version entry
+- Update the Directory Structure section if new files/folders were added
+
+### 4. Create Feature Branch & PR
 
 ```bash
 # Create branch for the sprint (if not already on one)
@@ -262,11 +304,18 @@ gh pr create --title "Sprint N: Feature Title" --body "## Summary
 - [x] Build succeeds
 - [x] Manual testing completed
 
+## Documentation Updated
+- [x] Decisions log updated
+- [x] TODOs updated
+- [x] Gaps documented
+- [x] System diagrams updated — .drawio + SVG exports (if architecture changed)
+- [x] CLAUDE.md sprint status updated
+
 ## Test Results
 [Include curl commands or screenshots of tested features]"
 ```
 
-### 4. PR Review Checklist
+### 5. PR Review Checklist
 
 Before merging, ensure:
 
@@ -275,8 +324,13 @@ Before merging, ensure:
 - [ ] No console errors in browser
 - [ ] Database schema changes are noted
 - [ ] Environment variable changes are documented
+- [ ] Decisions log has been updated
+- [ ] Future TODOs have been reviewed and updated
+- [ ] Gaps and limitations are documented
+- [ ] System diagrams reflect current architecture (.drawio + SVG exports)
+- [ ] CLAUDE.md sprint status is updated
 
-### 5. Merge & Update
+### 6. Merge & Update
 
 After PR is approved:
 
@@ -287,9 +341,6 @@ gh pr merge --squash
 # Update local main
 git checkout main
 git pull origin main
-
-# Update CLAUDE.md sprint status
-# Mark sprint as ✅ Complete
 ```
 
 ---

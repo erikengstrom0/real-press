@@ -1,0 +1,551 @@
+<mxfile host="app.diagrams.net" modified="2026-02-05" agent="Claude Code" version="24.0.0" type="device">
+
+  <!-- ================================================================ -->
+  <!-- PAGE 1: SYSTEM ARCHITECTURE OVERVIEW                             -->
+  <!-- ================================================================ -->
+  <diagram id="arch" name="System Architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="2" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;&lt;b&gt;REAL PRESS — SYSTEM ARCHITECTURE&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="480" y="10" width="440" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== CLIENTS ROW ====== -->
+
+        <!-- User Browser -->
+        <mxCell id="3" value="&lt;b style=&quot;font-size:13px;&quot;&gt;User Browser&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;Search | Submit | Browse&lt;br&gt;Admin Panel&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="200" y="80" width="220" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- External Cron -->
+        <mxCell id="4" value="&lt;b style=&quot;font-size:13px;&quot;&gt;External Cron&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;cron-job.org&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;Every 5 minutes&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="980" y="80" width="220" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== NEXT.JS APPLICATION (Container) ====== -->
+
+        <mxCell id="5" value="&lt;b&gt;NEXT.JS APPLICATION&lt;/b&gt;  —  Vercel  —  https://real.press" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;html=1;fontSize=13;fontStyle=0;collapsible=0;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="250" width="1240" height="310" as="geometry"/>
+        </mxCell>
+
+        <!-- Frontend -->
+        <mxCell id="6" value="&lt;b&gt;Frontend (React/SSR)&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;/ &amp;nbsp;Landing Page&lt;br&gt;/search &amp;nbsp;Results (SSR)&lt;br&gt;/submit &amp;nbsp;URL Form&lt;br&gt;/admin/* &amp;nbsp;Protected&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontSize=11;verticalAlign=top;" vertex="1" parent="5">
+          <mxGeometry x="30" y="55" width="340" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- API Routes -->
+        <mxCell id="7" value="&lt;b&gt;API Routes&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;POST /api/submit&lt;br&gt;GET &amp;nbsp;/api/search&lt;br&gt;POST /api/analyze&lt;br&gt;GET/POST /api/admin/*&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontSize=11;verticalAlign=top;" vertex="1" parent="5">
+          <mxGeometry x="420" y="55" width="340" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- Background Jobs -->
+        <mxCell id="8" value="&lt;b&gt;Background Jobs&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Crawl Worker&lt;br&gt;Job Queue Processor&lt;br&gt;Seed Importer&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontSize=11;verticalAlign=top;" vertex="1" parent="5">
+          <mxGeometry x="810" y="55" width="340" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- Middleware -->
+        <mxCell id="9" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;AUTH MIDDLEWARE&lt;/b&gt; — Bearer Token | Cookie (7-day) | Query Param | CRON_SECRET Header&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b3d1ff;strokeColor=#6c8ebf;fontSize=10;fontStyle=0;" vertex="1" parent="5">
+          <mxGeometry x="30" y="185" width="1150" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Services Layer -->
+        <mxCell id="10" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;SERVICES:&lt;/b&gt; Content Extraction &amp;nbsp;|&amp;nbsp; Content Analysis &amp;nbsp;|&amp;nbsp; Metadata Extraction &amp;nbsp;|&amp;nbsp; Topic Classification &amp;nbsp;|&amp;nbsp; AI Detection Orchestration&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#cce0ff;strokeColor=#6c8ebf;fontSize=10;fontStyle=0;" vertex="1" parent="5">
+          <mxGeometry x="30" y="230" width="1150" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== BACKEND SERVICES ROW ====== -->
+
+        <!-- Neon PostgreSQL -->
+        <mxCell id="11" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Neon PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;Serverless&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;&lt;b&gt;SOURCE OF RECORD&lt;/b&gt;&lt;br&gt;13 tables | Prisma ORM&lt;br&gt;blue-king-05242700&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="650" width="260" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- ML Service -->
+        <mxCell id="12" value="&lt;b style=&quot;font-size:13px;&quot;&gt;ML Service&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;Railway (Docker)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#9673a6&quot;&gt;https://ml.real.press&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;CNN Detector (ResNet50)&lt;br&gt;Frame Extractor (ffmpeg)&lt;br&gt;Python 3.11 / FastAPI&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;strokeWidth=2;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="400" y="650" width="260" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- HuggingFace API -->
+        <mxCell id="13" value="&lt;b style=&quot;font-size:13px;&quot;&gt;HuggingFace API&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;router.huggingface.co&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;RoBERTa text detection&lt;br&gt;Free tier (primary)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="720" y="660" width="260" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- GPTZero API (Optional - dashed) -->
+        <mxCell id="14" value="&lt;b style=&quot;font-size:13px;&quot;&gt;GPTZero API&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;api.gptzero.me&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;Text detection (backup)&lt;br&gt;$45/mo | &lt;b&gt;Optional&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;strokeWidth=2;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="660" width="220" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Target Websites -->
+        <mxCell id="15" value="&lt;b&gt;Target Websites&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;(Article Sources)&lt;/font&gt;" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="400" y="880" width="260" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Cloudflare DNS Note -->
+        <mxCell id="16" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Cloudflare DNS&lt;/b&gt;&lt;br&gt;real.press → Vercel&lt;br&gt;ml.real.press → Railway&lt;/font&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=15;fillColor=#e6e6e6;strokeColor=#999999;fontSize=10;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="170" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== ARROWS ====== -->
+
+        <!-- Browser → Next.js App -->
+        <mxCell id="20" value="&lt;font style=&quot;font-size:10px;&quot;&gt;HTTPS&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" source="3" target="5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Cron → Next.js App -->
+        <mxCell id="21" value="&lt;font style=&quot;font-size:9px;&quot;&gt;HTTPS + CRON_SECRET&lt;br&gt;POST /api/admin/crawl/worker&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#b85450;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.85;entryY=0;entryDx=0;entryDy=0;" edge="1" source="4" target="5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Next.js → Neon PostgreSQL -->
+        <mxCell id="22" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Prisma ORM / TCP&lt;/b&gt;&lt;br&gt;All reads &amp;amp; writes&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#82b366;exitX=0.12;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="5" target="11" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Next.js → ML Service -->
+        <mxCell id="23" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;HTTPS POST&lt;/b&gt;&lt;br&gt;/api/detect/image&lt;br&gt;/api/extract-frames&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#9673a6;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="5" target="12" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Next.js → HuggingFace -->
+        <mxCell id="24" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;HTTPS POST&lt;/b&gt;&lt;br&gt;Text AI detection&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#d6b656;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="5" target="13" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Next.js → GPTZero (dashed - optional) -->
+        <mxCell id="25" value="&lt;font style=&quot;font-size:10px;&quot;&gt;HTTPS POST&lt;br&gt;(if API key set)&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#d6b656;dashed=1;dashPattern=8 4;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="5" target="14" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Next.js → Target Websites -->
+        <mxCell id="26" value="&lt;font style=&quot;font-size:10px;&quot;&gt;HTTP GET&lt;br&gt;Article scraping&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#666666;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="5" target="15" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ML Service → Target Websites -->
+        <mxCell id="27" value="&lt;font style=&quot;font-size:10px;&quot;&gt;HTTPS GET&lt;br&gt;Download media&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#9673a6;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" edge="1" source="12" target="15" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== LEGEND ====== -->
+        <mxCell id="30" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="870" width="60" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="31" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="900" width="20" height="14" as="geometry"/>
+        </mxCell>
+        <mxCell id="32" value="&lt;font style=&quot;font-size:10px;&quot;&gt;Database (Source of Record)&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="895" width="170" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="33" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="922" width="20" height="14" as="geometry"/>
+        </mxCell>
+        <mxCell id="34" value="&lt;font style=&quot;font-size:10px;&quot;&gt;ML / AI Service&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="917" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="35" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="944" width="20" height="14" as="geometry"/>
+        </mxCell>
+        <mxCell id="36" value="&lt;font style=&quot;font-size:10px;&quot;&gt;External API&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="939" width="100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="37" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="966" width="20" height="14" as="geometry"/>
+        </mxCell>
+        <mxCell id="38" value="&lt;font style=&quot;font-size:10px;&quot;&gt;Optional Service&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="961" width="120" height="20" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ================================================================ -->
+  <!-- PAGE 2: USER SUBMISSION DATA FLOW                                -->
+  <!-- ================================================================ -->
+  <diagram id="flow" name="User Submission Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="2" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;b&gt;USER SUBMISSION FLOW&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;&quot;&gt;POST /api/submit&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="330" y="10" width="260" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Start -->
+        <mxCell id="3" value="&lt;b&gt;User submits URL&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="350" y="70" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Validate URL -->
+        <mxCell id="4" value="&lt;b&gt;Validate &amp;amp; Normalize URL&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Protocol check, domain extraction&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="170" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Check Duplicate -->
+        <mxCell id="5" value="&lt;b&gt;Check Duplicate&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;SHA-256 content hash lookup&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="270" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Neon callout for duplicate check -->
+        <mxCell id="50" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Neon DB&lt;/b&gt;&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="660" y="270" width="90" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Duplicate decision -->
+        <mxCell id="6" value="&lt;b&gt;Exists?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="390" y="370" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- 409 Conflict -->
+        <mxCell id="7" value="&lt;font color=&quot;#b85450&quot;&gt;&lt;b&gt;409 Conflict&lt;/b&gt;&lt;br&gt;Return existing&lt;br&gt;analysis&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="620" y="360" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Fetch Article -->
+        <mxCell id="8" value="&lt;b&gt;Fetch Article HTML&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;article-extractor library&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="470" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Target Website callout -->
+        <mxCell id="51" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Target&lt;br&gt;Website&lt;/b&gt;&lt;/font&gt;" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="640" y="460" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Content Analysis -->
+        <mxCell id="9" value="&lt;b&gt;Content Analysis&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Metrics: word count, reading level,&lt;br&gt;vocabulary, sentiment, topics...&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="570" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Create Content Record -->
+        <mxCell id="10" value="&lt;b&gt;Create Content Record&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Status: pending&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="680" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Neon callout for create -->
+        <mxCell id="52" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Neon DB&lt;/b&gt;&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="660" y="675" width="90" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- AI Detection Box (large container) -->
+        <mxCell id="11" value="&lt;b&gt;AI DETECTION (parallel)&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;rounded=1;html=1;fontSize=12;collapsible=0;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="140" y="780" width="640" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- HuggingFace -->
+        <mxCell id="12" value="&lt;b&gt;HuggingFace&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;RoBERTa&lt;br&gt;Text (primary)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;strokeWidth=1;" vertex="1" parent="11">
+          <mxGeometry x="15" y="40" width="130" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Heuristic -->
+        <mxCell id="13" value="&lt;b&gt;Heuristic&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Stylometric&lt;br&gt;Text (fallback)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;strokeWidth=1;" vertex="1" parent="11">
+          <mxGeometry x="170" y="40" width="130" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- ML Image -->
+        <mxCell id="14" value="&lt;b&gt;ML Service&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;CNN ResNet50&lt;br&gt;Image detection&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;strokeWidth=1;" vertex="1" parent="11">
+          <mxGeometry x="335" y="40" width="130" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- ML Video -->
+        <mxCell id="15" value="&lt;b&gt;ML Service&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Frame extract&lt;br&gt;+ per-frame CNN&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;strokeWidth=1;" vertex="1" parent="11">
+          <mxGeometry x="495" y="40" width="130" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Composite Score -->
+        <mxCell id="16" value="&lt;b&gt;Composite Score Calculation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Text 50% | Image 35% | Video 15%&lt;br&gt;Confidence-weighted average&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="305" y="960" width="290" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Store Results -->
+        <mxCell id="17" value="&lt;b&gt;Store AiScore&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Update Content status → analyzed&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1065" width="240" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Neon callout for store -->
+        <mxCell id="53" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Neon DB&lt;/b&gt;&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="660" y="1060" width="90" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- End -->
+        <mxCell id="18" value="&lt;b&gt;Return Result&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;{ content, aiScore }&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="365" y="1155" width="170" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Classification badges -->
+        <mxCell id="19" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Classification Output:&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#22c55e&quot;&gt;■ human (0.00-0.15)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#86efac&quot;&gt;■ likely_human (0.15-0.35)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#eab308&quot;&gt;■ unsure (0.35-0.65)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#f97316&quot;&gt;■ likely_ai (0.65-0.85)&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#ef4444&quot;&gt;■ ai (0.85-1.00)&lt;/font&gt;&lt;/font&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=15;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="640" y="940" width="200" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== FLOW ARROWS ====== -->
+        <mxCell id="40" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="3" target="4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="41" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="4" target="5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Check dup → Neon -->
+        <mxCell id="42" style="html=1;rounded=1;strokeWidth=1;strokeColor=#82b366;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="5" target="50" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="43" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="5" target="6" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Decision: Yes → 409 -->
+        <mxCell id="44" value="&lt;font style=&quot;font-size:10px;&quot;&gt;Yes&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;strokeColor=#b85450;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="6" target="7" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Decision: No → Fetch -->
+        <mxCell id="45" value="&lt;font style=&quot;font-size:10px;&quot;&gt;No&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="6" target="8" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Fetch → Website -->
+        <mxCell id="46" style="html=1;rounded=1;strokeWidth=1;strokeColor=#666666;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="8" target="51" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="47" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="8" target="9" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="48" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="9" target="10" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Create → Neon -->
+        <mxCell id="49" style="html=1;rounded=1;strokeWidth=1;strokeColor=#82b366;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="10" target="52" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Create → AI Detection -->
+        <mxCell id="60" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="10" target="11" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- AI Detection → Composite Score -->
+        <mxCell id="61" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="11" target="16" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Composite → Store -->
+        <mxCell id="62" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="16" target="17" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Store → Neon -->
+        <mxCell id="63" style="html=1;rounded=1;strokeWidth=1;strokeColor=#82b366;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="17" target="53" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Store → End -->
+        <mxCell id="64" style="html=1;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="17" target="18" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ================================================================ -->
+  <!-- PAGE 3: AI DETECTION PIPELINE                                    -->
+  <!-- ================================================================ -->
+  <diagram id="ai" name="AI Detection Pipeline">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="2" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;b&gt;AI DETECTION PIPELINE&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="10" width="280" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== INPUT COLUMN ====== -->
+
+        <mxCell id="3" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;INPUT&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="60" width="100" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="4" value="&lt;b&gt;Text Content&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Article body text&lt;br&gt;(max 1800 chars)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="100" width="160" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="5" value="&lt;b&gt;Images&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Extracted from page&lt;br&gt;(max 10MB each)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="360" width="160" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="6" value="&lt;b&gt;Video&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Video URL&lt;br&gt;(if present)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="600" width="160" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== PROVIDERS COLUMN ====== -->
+
+        <mxCell id="7" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;PROVIDERS&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="270" y="60" width="100" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- HuggingFace Provider -->
+        <mxCell id="8" value="&lt;b&gt;HuggingFace Provider&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Model: RoBERTa&lt;br&gt;API: router.huggingface.co&lt;br&gt;Free tier (primary)&lt;br&gt;&lt;b&gt;Always available&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="240" y="90" width="190" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Heuristic Provider -->
+        <mxCell id="9" value="&lt;b&gt;Heuristic Provider&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Vocab diversity, sentence&lt;br&gt;variation, punctuation,&lt;br&gt;n-gram repetition&lt;br&gt;&lt;b&gt;No API calls (local)&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="240" y="200" width="190" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- GPTZero Provider (optional) -->
+        <mxCell id="10" value="&lt;b&gt;GPTZero Provider&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;API: api.gptzero.me&lt;br&gt;$45/mo paid backup&lt;br&gt;&lt;b&gt;Optional&lt;/b&gt; (if key set)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;strokeWidth=2;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="240" y="310" width="190" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- LocalImage Provider -->
+        <mxCell id="11" value="&lt;b&gt;LocalImage Provider&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;CNN Detector (ResNet50)&lt;br&gt;POST ml.real.press/api/detect/image&lt;br&gt;224×224 RGB, ImageNet norm&lt;br&gt;Timeout: 30s&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="240" y="400" width="230" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Video Provider -->
+        <mxCell id="12" value="&lt;b&gt;Video Provider&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;1. Extract frames (ffmpeg, max 20)&lt;br&gt;   POST ml.real.press/api/extract-frames&lt;br&gt;2. Detect each frame as image&lt;br&gt;   POST ml.real.press/api/detect/image&lt;br&gt;3. Variance-adjusted aggregation&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="240" y="560" width="250" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== SCORING COLUMN ====== -->
+
+        <mxCell id="13" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;SCORING&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="570" y="60" width="100" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Text Score -->
+        <mxCell id="14" value="&lt;b&gt;Text Score&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;HF × 0.7 × conf + Heur × 0.3 × conf&lt;br&gt;─────────────────────────&lt;br&gt;0.7 × HF_conf + 0.3 × Heur_conf&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="540" y="150" width="240" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Image Score -->
+        <mxCell id="15" value="&lt;b&gt;Image Score&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Aggregate of per-image&lt;br&gt;CNN detection scores&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="540" y="400" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Video Score -->
+        <mxCell id="16" value="&lt;b&gt;Video Score&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;Variance-adjusted aggregate&lt;br&gt;High variance → lower confidence&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="540" y="590" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== COMPOSITE COLUMN ====== -->
+
+        <mxCell id="17" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;COMPOSITE&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="880" y="60" width="100" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Multi-Modal Composite -->
+        <mxCell id="18" value="&lt;b style=&quot;font-size:13px;&quot;&gt;Multi-Modal&lt;br&gt;Composite Score&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Σ(score × conf × weight)&lt;br&gt;────────────────&lt;br&gt;Σ(conf × weight)&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;Weights:&lt;/b&gt;&lt;br&gt;Text: &lt;b&gt;50%&lt;/b&gt;&lt;br&gt;Image: &lt;b&gt;35%&lt;/b&gt;&lt;br&gt;Video: &lt;b&gt;15%&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="840" y="170" width="200" height="230" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== CLASSIFICATION OUTPUT ====== -->
+
+        <mxCell id="19" value="&lt;font style=&quot;font-size:10px;&quot;&gt;&lt;b&gt;CLASSIFICATION&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="60" width="120" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- human -->
+        <mxCell id="20" value="&lt;b&gt;human&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;0.00 – 0.15&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="100" width="140" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- likely_human -->
+        <mxCell id="21" value="&lt;b&gt;likely_human&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;0.15 – 0.35&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b9e0a5;strokeColor=#6d9b3a;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="165" width="140" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- unsure -->
+        <mxCell id="22" value="&lt;b&gt;unsure&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;0.35 – 0.65&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="230" width="140" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- likely_ai -->
+        <mxCell id="23" value="&lt;b&gt;likely_ai&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;0.65 – 0.85&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#e65100;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="295" width="140" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- ai -->
+        <mxCell id="24" value="&lt;b&gt;ai&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;&quot;&gt;0.85 – 1.00&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="360" width="140" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- ====== ARROWS ====== -->
+
+        <!-- Text → HuggingFace -->
+        <mxCell id="30" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" source="4" target="8" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Text → Heuristic -->
+        <mxCell id="31" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" source="4" target="9" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Text → GPTZero (dashed) -->
+        <mxCell id="32" style="html=1;rounded=1;strokeWidth=1;dashed=1;dashPattern=8 4;exitX=1;exitY=1;entryX=0;entryY=0.5;" edge="1" source="4" target="10" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Images → LocalImage -->
+        <mxCell id="33" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="5" target="11" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Video → Video Provider -->
+        <mxCell id="34" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="6" target="12" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- HuggingFace → Text Score -->
+        <mxCell id="35" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.3;" edge="1" source="8" target="14" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Heuristic → Text Score -->
+        <mxCell id="36" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.7;" edge="1" source="9" target="14" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- GPTZero → Text Score (dashed) -->
+        <mxCell id="37" style="html=1;rounded=1;strokeWidth=1;dashed=1;dashPattern=8 4;exitX=1;exitY=0.5;entryX=0;entryY=1;" edge="1" source="10" target="14" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- LocalImage → Image Score -->
+        <mxCell id="38" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="11" target="15" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Video → Video Score -->
+        <mxCell id="39" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="12" target="16" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Text Score → Composite -->
+        <mxCell id="40" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;50%&lt;/b&gt;&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.2;" edge="1" source="14" target="18" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Image Score → Composite -->
+        <mxCell id="41" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;35%&lt;/b&gt;&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="15" target="18" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Video Score → Composite -->
+        <mxCell id="42" value="&lt;font style=&quot;font-size:9px;&quot;&gt;&lt;b&gt;15%&lt;/b&gt;&lt;/font&gt;" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.8;" edge="1" source="16" target="18" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Composite → Classifications -->
+        <mxCell id="43" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" edge="1" source="18" target="20" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="44" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" source="18" target="21" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="45" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="18" target="22" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="46" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.7;entryX=0;entryY=0.5;" edge="1" source="18" target="23" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="47" style="html=1;rounded=1;strokeWidth=2;exitX=1;exitY=0.85;entryX=0;entryY=0.5;" edge="1" source="18" target="24" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+</mxfile>

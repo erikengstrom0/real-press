@@ -8,10 +8,14 @@ import {
 import { CrawlStatus } from '@/generated/prisma/client'
 
 const createJobsSchema = z.object({
-  urls: z.array(z.string().url()).min(1).max(100),
-  sourceType: z.string().optional().default('manual'),
+  urls: z.array(z.string().url()).min(1).max(500),
+  sourceType: z.string().optional(),
+  source: z.string().optional(),
   priority: z.number().int().min(-10).max(10).optional().default(0),
-})
+}).transform(data => ({
+  ...data,
+  sourceType: data.sourceType || data.source || 'manual',
+}))
 
 export async function POST(request: NextRequest) {
   try {

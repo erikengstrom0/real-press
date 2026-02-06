@@ -12,8 +12,13 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Only protect admin routes
+  // Only protect admin routes (except login page)
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
+    return NextResponse.next()
+  }
+
+  // Allow access to the login page without authentication
+  if (pathname === '/admin/login') {
     return NextResponse.next()
   }
 

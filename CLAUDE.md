@@ -803,6 +803,7 @@ Decisions made during development that should persist across sessions.
    - Created `src/middleware.ts` to protect `/admin/*` and `/api/admin/*` routes
    - Matches paths and checks for valid authentication before allowing access
    - Public routes remain unprotected: `/`, `/search`, `/submit`, `/demo`
+   - Login page (`/admin/login`) explicitly excluded from protection to avoid redirect loops
 
 2. **Authentication Methods**
    - Authorization header: `Bearer <ADMIN_SECRET>`
@@ -814,6 +815,7 @@ Decisions made during development that should persist across sessions.
    - Validates token by testing against admin API endpoint
    - Sets cookie on successful authentication for 7 days
    - Redirects to originally requested page after login
+   - Uses Suspense boundary for `useSearchParams()` (Next.js static generation requirement)
 
 4. **Cron Worker Compatibility**
    - Worker endpoint (`/api/admin/crawl/worker`) accepts `CRON_SECRET` separately
@@ -824,6 +826,10 @@ Decisions made during development that should persist across sessions.
    - `ADMIN_SECRET` - Token for admin panel access (set in Vercel)
    - `CRON_SECRET` - Token for cron worker (already configured)
    - Both should be generated with `openssl rand -hex 32`
+
+6. **Build Issues Resolved**
+   - `useSearchParams()` must be wrapped in `<Suspense>` for Next.js static generation
+   - Login page must be excluded from middleware protection to prevent redirect loops
 
 ### Content Source Integration Decisions (2026-02-05)
 
@@ -859,6 +865,14 @@ Decisions made during development that should persist across sessions.
 ---
 
 ## Future TODOs
+
+### Recently Completed
+- [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
+- [x] **Admin login page** - Token-based login at `/admin/login` (2026-02-05)
+- [x] **Content source integrations** - Hacker News, DEV.to, YouTube, RSS feeds (2026-02-05)
+- [x] **Admin URL import page** - Bulk import and topic discovery at `/admin/import` (2026-02-05)
+- [x] **External cron setup** - cron-job.org triggers scraper worker every 5 min (2026-02-05)
+- [x] **Cross-browser styling fixes** - Safari/Brave compatibility for AI badges (2026-02-05)
 
 ### High Priority (Pre-Funding)
 - [ ] **User submission rate limiting** - Protect against abuse/spam

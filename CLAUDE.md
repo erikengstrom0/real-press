@@ -825,6 +825,37 @@ Decisions made during development that should persist across sessions.
    - `CRON_SECRET` - Token for cron worker (already configured)
    - Both should be generated with `openssl rand -hex 32`
 
+### Content Source Integration Decisions (2026-02-05)
+
+1. **Free API Priority Strategy**
+   - Prioritize free/low-cost APIs for MVP phase
+   - Document expensive APIs as future TODOs (post-funding)
+   - APIs requiring approval processes tracked separately
+
+2. **Implemented Source Integrations**
+   - `src/lib/sources/` - New directory for content source integrations
+   - Hacker News API: Completely free, no auth, no rate limits
+   - DEV.to API: Free, no auth for reading, 30 req/30s limit
+   - YouTube Data API: 10,000 units/day free (100 units per search)
+   - RSS/Atom feeds: Universal, works with Medium, Substack, any blog
+
+3. **Source Architecture**
+   - Each source exports `getUrlsForCrawling()` for easy integration with crawl queue
+   - Normalized output format: `{ url, title, author?, metadata }`
+   - Platform-specific helpers (e.g., `RSS.Substack.feed('name')`)
+   - Curated feed lists for quality content discovery
+
+4. **API Research Findings**
+   - Twitter/X: $200-$5,000/month - too expensive for MVP
+   - LinkedIn: $1,000s-$10,000s/month - enterprise only
+   - NewsAPI.org: Free tier blocked in production, $449+/month
+   - Reddit: Opaque pricing, requires pre-approval for all access
+   - Facebook/Instagram, TikTok, Pinterest: Free but require app review
+
+5. **Environment Variables**
+   - `YOUTUBE_API_KEY` - Optional, required for YouTube source
+   - Other sources work without configuration
+
 ---
 
 ## Future TODOs
@@ -839,3 +870,44 @@ Decisions made during development that should persist across sessions.
 - [ ] Deploy dedicated worker on Railway (vs Vercel Cron)
 - [ ] Bloom filter for fast URL deduplication
 - [ ] OpenTelemetry metrics and Grafana dashboards
+
+### Content Source API Integrations
+
+**Implemented (Free):**
+- [x] Hacker News API - `src/lib/sources/hackernews.source.ts` (free, no auth)
+- [x] DEV.to API - `src/lib/sources/devto.source.ts` (free, no auth)
+- [x] YouTube Data API - `src/lib/sources/youtube.source.ts` (10k units/day free, needs YOUTUBE_API_KEY)
+- [x] RSS/Atom feeds - `src/lib/sources/rss.source.ts` (Medium, Substack, blogs)
+
+**TODO: Requires Approval Process (Free but gated):**
+- [ ] **Reddit API** - Opaque commercial pricing, pre-approval required for all access
+  - Rate: 100 req/min (OAuth), 10 req/min (unauth)
+  - Cost: Negotiated (not published)
+  - Blocker: Requires pre-approval even for personal projects
+- [ ] **Facebook/Instagram Graph API** - Free but complex approval
+  - Rate: 200 calls/hour per account
+  - Cost: Free after app review
+  - Blocker: Strict app review, permission levels
+- [ ] **TikTok Research API** - Free but approval-gated
+  - Rate: 10 req/sec, 1k req/day
+  - Cost: Free after approval
+  - Blocker: Rate limits disclosed only after access granted
+- [ ] **Pinterest API** - Free but requires demo video
+  - Rate: Daily limits (Trial), per-minute (Standard)
+  - Cost: Free after approval
+  - Blocker: Requires video walkthrough for Standard access
+
+**TODO: Expensive APIs (Post-Funding):**
+- [ ] **Twitter/X API** - Prohibitively expensive
+  - Free tier: 1 req/24hr, 500 posts/month
+  - Basic: $200/month
+  - Pro: $5,000/month
+  - Note: Pay-per-use model in closed beta (Dec 2025)
+- [ ] **LinkedIn API** - Enterprise pricing
+  - Free tier: Only Sign In + basic profile
+  - Cost: $1,000s-$10,000s/month for comprehensive access
+  - Note: Not viable for startups
+- [ ] **NewsAPI.org** - Too expensive for production
+  - Free tier: 100 req/day, dev-only (blocked in production)
+  - Cost: $449/month (small), $1,749+/month (enterprise)
+  - Alternative: newsdata.io has better free tier

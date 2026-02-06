@@ -29,6 +29,20 @@ function getMLServiceUrl(): string {
 }
 
 /**
+ * Build auth headers for ML service requests
+ */
+function getMLServiceHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  const secret = process.env.CRON_SECRET
+  if (secret) {
+    headers['Authorization'] = `Bearer ${secret}`
+  }
+  return headers
+}
+
+/**
  * Check if video detection is enabled
  */
 function isVideoDetectionEnabled(): boolean {
@@ -119,9 +133,7 @@ export class VideoProvider extends BaseProvider {
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getMLServiceHeaders(),
         body: JSON.stringify({
           video_url: videoUrl,
           max_frames: this.maxFrames,

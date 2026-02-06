@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     max_video_duration_seconds: int = 300  # 5 minutes
     max_frames_per_video: int = 20
 
+    # Authentication
+    api_secret: str = ""  # Set ML_API_SECRET env var to enable auth
+
     # Timeouts
     download_timeout_seconds: int = 30
     inference_timeout_seconds: int = 60

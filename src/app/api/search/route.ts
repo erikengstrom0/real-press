@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db/prisma'
 import type { Classification } from '@/lib/ai-detection'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
 
 export interface SearchResult {
   id: string
@@ -29,11 +30,14 @@ export interface SearchResponse {
 const PAGE_SIZE = 10
 
 export async function GET(request: NextRequest) {
+  const rateLimitResponse = await checkRateLimit(request, 'search')
+  if (rateLimitResponse) return rateLimitResponse
+
   const searchParams = request.nextUrl.searchParams
-  const query = searchParams.get('q')?.trim() || ''
+  const query = (searchParams.get('q')?.trim() || '').slice(0, 200)
   const filter = searchParams.get('filter') // classification filter
   const sort = searchParams.get('sort') // 'score' = sort by AI score ascending (human first)
-  const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
+  const page = Math.min(Math.max(1, parseInt(searchParams.get('page') || '1', 10)), 100)
 
   if (!query) {
     return NextResponse.json<SearchResponse>({
@@ -49,12 +53,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Build the search conditions
+    // Build the search conditions (title, description, url, domain only — no contentText LIKE scan)
     const searchConditions = [
       { title: { contains: query, mode: 'insensitive' as const } },
       { description: { contains: query, mode: 'insensitive' as const } },
-      { contentText: { contains: query, mode: 'insensitive' as const } },
       { url: { contains: query, mode: 'insensitive' as const } },
+      { domain: { contains: query, mode: 'insensitive' as const } },
     ]
 
     // Build the where clause based on filter

@@ -6,6 +6,7 @@ import {
   analyzeMultiModalPreview,
 } from '@/lib/services/ai-detection.service'
 import { getContentById } from '@/lib/services/content.service'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
 
 const imageInputSchema = z.object({
   url: z.string().url().optional(),
@@ -37,6 +38,9 @@ const analyzeSchema = z.union([
 ])
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = await checkRateLimit(request, 'analyze')
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     const body = await request.json()
 

@@ -25,6 +25,20 @@ function getMLServiceUrl(): string {
 }
 
 /**
+ * Build auth headers for ML service requests
+ */
+function getMLServiceHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  const secret = process.env.CRON_SECRET
+  if (secret) {
+    headers['Authorization'] = `Bearer ${secret}`
+  }
+  return headers
+}
+
+/**
  * Check if image detection is enabled
  */
 function isImageDetectionEnabled(): boolean {
@@ -75,9 +89,7 @@ export class LocalImageProvider extends BaseProvider {
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getMLServiceHeaders(),
         body: JSON.stringify(body),
         signal: controller.signal,
       })

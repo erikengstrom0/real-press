@@ -5,6 +5,7 @@
  */
 
 import type { ImageInput, VideoInput } from '../ai-detection/types'
+import { validateUrlForFetch } from '../utils/ssrf-protection'
 
 /**
  * Result of media extraction from a URL
@@ -204,6 +205,12 @@ export function extractVideoFromHtml(html: string, baseUrl: string): string | nu
  * Extract media from a URL by fetching and parsing the page
  */
 export async function extractMediaFromUrl(url: string): Promise<ExtractedMedia> {
+  // SSRF protection
+  const ssrfCheck = await validateUrlForFetch(url)
+  if (!ssrfCheck.safe) {
+    return { images: [], video: null }
+  }
+
   // Check if URL directly points to media
   if (isImageUrl(url)) {
     return {

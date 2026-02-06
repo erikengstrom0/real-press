@@ -6,19 +6,18 @@ import type { NextRequest } from 'next/server'
  *
  * Admin routes require either:
  * 1. Authorization header: Bearer <ADMIN_SECRET>
- * 2. Cookie: admin_token=<ADMIN_SECRET>
- * 3. Query param: ?admin_token=<ADMIN_SECRET> (for initial login)
+ * 2. Cookie: admin_token=<ADMIN_SECRET> (set by /api/admin/auth)
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Only protect admin routes (except login page)
+  // Only protect admin routes (except login page and auth endpoint)
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
     return NextResponse.next()
   }
 
-  // Allow access to the login page without authentication
-  if (pathname === '/admin/login') {
+  // Allow access to login page and auth endpoint without authentication
+  if (pathname === '/admin/login' || pathname === '/api/admin/auth') {
     return NextResponse.next()
   }
 
@@ -43,15 +42,13 @@ export function middleware(request: NextRequest) {
     return new NextResponse('Admin access not configured', { status: 503 })
   }
 
-  // Check for valid admin authentication
+  // Check for valid admin authentication (header or cookie only)
   const authHeader = request.headers.get('authorization')
   const cookieToken = request.cookies.get('admin_token')?.value
-  const queryToken = request.nextUrl.searchParams.get('admin_token')
 
   const isAuthenticated =
     authHeader === `Bearer ${adminSecret}` ||
-    cookieToken === adminSecret ||
-    queryToken === adminSecret
+    cookieToken === adminSecret
 
   if (!isAuthenticated) {
     // For API routes, return 401
@@ -62,22 +59,10 @@ export function middleware(request: NextRequest) {
       )
     }
 
-    // For page routes, redirect to a simple login
+    // For page routes, redirect to login
     const loginUrl = new URL('/admin/login', request.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
-  }
-
-  // If authenticated via query param, set cookie for future requests
-  if (queryToken === adminSecret && !cookieToken) {
-    const response = NextResponse.next()
-    response.cookies.set('admin_token', adminSecret, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
-    return response
   }
 
   return NextResponse.next()

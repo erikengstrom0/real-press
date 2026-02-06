@@ -5,8 +5,9 @@ Provides AI-generated image/video detection endpoints.
 """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .config import get_settings
 from .models import CNNDetector
@@ -55,14 +56,47 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Add CORS middleware
+# CORS — restrict to known origins
+settings = get_settings()
+allowed_origins = [
+    "https://www.real.press",
+    "https://real.press",
+    "http://localhost:3000",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    """
+    Require Bearer token on /api/* routes when ML_API_SECRET is configured.
+    Skip auth for health checks, root, and when no secret is set (dev mode).
+    """
+    settings = get_settings()
+
+    # Skip auth if no secret configured (dev mode)
+    if not settings.api_secret:
+        return await call_next(request)
+
+    # Only protect /api/* routes — allow /health and / without auth
+    if request.url.path.startswith("/api/"):
+        auth_header = request.headers.get("authorization", "")
+        expected = f"Bearer {settings.api_secret}"
+
+        if auth_header != expected:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Unauthorized"},
+            )
+
+    return await call_next(request)
+
 
 # Include routers
 app.include_router(health_router)

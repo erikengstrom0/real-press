@@ -18,21 +18,19 @@ function LoginForm() {
     setLoading(true)
 
     try {
-      // Test the token by making a request to an admin endpoint
-      const res = await fetch('/api/admin/crawl/jobs?stats=true', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      // Authenticate via server-side route (sets httpOnly secure cookie)
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
       })
 
       if (res.ok) {
-        // Set cookie and redirect
-        document.cookie = `admin_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; samesite=lax`
         router.push(redirect)
       } else {
         setError('Invalid admin token')
       }
-    } catch (err) {
+    } catch {
       setError('Authentication failed')
     } finally {
       setLoading(false)

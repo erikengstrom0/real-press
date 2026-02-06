@@ -11,6 +11,8 @@ import {
   extractMediaFromUrl,
   filterRelevantImages,
 } from '@/lib/services/media-extraction.service'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { validateUrlForFetch } from '@/lib/utils/ssrf-protection'
 
 const submitSchema = z.object({
   url: z.string().min(1, 'Please enter a URL'),
@@ -23,6 +25,9 @@ const submitSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = await checkRateLimit(request, 'submit')
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     const body = await request.json()
 
@@ -45,6 +50,37 @@ export async function POST(request: NextRequest) {
     }
 
     const url = normalizeResult.url
+
+    // SSRF protection: block private/internal URLs
+    const ssrfCheck = await validateUrlForFetch(url)
+    if (!ssrfCheck.safe) {
+      return NextResponse.json(
+        { error: ssrfCheck.error },
+        { status: 400 }
+      )
+    }
+
+    // Also validate any explicit media URLs
+    if (validation.data.imageUrls) {
+      for (const imgUrl of validation.data.imageUrls) {
+        const imgCheck = await validateUrlForFetch(imgUrl)
+        if (!imgCheck.safe) {
+          return NextResponse.json(
+            { error: `Image URL blocked: ${imgCheck.error}` },
+            { status: 400 }
+          )
+        }
+      }
+    }
+    if (validation.data.videoUrl) {
+      const vidCheck = await validateUrlForFetch(validation.data.videoUrl)
+      if (!vidCheck.safe) {
+        return NextResponse.json(
+          { error: `Video URL blocked: ${vidCheck.error}` },
+          { status: 400 }
+        )
+      }
+    }
 
     // Check if URL already exists and return its info
     const existingContent = await getContentByUrl(url)

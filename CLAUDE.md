@@ -8,6 +8,13 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 **Goal:** Build a fundable MVP demo for investor meetings.
 
+## Release History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| v1.1.0 | 2026-02-05 | Admin route protection with middleware authentication |
+| v1.0.0 | 2026-02-04 | Production deployment with web scraper |
+
 ## Commands
 
 ```bash

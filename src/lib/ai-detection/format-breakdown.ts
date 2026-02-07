@@ -340,7 +340,7 @@ function formatProviders(
       if (p.name === 'heuristic' && heuristics) {
         entry.metrics = {
           vocabularyDiversity: metricToSignal('vocabularyDiversity', heuristics.vocabularyDiversity),
-          sentenceVariation: metricToSignal(
+          sentenceLengthVariation: metricToSignal(
             'sentenceLengthVariation',
             heuristics.sentenceLengthVariation,
           ),

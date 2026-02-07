@@ -183,7 +183,7 @@ function extractHeuristicMetrics(
   const m = heuristic.metrics
   return {
     vocabularyDiversity: toMetricSignal(m.vocabularyDiversity),
-    sentenceVariation: toMetricSignal(m.sentenceVariation),
+    sentenceLengthVariation: toMetricSignal(m.sentenceLengthVariation),
     avgSentenceLength: toMetricSignal(m.avgSentenceLength),
     punctuationVariety: toMetricSignal(m.punctuationVariety),
   }

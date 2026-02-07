@@ -1183,11 +1183,13 @@ Decisions made during development that should persist across sessions.
    - Similarity threshold set to 0.2 (pg_trgm default is 0.3 — lowered to catch more candidates)
    - Combined with Levenshtein distance ranking (max 3 edits) for best match selection
 
-2. **Spell Check Only on Zero Results**
-   - Spell check runs only when `total === 0 && page === 1 && query.length >= 3`
-   - Keeps spell check completely off the hot path — no performance impact on normal searches
-   - Wrapped in try/catch so spell check failures never break search
-   - Corrected query is verified to return >0 results before suggesting
+2. **Pre-Search Spell Check (Intercept Before Navigation)**
+   - Spell check runs in the SearchBar *before* navigating to the search results page
+   - Dedicated `/api/spell-check?q=...` endpoint returns suggestions without executing the full search
+   - On submit, SearchBar calls spell-check API; if a suggestion exists, shows a two-option prompt
+   - User must choose "Did you mean: **corrected**?" or "Or search for: **original**" before navigation proceeds
+   - If no suggestion, navigates directly — no delay for correctly spelled queries
+   - Wrapped in try/catch so spell check failures fall through to normal search
 
 3. **Word-Level Correction Strategy**
    - Query tokenized into words; words <= 2 chars skipped (too short for meaningful correction)
@@ -1200,36 +1202,38 @@ Decisions made during development that should persist across sessions.
    - Created TypeScript declaration at `src/types/fast-levenshtein.d.ts` (no `@types` package exists)
    - Used for candidate ranking and confidence scoring
 
-5. **UI: Inline Banner Component**
-   - `SpellSuggestion` component renders between FilterPanel and search results
-   - Retro newspaper aesthetic: cream background, green left border, Caudex headline font
-   - Suggested query is a clickable button that navigates to `/search?q=<corrected>`
-   - Dismiss button (x) hides the banner by setting state to null
+5. **UI: Two-Option Prompt in SearchBar**
+   - `SpellSuggestion` component renders below the search bar input, not in results
+   - Two clickable options: corrected query (green, headline font, prominent) and original query (muted, body font)
+   - Retro newspaper aesthetic: cream background, green left border, Caudex headline font for suggestion
+   - Search button shows "Checking..." state while spell-check API is in-flight
+   - Input clears suggestion when user types a new query
    - Mobile responsive with smaller font sizes at 480px breakpoint
 
-6. **State Management in SearchResultsContainer**
-   - Suggestion passed as prop from server-side render (initial page load / navigation from home)
-   - Also read from client-side refetch responses (filter/sort/page changes)
-   - Dismiss is local state only — re-searching resets it
-   - `useRouter().push()` used for accept navigation (triggers full server-side re-render via `key={query}`)
+6. **SearchBar State Machine**
+   - Three states: idle (normal), checking (spell-check API in-flight), prompted (showing two options)
+   - In "checking" state: input and button disabled, button text changes to "Checking..."
+   - In "prompted" state: SpellSuggestion banner visible below search bar
+   - Selecting either option clears the prompt and navigates to `/search?q=<chosen>`
+   - Typing new text resets back to idle state
 
 7. **Files Created**
    - `src/lib/services/spell-check.service.ts` — Core spell correction logic
    - `src/types/fast-levenshtein.d.ts` — TypeScript declaration
-   - `src/components/SpellSuggestion.tsx` — Banner UI component
-   - `src/components/SpellSuggestion.module.css` — Banner styles
+   - `src/app/api/spell-check/route.ts` — Dedicated spell-check API endpoint
+   - `src/components/SpellSuggestion.tsx` — Two-option prompt component
+   - `src/components/SpellSuggestion.module.css` — Prompt styles
 
 8. **Files Modified**
-   - `src/app/api/search/route.ts` — Added `suggestion` to `SearchResponse`, calls spell check on 0 results
-   - `src/app/search/page.tsx` — Passes `suggestion` prop to `SearchResultsContainer`
-   - `src/components/SearchResultsContainer.tsx` — Accepts prop, manages dismiss state, renders banner
+   - `src/components/SearchBar.tsx` — Intercepts submit, calls spell-check API, shows prompt
+   - `src/components/SearchBar.module.css` — Added wrapper class for layout
 
 ---
 
 ## Future TODOs
 
 ### Recently Completed
-- [x] **"Did You Mean?" spell correction** - pg_trgm + Levenshtein spell suggestion banner when search returns 0 results (2026-02-07)
+- [x] **"Did You Mean?" spell correction** - Pre-search spell check in SearchBar with two-option prompt before navigation (2026-02-07)
 - [x] **Search page layout alignment** - Aligned SearchBar right edge with FilterPanel by removing max-width constraint (2026-02-07)
 - [x] **Header "Account" link** - Changed dynamic user name to static "Account" label for clearer navigation (2026-02-07)
 - [x] **Fix search results not updating on subsequent searches** - Added `key={query}` to force remount of SearchResultsContainer (2026-02-07)

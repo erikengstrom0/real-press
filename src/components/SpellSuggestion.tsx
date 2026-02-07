@@ -5,33 +5,31 @@ import styles from './SpellSuggestion.module.css'
 interface SpellSuggestionProps {
   original: string
   suggested: string
-  onAccept: () => void
-  onDismiss: () => void
+  onSearchOriginal: () => void
+  onSearchSuggested: () => void
 }
 
 export function SpellSuggestion({
   original,
   suggested,
-  onAccept,
-  onDismiss,
+  onSearchOriginal,
+  onSearchSuggested,
 }: SpellSuggestionProps) {
   return (
     <div className={styles.banner}>
-      <div className={styles.content}>
+      <div className={styles.row}>
         <span className={styles.label}>Did you mean: </span>
-        <button className={styles.suggestion} onClick={onAccept} type="button">
+        <button className={styles.suggested} onClick={onSearchSuggested} type="button">
           {suggested}
         </button>
         <span className={styles.label}>?</span>
       </div>
-      <button
-        className={styles.dismiss}
-        onClick={onDismiss}
-        type="button"
-        aria-label="Dismiss suggestion"
-      >
-        &times;
-      </button>
+      <div className={styles.row}>
+        <span className={styles.label}>Or search for: </span>
+        <button className={styles.original} onClick={onSearchOriginal} type="button">
+          {original}
+        </button>
+      </div>
     </div>
   )
 }

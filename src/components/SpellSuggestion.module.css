@@ -1,17 +1,17 @@
 .banner {
+  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.375rem;
   padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
   background-color: var(--color-cream);
   border-left: 4px solid var(--color-accent-primary);
   border-top: 1px solid var(--color-paper-dark);
   border-bottom: 1px solid var(--color-paper-dark);
-  margin-bottom: 1rem;
 }
 
-.content {
+.row {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -25,7 +25,7 @@
   font-weight: var(--weight-regular);
 }
 
-.suggestion {
+.suggested {
   all: unset;
   cursor: pointer;
   font-family: var(--font-headline);
@@ -36,30 +36,31 @@
   text-underline-offset: 3px;
 }
 
-.suggestion:hover {
+.suggested:hover {
   color: var(--color-ink);
 }
 
-.suggestion:focus-visible {
+.suggested:focus-visible {
   outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
 }
 
-.dismiss {
+.original {
   all: unset;
   cursor: pointer;
-  font-size: var(--text-xl);
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-base);
   color: var(--color-charcoal-muted);
-  line-height: 1;
-  padding: 0.25rem;
-  flex-shrink: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.dismiss:hover {
+.original:hover {
   color: var(--color-charcoal);
 }
 
-.dismiss:focus-visible {
+.original:focus-visible {
   outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
 }
@@ -69,11 +70,11 @@
     padding: 0.625rem 0.75rem;
   }
 
-  .content {
+  .row {
     font-size: var(--text-sm);
   }
 
-  .suggestion {
+  .suggested {
     font-size: var(--text-base);
   }
 }

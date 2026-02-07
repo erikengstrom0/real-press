@@ -86,7 +86,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             initialHasMore={searchResponse.hasMore}
             initialFilter={filter}
             initialSort={sort}
-            suggestion={searchResponse.suggestion ?? null}
           />
         ) : (
           <div className={styles.placeholder}>

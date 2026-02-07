@@ -5,7 +5,6 @@ import { checkRateLimit } from '@/lib/utils/rate-limit'
 import { auth } from '@/lib/auth'
 import { getUserTier } from '@/lib/api/check-tier'
 import { recordSearch } from '@/lib/services/search-history.service'
-import { getSpellSuggestion, type SpellSuggestion } from '@/lib/services/spell-check.service'
 
 export interface SearchResult {
   id: string
@@ -29,7 +28,6 @@ export interface SearchResponse {
   page: number
   pageSize: number
   hasMore: boolean
-  suggestion?: SpellSuggestion | null
 }
 
 const PAGE_SIZE = 10
@@ -121,16 +119,6 @@ export async function GET(request: NextRequest) {
       createdAt: item.createdAt.toISOString(),
     }))
 
-    // Spell suggestion: only when 0 results, first page, query long enough
-    let suggestion: SpellSuggestion | null = null
-    if (total === 0 && page === 1 && query.length >= 3) {
-      try {
-        suggestion = await getSpellSuggestion(query)
-      } catch {
-        // Spell check failures never break search
-      }
-    }
-
     const response = NextResponse.json<SearchResponse>({
       results,
       query,
@@ -140,7 +128,6 @@ export async function GET(request: NextRequest) {
       page,
       pageSize: PAGE_SIZE,
       hasMore: page * PAGE_SIZE < total,
-      suggestion,
     })
 
     // Fire-and-forget: record search in history if user is authenticated

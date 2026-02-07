@@ -12,6 +12,7 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.3.0 | 2026-02-07 | Phase 7 Wave 2: Integration — service persistence, breakdown API, backfill, content detail page |
 | v1.2.0 | 2026-02-07 | Phase 7 Wave 1: Explainability pipeline, schema, formatters, UI |
 | v1.1.0 | 2026-02-05 | Admin route protection with middleware authentication |
 | v1.0.0 | 2026-02-04 | Production deployment with web scraper |
@@ -90,15 +91,21 @@ src/
 │   ├── layout.tsx            # Root layout
 │   ├── search/page.tsx       # Search results
 │   ├── submit/page.tsx       # URL submission
+│   ├── content/[id]/         # Content detail page (Phase 7)
+│   │   ├── page.tsx                    # Server component: article + score
+│   │   ├── ContentBreakdownSection.tsx # Client component: fetches & renders breakdown
+│   │   └── page.module.css
 │   └── api/
 │       ├── search/route.ts   # Search endpoint
 │       ├── submit/route.ts   # Submission endpoint
 │       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
+│       ├── content/[id]/breakdown/route.ts  # Tier-gated breakdown API (Phase 7)
 │       └── admin/
 │           ├── crawl/worker/route.ts  # Job worker (Vercel Cron target)
 │           ├── crawl/jobs/route.ts    # Job queue management
 │           ├── crawl/seeds/route.ts   # Seed list import
-│           └── content/[id]/route.ts  # Content inspection
+│           ├── content/[id]/route.ts  # Content inspection
+│           └── backfill-explainability/route.ts  # Backfill JSONB data (Phase 7)
 ├── components/
 │   ├── SearchBar.tsx
 │   ├── SearchResults.tsx
@@ -210,6 +217,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint 4 | Polish + demo ready | ✅ Complete |
 | Sprint 5 | Production deployment | ✅ Complete |
 | Phase 7 Wave 1 | Explainability pipeline, schema, formatters, UI | ✅ Complete |
+| Phase 7 Wave 2 | Integration: persistence, breakdown API, backfill, content page | ✅ Complete |
 
 ---
 
@@ -999,11 +1007,74 @@ Decisions made during development that should persist across sessions.
    - `src/lib/ai-detection/index.ts` — threads provider metadata, tracks availability
    - All 5 providers — enriched metadata (heuristic sub-scores, model info, per-image/frame data)
 
+### Phase 7 Wave 2: Integration (Agent E) (2026-02-07)
+
+1. **Service Layer Persistence**
+   - `analyzeAndStoreScore()` now builds and persists `providerDetails`, `heuristicMetrics`, `fusionDetails` JSONB columns
+   - `analyzeMultiModalAndStore()` persists all JSONB fields plus writes `MediaScore` records
+   - Builder functions extract enriched metadata from `CompositeResult` and `MultiModalResult`
+   - Uses `JSON.parse(JSON.stringify(...))` for Prisma JSON column serialization (matches existing pattern in `crawl-job.service.ts`)
+
+2. **MediaScore Wiring**
+   - `analyzeMultiModalAndStore()` now creates `MediaScore` rows for each image with per-image CNN scores
+   - Video `MediaScore` rows include aggregated score and `frameScores` JSONB column with per-frame breakdown
+   - After creating `ContentMedia` records, queries back IDs to link `MediaScore` foreign keys
+
+3. **Breakdown API Endpoint**
+   - `GET /api/content/[id]/breakdown` — tier-gated explainability endpoint
+   - Free tier: returns `formatFreeResponse()` (score, classification, confidence, analyzedTypes) + `X-Breakdown-Available: true` header
+   - Pro/Enterprise tier: returns `formatPaidResponse()` with full provider details, heuristic signals, fusion weights, per-image/video data
+   - Returns `{ hasExplainability: false }` for content analyzed before Phase 7
+   - Supports `X-User-Tier` header override for development/demo purposes
+
+4. **Backfill Admin Endpoint**
+   - `POST /api/admin/backfill-explainability` — re-runs detection on old content missing JSONB data
+   - Protected by middleware ADMIN_SECRET authentication (same as all `/api/admin/*` routes)
+   - Accepts `{ batchSize }` (default 10, max 50)
+   - Uses raw SQL queries to filter `provider_details IS NULL` and update JSONB columns
+   - Idempotent: skips rows that already have `providerDetails`
+   - Does NOT change original `compositeScore` or `classification` — only populates new JSONB columns
+
+5. **Content Detail Page**
+   - New `/content/[id]` route — first public page for viewing individual content
+   - Server component fetches content with AI score, renders title, domain, author, published date, classification
+   - `ContentBreakdownSection` client component fetches `/api/content/[id]/breakdown`
+   - Renders `BreakdownPanel` for pro users, `BreakdownTeaser` for free users
+   - Handles missing explainability data gracefully ("analyzed before detailed tracking was available")
+
+6. **Prisma 7 JSON Column Typing**
+   - Prisma 7 generated types don't export `Prisma.InputJsonValue` from `@/generated/prisma`; must import from `@/generated/prisma/client`
+   - Structured interfaces (e.g., `StoredProviderDetail[]`) can't directly satisfy `InputJsonValue` due to missing index signatures
+   - Solution: `JSON.parse(JSON.stringify(value))` strips type info and returns a plain JSON value Prisma accepts
+   - For backfill queries: used `$queryRawUnsafe` with `$1::jsonb` casts to avoid Prisma `JsonNullValueFilter` typing issues
+
+7. **Phase 4 API Endpoints**
+   - Phase 4 (`/api/v1/verify/*`) endpoints don't exist yet
+   - TODO comment added in service file for future integration
+   - When created, updated service functions will automatically persist explainability data
+   - Route handlers should use `formatFreeResponse`/`formatPaidResponse` based on caller tier
+
+8. **Return Type Backwards Compatibility**
+   - `AnalyzeContentResult` and `MultiModalAnalyzeResult` interfaces extended with optional `providerDetails`, `heuristicMetrics`, `fusionDetails`
+   - All new fields are optional — existing callers unaffected
+   - Function signatures unchanged — no breaking changes
+
+9. **New Files Created**
+   - `src/app/api/content/[id]/breakdown/route.ts` — Tier-gated breakdown API
+   - `src/app/api/admin/backfill-explainability/route.ts` — Admin backfill endpoint
+   - `src/app/content/[id]/page.tsx` — Content detail page (server component)
+   - `src/app/content/[id]/ContentBreakdownSection.tsx` — Breakdown rendering (client component)
+   - `src/app/content/[id]/page.module.css` — Content page styles
+
+10. **Files Modified**
+    - `src/lib/services/ai-detection.service.ts` — Core integration: persistence builders, MediaScore writes, updated interfaces
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)
 - [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)
 - [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
 - [x] **Admin login page** - Token-based login at `/admin/login` (2026-02-05)
@@ -1013,9 +1084,11 @@ Decisions made during development that should persist across sessions.
 - [x] **Cross-browser styling fixes** - Safari/Brave compatibility for AI badges (2026-02-05)
 
 ### High Priority (Pre-Funding)
-- [ ] **Phase 7 Wave 2 (Agent E)** - Integration: service layer persistence, MediaScore wiring, API endpoint integration, backfill, consumer page wiring
+- [ ] **Run backfill on production** - Call `POST /api/admin/backfill-explainability` to populate JSONB data for existing content
+- [ ] **Wire Phase 4 API endpoints** - When `/api/v1/verify/*` is created, use `formatFreeResponse`/`formatPaidResponse` with tier gating
 - [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
 - [ ] **Implement check-tier.ts** - Replace stub with actual billing tier lookup (depends on Phase 2)
+- [ ] **Link search results to content detail page** - Add `/content/[id]` links from search result items
 - [ ] **User submission rate limiting** - Protect against abuse/spam
 - [ ] **Malicious submission protection** - Validate URLs, block known bad actors
 - [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck

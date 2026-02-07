@@ -1140,11 +1140,29 @@ Decisions made during development that should persist across sessions.
    - `src/middleware.ts` — Added `/api/v1/*` pass-through + matcher
    - `src/app/profile/page.tsx` + `page.module.css` — Added API key management link
 
+### Search Bugfix: Subsequent Searches Not Updating (2026-02-07)
+
+1. **Root Cause: React `useState` Ignoring Updated Props**
+   - `SearchResultsContainer` is a client component initialized with `useState(initialResults)`
+   - `useState` only uses the initial value on first mount; subsequent renders ignore the new prop
+   - When user searches again via `router.push()`, the server re-fetches correct results but the client component keeps stale state
+   - This caused subsequent searches to show results from the first search
+
+2. **Fix: React `key` Prop on SearchResultsContainer**
+   - Added `key={query}` to `<SearchResultsContainer>` in `src/app/search/page.tsx`
+   - When `key` changes, React unmounts the old component and mounts a new instance
+   - New instance correctly initializes `useState` with the updated `initialResults`
+   - Chosen over `useEffect` sync approach because it's simpler, more idiomatic, and avoids stale closure issues
+
+3. **Files Modified**
+   - `src/app/search/page.tsx` — Added `key={query}` prop (1-line change)
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Fix search results not updating on subsequent searches** - Added `key={query}` to force remount of SearchResultsContainer (2026-02-07)
 - [x] **Phase 4: Public Verification API** - API key auth, verify endpoints (text/url/image/batch), key management UI, admin tier setter (2026-02-07)
 - [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)
 - [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)

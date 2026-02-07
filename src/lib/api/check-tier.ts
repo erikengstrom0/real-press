@@ -1,32 +1,29 @@
-/**
- * User Tier Check Utility
- *
- * Determines a user's subscription tier for API response gating.
- * Pure utility functions — no database calls, no side effects.
- */
+import prisma from '@/lib/db/prisma'
 
 export type UserTier = 'free' | 'pro' | 'enterprise'
 
+const tierMap: Record<string, UserTier> = {
+  FREE: 'free',
+  PRO: 'pro',
+  ENTERPRISE: 'enterprise',
+}
+
 /**
- * Get the subscription tier for a user.
- *
- * TODO: This is a stub that always returns 'free'. Once Phase 2 (Billing)
- * is implemented, this should query the User's subscription tier from
- * the database (e.g., via the Subscription model or Stripe metadata).
- * The lookup should be cached alongside the API key validation cache
- * to avoid adding latency to every request.
- *
- * @param _userIdOrApiKeyHash - User ID or hashed API key
- * @returns The user's subscription tier
+ * Get the subscription tier for a user by querying the database.
+ * Returns 'free' if the user is not found.
  */
-export function getUserTier(_userIdOrApiKeyHash: string): UserTier {
-  // TODO: Replace with actual tier lookup when Phase 2 (Billing) is implemented.
-  // Expected implementation:
-  //   1. Look up user by ID or API key hash
-  //   2. Check their active subscription (Stripe, etc.)
-  //   3. Map subscription plan to tier ('free' | 'pro' | 'enterprise')
-  //   4. Cache the result for the TTL of the API key cache
-  return 'free'
+export async function getUserTier(userId: string): Promise<UserTier> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tier: true },
+    })
+
+    if (!user) return 'free'
+    return tierMap[user.tier] ?? 'free'
+  } catch {
+    return 'free'
+  }
 }
 
 /**

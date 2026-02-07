@@ -399,7 +399,9 @@ export const ModelName = {
   User: 'User',
   Account: 'Account',
   Session: 'Session',
-  VerificationToken: 'VerificationToken'
+  VerificationToken: 'VerificationToken',
+  SavedSearch: 'SavedSearch',
+  SearchHistory: 'SearchHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -415,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore" | "crawlJob" | "crawlDomain" | "crawlSource" | "crawlMetric" | "author" | "topic" | "contentTopic" | "domainStats" | "user" | "account" | "session" | "verificationToken"
+    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore" | "crawlJob" | "crawlDomain" | "crawlSource" | "crawlMetric" | "author" | "topic" | "contentTopic" | "domainStats" | "user" | "account" | "session" | "verificationToken" | "savedSearch" | "searchHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1603,6 +1605,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SavedSearch: {
+      payload: Prisma.$SavedSearchPayload<ExtArgs>
+      fields: Prisma.SavedSearchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SavedSearchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SavedSearchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>
+        }
+        findFirst: {
+          args: Prisma.SavedSearchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SavedSearchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>
+        }
+        findMany: {
+          args: Prisma.SavedSearchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>[]
+        }
+        create: {
+          args: Prisma.SavedSearchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>
+        }
+        createMany: {
+          args: Prisma.SavedSearchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SavedSearchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>[]
+        }
+        delete: {
+          args: Prisma.SavedSearchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>
+        }
+        update: {
+          args: Prisma.SavedSearchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>
+        }
+        deleteMany: {
+          args: Prisma.SavedSearchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SavedSearchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SavedSearchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>[]
+        }
+        upsert: {
+          args: Prisma.SavedSearchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SavedSearchPayload>
+        }
+        aggregate: {
+          args: Prisma.SavedSearchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSavedSearch>
+        }
+        groupBy: {
+          args: Prisma.SavedSearchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SavedSearchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SavedSearchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SavedSearchCountAggregateOutputType> | number
+        }
+      }
+    }
+    SearchHistory: {
+      payload: Prisma.$SearchHistoryPayload<ExtArgs>
+      fields: Prisma.SearchHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SearchHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SearchHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.SearchHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SearchHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.SearchHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.SearchHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.SearchHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SearchHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.SearchHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>
+        }
+        update: {
+          args: Prisma.SearchHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.SearchHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SearchHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SearchHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.SearchHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.SearchHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSearchHistory>
+        }
+        groupBy: {
+          args: Prisma.SearchHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SearchHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SearchHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SearchHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1919,6 +2069,32 @@ export const VerificationTokenScalarFieldEnum = {
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+export const SavedSearchScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  query: 'query',
+  filters: 'filters',
+  alertEnabled: 'alertEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SavedSearchScalarFieldEnum = (typeof SavedSearchScalarFieldEnum)[keyof typeof SavedSearchScalarFieldEnum]
+
+
+export const SearchHistoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  query: 'query',
+  resultsCount: 'resultsCount',
+  filters: 'filters',
+  createdAt: 'createdAt'
+} as const
+
+export type SearchHistoryScalarFieldEnum = (typeof SearchHistoryScalarFieldEnum)[keyof typeof SearchHistoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2202,6 +2378,8 @@ export type GlobalOmitConfig = {
   account?: Prisma.AccountOmit
   session?: Prisma.SessionOmit
   verificationToken?: Prisma.VerificationTokenOmit
+  savedSearch?: Prisma.SavedSearchOmit
+  searchHistory?: Prisma.SearchHistoryOmit
 }
 
 /* Types for Logging */

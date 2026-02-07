@@ -58,7 +58,7 @@ export async function GET(
   const devTierOverride = request.headers.get('x-user-tier')
   const tier = (devTierOverride === 'pro' || devTierOverride === 'enterprise')
     ? devTierOverride
-    : getUserTier('anonymous')
+    : await getUserTier('anonymous')
 
   // Build the AiScoreRow for the formatter
   const scoreRow: AiScoreRow = {

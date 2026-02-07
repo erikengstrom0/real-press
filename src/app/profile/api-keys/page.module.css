@@ -1,0 +1,311 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8) var(--space-6);
+  background-color: var(--color-paper);
+}
+
+.loading {
+  font-size: var(--text-sm);
+  color: var(--color-charcoal-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding-top: var(--space-10);
+}
+
+.container {
+  width: 100%;
+  max-width: 640px;
+}
+
+.header {
+  margin-bottom: var(--space-2);
+}
+
+.title {
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-charcoal-muted);
+  margin: 0;
+}
+
+.divider {
+  height: var(--border-thin);
+  background-color: var(--color-charcoal-muted);
+  margin: var(--space-5) 0;
+}
+
+.error {
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(166, 93, 93, 0.08);
+  border: var(--border-thin) solid var(--color-ai);
+  margin-bottom: var(--space-4);
+}
+
+.error p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ai);
+}
+
+/* New key banner */
+.newKeyBanner {
+  padding: var(--space-4);
+  background-color: rgba(36, 148, 69, 0.06);
+  border: var(--border-thin) solid var(--color-accent-primary);
+  margin-bottom: var(--space-5);
+}
+
+.newKeyWarning {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-charcoal);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.newKeyRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.newKeyValue {
+  flex: 1;
+  font-size: var(--text-xs);
+  font-family: monospace;
+  background-color: var(--color-cream);
+  border: var(--border-thin) solid var(--color-charcoal-muted);
+  padding: var(--space-2) var(--space-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copyBtn {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-cream);
+  background-color: var(--color-accent-primary);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copyBtn:hover {
+  opacity: 0.9;
+}
+
+.dismissBtn {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-charcoal-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* Create form */
+.createForm {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.nameInput {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  padding: var(--space-3);
+  border: var(--border-thin) solid var(--color-charcoal-muted);
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+  border-radius: 2px;
+}
+
+.nameInput:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+}
+
+.createBtn {
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-cream);
+  background-color: var(--color-accent-primary);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast);
+}
+
+.createBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.createBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Section headers */
+.sectionTitle {
+  font-family: var(--font-headline);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-charcoal);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.empty {
+  font-size: var(--text-sm);
+  color: var(--color-charcoal-muted);
+  font-style: italic;
+}
+
+/* Key list */
+.keyList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.keyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-cream);
+  border: var(--border-thin) solid var(--color-charcoal-muted);
+}
+
+.keyItem.revoked {
+  opacity: 0.5;
+}
+
+.keyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.keyName {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-charcoal);
+}
+
+.keyPrefixCode {
+  font-size: var(--text-xs);
+  font-family: monospace;
+  color: var(--color-charcoal-muted);
+}
+
+.keyDate {
+  font-size: var(--text-xs);
+  color: var(--color-charcoal-muted);
+}
+
+.revokeBtn {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-ai);
+  background: none;
+  border: var(--border-thin) solid var(--color-ai);
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.revokeBtn:hover:not(:disabled) {
+  background-color: var(--color-ai);
+  color: var(--color-cream);
+}
+
+.revokeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.navLink {
+  font-size: var(--text-sm);
+  color: var(--color-charcoal-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.navLink:hover {
+  color: var(--color-accent-primary);
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .main {
+    padding: var(--space-4);
+  }
+
+  .createForm {
+    flex-direction: column;
+  }
+
+  .nameInput {
+    width: 100%;
+  }
+
+  .createBtn {
+    width: 100%;
+  }
+
+  .keyItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .revokeBtn {
+    align-self: flex-end;
+  }
+
+  .newKeyRow {
+    flex-direction: column;
+  }
+
+  .newKeyValue {
+    width: 100%;
+  }
+}

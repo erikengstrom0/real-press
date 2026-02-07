@@ -18,6 +18,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Public verification API — auth handled in route handlers
+  if (pathname.startsWith('/api/v1/')) {
+    return NextResponse.next()
+  }
+
   // Only protect admin routes (except login page and auth endpoint)
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
     return NextResponse.next()
@@ -80,5 +85,6 @@ export const config = {
     '/admin/:path*',
     '/api/admin/:path*',
     '/api/auth/:path*',
+    '/api/v1/:path*',
   ],
 }

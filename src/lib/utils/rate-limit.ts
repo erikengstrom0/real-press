@@ -9,13 +9,24 @@ import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
 
-type EndpointKey = 'submit' | 'analyze' | 'search'
+type EndpointKey =
+  | 'submit'
+  | 'analyze'
+  | 'search'
+  | 'verify-text'
+  | 'verify-url'
+  | 'verify-image'
+  | 'verify-batch'
 
 // Limits per endpoint (requests per sliding window)
 const LIMITS: Record<EndpointKey, { requests: number; window: `${number} s` | `${number} m` }> = {
   submit: { requests: 10, window: '1 m' },
   analyze: { requests: 20, window: '1 m' },
   search: { requests: 60, window: '1 m' },
+  'verify-text': { requests: 30, window: '1 m' },
+  'verify-url': { requests: 10, window: '1 m' },
+  'verify-image': { requests: 10, window: '1 m' },
+  'verify-batch': { requests: 5, window: '1 m' },
 }
 
 // Lazy-initialized limiters (one per endpoint)

@@ -33,6 +33,12 @@ export type {
   Classification,
   CompositeResult,
   HeuristicMetrics,
+  HeuristicFeatureScores,
+  HeuristicFeatureWeights,
+  StoredHeuristicMetrics,
+  StoredProviderDetail,
+  StoredFusionDetails,
+  ModalityWeight,
   ContentType,
   MultiModalInput,
   MultiModalResult,
@@ -98,11 +104,74 @@ export async function detectAIContent(
     heuristicMetrics: heuristicResult.metrics,
   })
 
-  // Add provider info to metadata
+  // Enrich metadata with provider info and heuristic breakdown
   if (result.metadata) {
     result.metadata.primaryProvider = primaryProviderName
     result.metadata.huggingfaceAvailable = huggingfaceResult !== null
     result.metadata.gptzeroAvailable = gptzeroResult !== null
+    result.metadata.heuristicFeatureScores = heuristicResult.featureScores
+    result.metadata.heuristicFeatureWeights = heuristicResult.featureWeights
+
+    // Collect individual provider results for downstream consumers
+    const providerResults: Record<string, unknown>[] = []
+
+    providerResults.push({
+      name: 'heuristic',
+      type: 'text',
+      score: heuristicResult.score,
+      confidence: heuristicResult.confidence,
+      available: true,
+      isPrimary: primaryProviderName === null,
+      metadata: {
+        metrics: heuristicResult.metrics,
+        featureScores: heuristicResult.featureScores,
+        featureWeights: heuristicResult.featureWeights,
+      },
+    })
+
+    if (huggingfaceResult) {
+      providerResults.push({
+        name: 'huggingface',
+        type: 'text',
+        score: huggingfaceResult.score,
+        confidence: huggingfaceResult.confidence,
+        available: true,
+        isPrimary: primaryProviderName === 'huggingface',
+        metadata: huggingfaceResult.metadata,
+      })
+    } else {
+      providerResults.push({
+        name: 'huggingface',
+        type: 'text',
+        score: 0,
+        confidence: 0,
+        available: false,
+        isPrimary: false,
+      })
+    }
+
+    if (gptzeroResult) {
+      providerResults.push({
+        name: 'gptzero',
+        type: 'text',
+        score: gptzeroResult.score,
+        confidence: gptzeroResult.confidence,
+        available: true,
+        isPrimary: primaryProviderName === 'gptzero',
+        metadata: gptzeroResult.metadata,
+      })
+    } else {
+      providerResults.push({
+        name: 'gptzero',
+        type: 'text',
+        score: 0,
+        confidence: 0,
+        available: false,
+        isPrimary: false,
+      })
+    }
+
+    result.metadata.providerResults = providerResults
   }
 
   return result
@@ -144,6 +213,16 @@ async function analyzeText(
 }
 
 /**
+ * Per-image score detail for explainability
+ */
+interface PerImageScore {
+  index: number
+  score: number
+  confidence: number
+  url?: string
+}
+
+/**
  * Analyze images and return a ContentTypeScore
  */
 async function analyzeImages(images: ImageInput[]): Promise<ContentTypeScore | null> {
@@ -156,10 +235,12 @@ async function analyzeImages(images: ImageInput[]): Promise<ContentTypeScore | n
     return null
   }
 
-  // Analyze each image
+  // Analyze each image and collect per-image details
   const imageScores: Array<{ score: number; confidence: number }> = []
+  const perImageScores: PerImageScore[] = []
 
-  for (const image of images) {
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i]
     const result = await localImageProvider.analyze({
       type: 'image',
       imageUrl: image.url,
@@ -170,6 +251,12 @@ async function analyzeImages(images: ImageInput[]): Promise<ContentTypeScore | n
       imageScores.push({
         score: result.score,
         confidence: result.confidence,
+      })
+      perImageScores.push({
+        index: i,
+        score: result.score,
+        confidence: result.confidence,
+        url: image.url,
       })
     }
   }
@@ -189,6 +276,7 @@ async function analyzeImages(images: ImageInput[]): Promise<ContentTypeScore | n
     metadata: {
       imageCount: images.length,
       analyzedCount: imageScores.length,
+      perImageScores,
     },
   }
 }
@@ -261,5 +349,6 @@ export async function detectMultiModalContent(
   }
 
   // Calculate multi-modal composite
+  // contentScores[] already includes all provider metadata from each analyzer
   return calculateMultiModalComposite(contentScores)
 }

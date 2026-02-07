@@ -105,6 +105,13 @@ export class VideoProvider extends BaseProvider {
       // Aggregate frame scores
       const aggregated = aggregateImageScores(frameScores)
 
+      // Build per-frame breakdown for explainability
+      const perFrameScores = frameScores.map((fs, index) => ({
+        index,
+        score: fs.score,
+        confidence: fs.confidence,
+      }))
+
       return {
         score: aggregated.score,
         confidence: aggregated.confidence,
@@ -112,6 +119,7 @@ export class VideoProvider extends BaseProvider {
           frameCount: frames.length,
           analyzedFrameCount: frameScores.length,
           provider: this.name,
+          perFrameScores,
         },
       }
     } catch (error) {

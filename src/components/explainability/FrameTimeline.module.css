@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.title {
+  font-family: var(--font-headline);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+}
+
+.chartWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  min-width: 400px;
+}
+
+.axisText {
+  font-family: var(--font-body);
+  font-size: 10px;
+  fill: var(--color-charcoal-muted);
+}
+
+.thresholdLabel {
+  font-family: var(--font-body);
+  font-size: 9px;
+  fill: var(--color-charcoal-muted);
+}
+
+.zoneLabel {
+  font-family: var(--font-body);
+  font-size: 10px;
+  fill: var(--color-charcoal-muted);
+  font-style: italic;
+}
+
+.varianceNote {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-charcoal-muted);
+  font-style: italic;
+  margin: 0;
+}

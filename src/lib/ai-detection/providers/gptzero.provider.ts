@@ -110,6 +110,10 @@ export async function analyzeWithGPTZero(text: string): Promise<ProviderResult |
         completelyGeneratedProb: doc.completely_generated_prob,
         burstiness: doc.overall_burstiness,
         paragraphCount: doc.paragraphs?.length ?? 0,
+        paragraphScores: (doc.paragraphs ?? []).map((p, index) => ({
+          index,
+          score: p.completely_generated_prob,
+        })),
       },
     }
   } catch (error) {

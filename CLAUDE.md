@@ -12,6 +12,7 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.4.0 | 2026-02-07 | Phase 4: Public Verification API — API key auth, verify endpoints, key management UI |
 | v1.3.0 | 2026-02-07 | Phase 7 Wave 2: Integration — service persistence, breakdown API, backfill, content detail page |
 | v1.2.0 | 2026-02-07 | Phase 7 Wave 1: Explainability pipeline, schema, formatters, UI |
 | v1.1.0 | 2026-02-05 | Admin route protection with middleware authentication |
@@ -100,11 +101,19 @@ src/
 │       ├── submit/route.ts   # Submission endpoint
 │       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
 │       ├── content/[id]/breakdown/route.ts  # Tier-gated breakdown API (Phase 7)
+│       ├── user/api-keys/route.ts           # User API key CRUD (Phase 4)
+│       ├── v1/verify/                       # Public verification API (Phase 4)
+│       │   ├── _lib/build-score-row.ts      # Detection result → AiScoreRow mapper
+│       │   ├── text/route.ts                # POST text verification
+│       │   ├── url/route.ts                 # POST URL extraction + verification
+│       │   ├── image/route.ts               # POST image verification
+│       │   └── batch/route.ts               # POST batch verification
 │       └── admin/
 │           ├── crawl/worker/route.ts  # Job worker (Vercel Cron target)
 │           ├── crawl/jobs/route.ts    # Job queue management
 │           ├── crawl/seeds/route.ts   # Seed list import
 │           ├── content/[id]/route.ts  # Content inspection
+│           ├── users/[id]/tier/route.ts     # Admin tier setter (Phase 4)
 │           └── backfill-explainability/route.ts  # Backfill JSONB data (Phase 7)
 ├── components/
 │   ├── SearchBar.tsx
@@ -127,6 +136,7 @@ src/
     │   ├── content.service.ts
     │   ├── extraction.service.ts
     │   ├── ai-detection.service.ts
+    │   ├── api-key.service.ts           # API key CRUD + SHA-256 hashing (Phase 4)
     │   ├── media-extraction.service.ts  # Extract images/videos from URLs
     │   ├── crawl-job.service.ts         # Job queue management
     │   ├── crawl-worker.service.ts      # Job processing
@@ -136,7 +146,8 @@ src/
     │   ├── topic-extraction.service.ts  # Topic classification
     │   └── author.service.ts            # Author tracking
     ├── api/
-    │   └── check-tier.ts             # User/API key tier lookup (Phase 7)
+    │   ├── check-tier.ts             # User/API key tier lookup (Phase 7)
+    │   └── verify-auth.ts            # Dual auth: API key + session (Phase 4)
     └── ai-detection/
         ├── index.ts              # Multi-modal orchestrator
         ├── composite-score.ts    # Score calculation
@@ -218,6 +229,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint 5 | Production deployment | ✅ Complete |
 | Phase 7 Wave 1 | Explainability pipeline, schema, formatters, UI | ✅ Complete |
 | Phase 7 Wave 2 | Integration: persistence, breakdown API, backfill, content page | ✅ Complete |
+| Phase 4 | Public Verification API, API key auth, key management UI | ✅ Complete |
 
 ---
 
@@ -1069,11 +1081,71 @@ Decisions made during development that should persist across sessions.
 10. **Files Modified**
     - `src/lib/services/ai-detection.service.ts` — Core integration: persistence builders, MediaScore writes, updated interfaces
 
+### Phase 4: Public Verification API (2026-02-07)
+
+1. **API Key Format & Storage**
+   - Raw key format: `rp_live_` + 32 hex chars (16 random bytes)
+   - Only SHA-256 hash stored in database; raw key shown once at creation
+   - `keyPrefix` column stores `rp_live_<first 8 hex>` for user identification
+   - Revoked keys keep their row (soft delete via `revokedAt` timestamp)
+
+2. **Dual Authentication (`verify-auth.ts`)**
+   - Bearer token checked first: if prefixed `rp_live_`, validated as API key
+   - Falls back to NextAuth session cookie for browser-based access
+   - Returns `{ userId, tier, authMethod }` or `{ error, status }`
+   - `isAuthError()` type guard for clean control flow in route handlers
+
+3. **Verification Endpoint Pattern**
+   - All 4 endpoints follow: rate limit → auth → validate → detect → format → respond
+   - Rate limits: text (30/min), url (10/min), image (10/min), batch (5/min)
+   - Free tier gets `formatFreeResponse()` (score, classification, confidence, analyzedTypes)
+   - Pro/Enterprise gets `formatPaidResponse()` (full breakdown with provider details, heuristic signals, fusion weights)
+   - `build-score-row.ts` maps `CompositeResult`/`MultiModalResult` → `AiScoreRow` for formatters
+
+4. **Batch Endpoint Tier Limits**
+   - Free: max 10 items per batch
+   - Pro: max 25 items per batch
+   - Enterprise: max 50 items per batch
+   - Items processed sequentially with per-item error handling (one failure doesn't abort batch)
+   - Supports mixed item types (text, url, image) in a single batch
+
+5. **URL Verification**
+   - Reuses `extractContent()` from `extraction.service.ts` for content extraction
+   - Optional `extractMedia: true` flag triggers multi-modal analysis via `extractMediaFromUrl()`
+   - Extraction errors return 422 with user-friendly messages (from existing `ExtractionError` class)
+
+6. **Middleware Pass-Through**
+   - `/api/v1/*` routes added to middleware matcher but immediately pass through
+   - Auth handled in route handlers (not middleware) because API key validation requires database lookup
+   - Admin tier setter at `/api/admin/users/[id]/tier` protected by existing admin middleware
+
+7. **API Key Management UI**
+   - `/profile/api-keys` page with create, copy-once, and revoke flows
+   - Raw key shown in a banner after creation with copy button; dismissed with "I've saved this key"
+   - Revoke requires confirmation dialog; revoked keys shown in separate section
+   - Profile page links to API key management with "Manage API Keys" button
+
+8. **New Files Created**
+   - `prisma/schema.prisma` — `ApiKey` model added
+   - `src/lib/services/api-key.service.ts` — CRUD + hashing
+   - `src/lib/api/verify-auth.ts` — Dual auth utility
+   - `src/app/api/v1/verify/{text,url,image,batch}/route.ts` — 4 verification endpoints
+   - `src/app/api/v1/verify/_lib/build-score-row.ts` — Detection result mapper
+   - `src/app/api/user/api-keys/route.ts` — User key management API
+   - `src/app/api/admin/users/[id]/tier/route.ts` — Admin tier setter
+   - `src/app/profile/api-keys/page.tsx` + `page.module.css` — Key management UI
+
+9. **Files Modified**
+   - `src/lib/utils/rate-limit.ts` — Added 4 verify endpoint rate limits
+   - `src/middleware.ts` — Added `/api/v1/*` pass-through + matcher
+   - `src/app/profile/page.tsx` + `page.module.css` — Added API key management link
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Phase 4: Public Verification API** - API key auth, verify endpoints (text/url/image/batch), key management UI, admin tier setter (2026-02-07)
 - [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)
 - [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)
 - [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
@@ -1085,11 +1157,11 @@ Decisions made during development that should persist across sessions.
 
 ### High Priority (Pre-Funding)
 - [ ] **Run backfill on production** - Call `POST /api/admin/backfill-explainability` to populate JSONB data for existing content
-- [ ] **Wire Phase 4 API endpoints** - When `/api/v1/verify/*` is created, use `formatFreeResponse`/`formatPaidResponse` with tier gating
 - [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
 - [ ] **Implement check-tier.ts** - Replace stub with actual billing tier lookup (depends on Phase 2)
 - [ ] **Link search results to content detail page** - Add `/content/[id]` links from search result items
-- [ ] **User submission rate limiting** - Protect against abuse/spam
+- [ ] **API documentation page** - Public docs for `/api/v1/verify/*` with code examples (curl, JS, Python)
+- [ ] **API key usage tracking** - Track request counts per key for billing/analytics
 - [ ] **Malicious submission protection** - Validate URLs, block known bad actors
 - [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
 

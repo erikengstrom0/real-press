@@ -86,6 +86,23 @@
   -webkit-box-orient: vertical;
 }
 
+.analysisLink {
+  display: inline-block;
+  color: var(--color-charcoal-muted);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-weight: var(--weight-medium);
+  margin-top: 0.5rem;
+  transition: color var(--transition-fast);
+}
+
+.analysisLink:hover {
+  color: var(--color-accent-primary);
+  text-decoration: underline;
+}
+
 .empty {
   color: var(--color-charcoal-muted);
   padding: 2rem 0;

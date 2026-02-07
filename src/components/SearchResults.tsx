@@ -56,6 +56,9 @@ export function SearchResults({ results, query, total, page, hasMore, onPageChan
             {result.description && (
               <p className={styles.description}>{result.description}</p>
             )}
+            <a href={`/content/${result.id}`} className={styles.analysisLink}>
+              View Analysis →
+            </a>
           </li>
         ))}
       </ul>

@@ -7,9 +7,16 @@ import type { NextRequest } from 'next/server'
  * Admin routes require either:
  * 1. Authorization header: Bearer <ADMIN_SECRET>
  * 2. Cookie: admin_token=<ADMIN_SECRET> (set by /api/admin/auth)
+ *
+ * NextAuth routes (/api/auth/*) are publicly accessible.
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // NextAuth routes must be publicly accessible
+  if (pathname.startsWith('/api/auth')) {
+    return NextResponse.next()
+  }
 
   // Only protect admin routes (except login page and auth endpoint)
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
@@ -72,5 +79,6 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/api/admin/:path*',
+    '/api/auth/:path*',
   ],
 }

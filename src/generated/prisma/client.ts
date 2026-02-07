@@ -119,3 +119,13 @@ export type Session = Prisma.SessionModel
  * 
  */
 export type VerificationToken = Prisma.VerificationTokenModel
+/**
+ * Model SavedSearch
+ * 
+ */
+export type SavedSearch = Prisma.SavedSearchModel
+/**
+ * Model SearchHistory
+ * 
+ */
+export type SearchHistory = Prisma.SearchHistoryModel

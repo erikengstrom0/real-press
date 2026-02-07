@@ -176,8 +176,8 @@ export async function analyzeWithHuggingFace(
         confidence,
         metadata: {
           model,
-          classifications,
-          truncated: text.length > 5000,
+          truncated: text.length > 1800,
+          labels: classifications.map((c) => ({ label: c.label, score: c.score })),
         },
       }
     } catch (error) {

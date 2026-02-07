@@ -12,6 +12,7 @@ import type {
   ContentType,
   ContentTypeScore,
   MultiModalResult,
+  ModalityWeight,
 } from './types'
 
 interface ScoreInput {
@@ -38,6 +39,8 @@ export function calculateCompositeScore(input: ScoreInput): CompositeResult {
     input
 
   let compositeScore: number
+  let effectiveApiWeight = 0
+  let effectiveHeuristicWeight = 0
 
   if (gptzeroScore !== null && gptzeroConfidence !== null) {
     // Both providers available - use confidence-weighted average
@@ -48,9 +51,15 @@ export function calculateCompositeScore(input: ScoreInput): CompositeResult {
 
     compositeScore =
       (gptzeroScore * gptzeroWeight + heuristicScore * heuristicWeight) / totalWeight
+
+    // Normalize effective weights to sum to 1
+    effectiveApiWeight = gptzeroWeight / totalWeight
+    effectiveHeuristicWeight = heuristicWeight / totalWeight
   } else {
     // GPTZero unavailable - fall back to heuristics only
     compositeScore = heuristicScore
+    effectiveApiWeight = 0
+    effectiveHeuristicWeight = 1
   }
 
   // Clamp to [0, 1]
@@ -66,6 +75,8 @@ export function calculateCompositeScore(input: ScoreInput): CompositeResult {
     metadata: {
       gptzeroAvailable: gptzeroScore !== null,
       heuristicMetrics,
+      apiWeight: effectiveApiWeight,
+      heuristicWeight: effectiveHeuristicWeight,
     },
   }
 }
@@ -129,6 +140,7 @@ export function calculateMultiModalComposite(contentScores: ContentTypeScore[]):
   let totalWeight = 0
 
   const metadata: MultiModalResult['metadata'] = {}
+  const modalityWeightsData: Array<{ type: string; baseWeight: number; confidence: number; effectiveWeight: number; score: number }> = []
 
   for (const score of contentScores) {
     const baseWeight = CONTENT_TYPE_WEIGHTS[score.type] || 0.33
@@ -136,6 +148,14 @@ export function calculateMultiModalComposite(contentScores: ContentTypeScore[]):
 
     weightedSum += score.score * effectiveWeight
     totalWeight += effectiveWeight
+
+    modalityWeightsData.push({
+      type: score.type,
+      baseWeight,
+      confidence: score.confidence,
+      effectiveWeight,
+      score: score.score,
+    })
 
     // Store per-type scores in metadata
     if (score.type === 'text') {
@@ -158,6 +178,18 @@ export function calculateMultiModalComposite(contentScores: ContentTypeScore[]):
 
   const classification = classifyScore(clampedScore)
   const analyzedTypes = contentScores.map((s) => s.type)
+
+  // Build modality weights with contribution percentages
+  const modalityWeights: ModalityWeight[] = modalityWeightsData.map((mw) => ({
+    type: mw.type,
+    baseWeight: mw.baseWeight,
+    confidence: mw.confidence,
+    effectiveWeight: mw.effectiveWeight,
+    contribution: totalWeight > 0 ? mw.effectiveWeight / totalWeight : 0,
+  }))
+
+  metadata.modalityWeights = modalityWeights
+  metadata.totalEffectiveWeight = totalWeight
 
   return {
     compositeScore: clampedScore,

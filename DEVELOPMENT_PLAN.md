@@ -1,4 +1,16 @@
-# Real Press - Development Plan
+# ⛔ ARCHIVED — DO NOT USE FOR PLANNING
+
+> **This file is archived and no longer the active development plan.**
+> All sprints in this file (1–5) are complete. The Post-MVP Roadmap below is outdated — actual development diverged from what was planned here.
+>
+> **Source of truth:** [`CLAUDE.md`](./CLAUDE.md) — contains the current architecture, sprint status, decisions log, and future TODOs.
+> If you are a Claude instance or agent, **do not execute tasks from this file**. Read `CLAUDE.md` instead.
+>
+> *Archived: 2026-02-07*
+
+---
+
+# Real Press - Development Plan (ARCHIVED)
 
 ## Goal
 

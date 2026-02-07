@@ -209,3 +209,130 @@
     text-align: center;
   }
 }
+
+/* Billing Banners */
+.billingSuccess {
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(36, 148, 69, 0.1);
+  border: var(--border-thin) solid var(--color-accent-primary);
+  color: var(--color-accent-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.billingCancel {
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(243, 214, 83, 0.1);
+  border: var(--border-thin) solid var(--color-accent-gold);
+  color: var(--color-charcoal);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+/* Upgrade Button */
+.upgradeBtn {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-ink);
+  background-color: var(--color-accent-gold);
+  border: var(--border-medium) solid var(--color-accent-gold);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upgradeBtn:hover {
+  background-color: #e5c84a;
+  border-color: #e5c84a;
+}
+
+.upgradeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Subscription Info */
+.subscriptionInfo {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background-color: rgba(36, 148, 69, 0.06);
+  border: var(--border-thin) solid var(--color-accent-secondary);
+}
+
+.subscriptionText {
+  font-size: var(--text-sm);
+  color: var(--color-charcoal);
+  margin: 0 0 var(--space-3) 0;
+  line-height: var(--leading-relaxed);
+}
+
+.manageBtn {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-accent-primary);
+  background: none;
+  border: var(--border-thin) solid var(--color-accent-primary);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.manageBtn:hover {
+  background-color: var(--color-accent-primary);
+  color: var(--color-cream);
+}
+
+.manageBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Link sections */
+.linkSection {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.linkHint {
+  font-size: var(--text-xs);
+  color: var(--color-charcoal-muted);
+  margin: var(--space-2) 0 0 0;
+}
+
+/* Usage link button */
+.usageBtn {
+  display: inline-block;
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-charcoal);
+  background-color: var(--color-paper);
+  border: var(--border-medium) solid var(--color-charcoal);
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.usageBtn:hover {
+  background-color: var(--color-charcoal);
+  color: var(--color-cream);
+}

@@ -1,4 +1,16 @@
-# Phase 7: Explainability & Analytics (Detection Breakdown as a Product)
+# ⛔ ARCHIVED — DO NOT USE FOR PLANNING
+
+> **This file is archived. Phase 7 (Wave 1 and Wave 2) is fully complete.**
+> All tasks in this file have been implemented, even though some checkboxes remain unchecked. The decisions log in `CLAUDE.md` documents what was actually built.
+>
+> **Source of truth:** [`CLAUDE.md`](./CLAUDE.md) — contains the current architecture, sprint status, decisions log, and future TODOs.
+> If you are a Claude instance or agent, **do not execute tasks from this file**. Read `CLAUDE.md` instead.
+>
+> *Archived: 2026-02-07*
+
+---
+
+# Phase 7: Explainability & Analytics (Detection Breakdown as a Product) (ARCHIVED)
 
 > **Goal:** Store the full detection breakdown (per-provider scores, heuristic sub-features, per-image/per-frame results) and expose it as a paid feature for both consumer users and API customers.
 >

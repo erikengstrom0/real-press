@@ -9,11 +9,13 @@ import { NextRequest } from 'next/server'
 import { auth } from '@/lib/auth'
 import { validateApiKey } from '@/lib/services/api-key.service'
 import { getUserTier, type UserTier } from '@/lib/api/check-tier'
+import { recordUsage } from '@/lib/services/usage.service'
 
 export interface VerifyAuthResult {
   userId: string
   tier: UserTier
   authMethod: 'session' | 'api_key'
+  apiKeyId: string | null
 }
 
 export interface VerifyAuthError {
@@ -25,6 +27,15 @@ const tierMap: Record<string, UserTier> = {
   FREE: 'free',
   PRO: 'pro',
   ENTERPRISE: 'enterprise',
+}
+
+/**
+ * Extract endpoint key from pathname.
+ * e.g. /api/v1/verify/text -> 'verify-text'
+ */
+function extractEndpointKey(pathname: string): string {
+  const match = pathname.match(/\/api\/v1\/verify\/(\w+)/)
+  return match ? `verify-${match[1]}` : 'unknown'
 }
 
 /**
@@ -52,7 +63,12 @@ export async function verifyAuth(
       }
 
       const tier = tierMap[result.tier] ?? 'free'
-      return { userId: result.userId, tier, authMethod: 'api_key' }
+      const endpoint = extractEndpointKey(request.nextUrl.pathname)
+
+      // Fire-and-forget usage tracking
+      recordUsage(result.userId, result.apiKeyId, endpoint)
+
+      return { userId: result.userId, tier, authMethod: 'api_key', apiKeyId: result.apiKeyId }
     }
 
     // Non-API-key Bearer tokens are invalid for this endpoint
@@ -70,7 +86,12 @@ export async function verifyAuth(
   }
 
   const tier = await getUserTier(session.user.id)
-  return { userId: session.user.id, tier, authMethod: 'session' }
+  const endpoint = extractEndpointKey(request.nextUrl.pathname)
+
+  // Fire-and-forget usage tracking
+  recordUsage(session.user.id, null, endpoint)
+
+  return { userId: session.user.id, tier, authMethod: 'session', apiKeyId: null }
 }
 
 /**

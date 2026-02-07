@@ -31,6 +31,9 @@ export default function Header() {
           <Link href="/submit" className={styles.navLink} onClick={() => setMenuOpen(false)}>
             Submit
           </Link>
+          <Link href="/docs" className={styles.navLink} onClick={() => setMenuOpen(false)}>
+            Docs
+          </Link>
 
           <span className={styles.navDivider} />
 

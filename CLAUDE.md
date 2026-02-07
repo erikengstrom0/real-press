@@ -12,6 +12,7 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.5.0 | 2026-02-07 | Phase 5: Stripe billing, API docs, usage tracking |
 | v1.4.0 | 2026-02-07 | Phase 4: Public Verification API — API key auth, verify endpoints, key management UI |
 | v1.3.0 | 2026-02-07 | Phase 7 Wave 2: Integration — service persistence, breakdown API, backfill, content detail page |
 | v1.2.0 | 2026-02-07 | Phase 7 Wave 1: Explainability pipeline, schema, formatters, UI |
@@ -90,6 +91,7 @@ src/
 ├── app/
 │   ├── page.tsx              # Landing page
 │   ├── layout.tsx            # Root layout
+│   ├── docs/page.tsx             # API documentation (Phase 5)
 │   ├── search/page.tsx       # Search results
 │   ├── submit/page.tsx       # URL submission
 │   ├── content/[id]/         # Content detail page (Phase 7)
@@ -101,7 +103,13 @@ src/
 │       ├── submit/route.ts   # Submission endpoint
 │       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
 │       ├── content/[id]/breakdown/route.ts  # Tier-gated breakdown API (Phase 7)
-│       ├── user/api-keys/route.ts           # User API key CRUD (Phase 4)
+│       ├── billing/                          # Stripe billing (Phase 5)
+│       │   ├── checkout/route.ts            # POST create Checkout Session
+│       │   ├── portal/route.ts              # POST create Customer Portal session
+│       │   └── webhook/route.ts             # POST Stripe webhook handler
+│       ├── user/
+│       │   ├── api-keys/route.ts            # User API key CRUD (Phase 4)
+│       │   └── usage/route.ts               # GET usage stats (Phase 5)
 │       ├── v1/verify/                       # Public verification API (Phase 4)
 │       │   ├── _lib/build-score-row.ts      # Detection result → AiScoreRow mapper
 │       │   ├── text/route.ts                # POST text verification
@@ -137,6 +145,8 @@ src/
     │   ├── extraction.service.ts
     │   ├── ai-detection.service.ts
     │   ├── api-key.service.ts           # API key CRUD + SHA-256 hashing (Phase 4)
+    │   ├── billing.service.ts           # Stripe customer, checkout, portal, webhooks (Phase 5)
+    │   ├── usage.service.ts             # API usage tracking + daily aggregation (Phase 5)
     │   ├── media-extraction.service.ts  # Extract images/videos from URLs
     │   ├── crawl-job.service.ts         # Job queue management
     │   ├── crawl-worker.service.ts      # Job processing
@@ -146,8 +156,8 @@ src/
     │   ├── topic-extraction.service.ts  # Topic classification
     │   └── author.service.ts            # Author tracking
     ├── api/
-    │   ├── check-tier.ts             # User/API key tier lookup (Phase 7)
-    │   └── verify-auth.ts            # Dual auth: API key + session (Phase 4)
+    │   ├── check-tier.ts             # Tier lookup with Stripe subscription integration (Phase 5)
+    │   └── verify-auth.ts            # Dual auth + usage tracking (Phase 4/5)
     └── ai-detection/
         ├── index.ts              # Multi-modal orchestrator
         ├── composite-score.ts    # Score calculation
@@ -212,13 +222,21 @@ ML_SERVICE_URL="http://localhost:8000"  # Python ML service URL
 PROVIDER_IMAGE_ENABLED="true"       # Enable image detection
 PROVIDER_VIDEO_ENABLED="true"       # Enable video detection
 
+# Stripe Billing (Phase 5)
+STRIPE_SECRET_KEY="sk_..."                   # Stripe server-side API key
+STRIPE_WEBHOOK_SECRET="whsec_..."            # Stripe webhook signing secret
+STRIPE_PRO_PRICE_ID="price_..."              # Stripe price ID for Pro monthly
+STRIPE_ENTERPRISE_PRICE_ID="price_..."       # Stripe price ID for Enterprise monthly
+NEXT_PUBLIC_STRIPE_PRO_PRICE_ID="price_..."  # Same as STRIPE_PRO_PRICE_ID (client-side)
+
 # App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ## Development Plan
 
-Full plan: `DEVELOPMENT_PLAN.md`
+**This file (`CLAUDE.md`) is the sole source of truth for all project planning, architecture, and decisions.**
+Do not rely on standalone plan files — they are archived. If you find `DEVELOPMENT_PLAN.md`, `PHASE5_PLAN.md`, or files in `docs/development-plans/`, those are archived references only. Always use this file for current state.
 
 | Sprint | Focus | Status |
 |--------|-------|--------|
@@ -230,6 +248,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Phase 7 Wave 1 | Explainability pipeline, schema, formatters, UI | ✅ Complete |
 | Phase 7 Wave 2 | Integration: persistence, breakdown API, backfill, content page | ✅ Complete |
 | Phase 4 | Public Verification API, API key auth, key management UI | ✅ Complete |
+| Phase 5 | Stripe billing, API docs, usage tracking | ✅ Complete |
 
 ---
 
@@ -1140,11 +1159,85 @@ Decisions made during development that should persist across sessions.
    - `src/middleware.ts` — Added `/api/v1/*` pass-through + matcher
    - `src/app/profile/page.tsx` + `page.module.css` — Added API key management link
 
+### Phase 5: Stripe Billing, API Docs & Usage Tracking (2026-02-07)
+
+1. **Stripe SDK Lazy Initialization**
+   - Stripe SDK (`stripe` v20.3.1) fails at build time if `STRIPE_SECRET_KEY` is not set
+   - Solution: lazy singleton via `getStripe()` function — only instantiates Stripe client when first API call is made
+   - Without this, `next build` crashes during page data collection because billing API routes import billing.service.ts at module level
+   - Stripe v20 uses API version `2026-01-28.clover` (not `2025-04-30.basil` from earlier docs)
+
+2. **Stripe v20 API Changes**
+   - `subscription.current_period_end` moved from `Subscription` object to `SubscriptionItem`
+   - Access via `subscription.items.data[0].current_period_end` instead
+   - `invoice.customer` can be string or object — handle both with typeof check
+
+3. **Subscription Tier Resolution Priority**
+   - `getUserTier()` in `check-tier.ts` now checks Stripe status before DB tier enum
+   - Priority: active subscription → past_due (grace) → canceled-with-time-remaining → DB tier enum
+   - This allows admin-set tiers to still work (e.g., manually granting Pro to a beta tester)
+   - New `getSubscriptionStatus()` export for UI display (tier + status + periodEnd)
+
+4. **Usage Tracking Architecture**
+   - Daily aggregation model (`ApiUsage`) with composite unique `[userId, apiKeyId, endpoint, date]`
+   - `recordUsage()` is fire-and-forget — never blocks or fails API responses
+   - Nullable `apiKeyId` in composite unique handled by using empty string `''` for upsert key lookup
+   - Usage tracking integrated into `verify-auth.ts` — every successful auth triggers a fire-and-forget record
+   - Endpoint key extracted from pathname: `/api/v1/verify/text` → `verify-text`
+
+5. **API Key Service Change**
+   - `validateApiKey()` now returns `apiKeyId` alongside `userId` and `tier`
+   - Needed by `verify-auth.ts` to pass to `recordUsage()` for per-key tracking
+   - Backwards compatible — just adds one field to the return object
+
+6. **Profile Page Billing UX**
+   - FREE tier: gold "Upgrade to Pro" button → calls `POST /api/billing/checkout` → redirects to Stripe Checkout
+   - PRO/ENTERPRISE: "Manage Subscription" button → calls `POST /api/billing/portal` → redirects to Stripe Customer Portal
+   - URL params `?billing=success` / `?billing=cancel` show green/yellow banners
+   - `useSearchParams()` requires `<Suspense>` boundary (Next.js static generation requirement)
+   - Client-side price ID via `NEXT_PUBLIC_STRIPE_PRO_PRICE_ID` env var
+
+7. **API Documentation Page**
+   - Static server component at `/docs` (no "use client") — fully SSR, zero JS for readers
+   - 700+ lines covering all 4 endpoints, auth, rate limits, error codes, code examples (curl/JS/Python), tier comparison
+   - 1920s newspaper aesthetic with CSS Modules using design system tokens
+   - "Docs" link added to Header nav between "Submit" and auth divider
+
+8. **Webhook Security**
+   - `POST /api/billing/webhook` uses NO auth middleware — Stripe sends directly
+   - Signature verification via `stripe.webhooks.constructEvent(body, sig, secret)`
+   - Returns 200 for all events (even unhandled) to prevent Stripe retries
+   - Returns 400 only for invalid signatures
+   - Handler errors logged but still return 200 (prevents retry storms)
+
+9. **New Prisma Models & Fields**
+   - User model: 5 new Stripe fields (`stripeCustomerId`, `stripeSubscriptionId`, `stripeSubscriptionStatus`, `stripePriceId`, `stripeCurrentPeriodEnd`) + `apiUsage` relation
+   - ApiKey model: added `usage ApiUsage[]` relation
+   - New `ApiUsage` model: daily aggregation with composite unique, date column uses `@db.Date`
+   - All new columns nullable for backwards compatibility
+
+10. **New Files Created**
+    - `src/lib/services/billing.service.ts` — Stripe customer, checkout, portal, webhook handlers
+    - `src/lib/services/usage.service.ts` — Usage recording + querying
+    - `src/app/api/billing/{checkout,portal,webhook}/route.ts` — 3 billing API routes
+    - `src/app/api/user/usage/route.ts` — Usage stats API
+    - `src/app/docs/page.tsx` + `page.module.css` — API documentation
+    - `src/app/profile/usage/page.tsx` + `page.module.css` — Usage dashboard
+
+11. **Files Modified**
+    - `prisma/schema.prisma` — User billing fields, ApiKey usage relation, ApiUsage model
+    - `src/lib/api/check-tier.ts` — Stripe subscription integration + `getSubscriptionStatus()`
+    - `src/lib/api/verify-auth.ts` — Usage tracking + `apiKeyId` in result
+    - `src/lib/services/api-key.service.ts` — `apiKeyId` in return
+    - `src/app/profile/page.tsx` + `page.module.css` — Billing CTAs, usage link, banners
+    - `src/components/Header.tsx` — "Docs" nav link
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Phase 5: Stripe Billing, API Docs & Usage Tracking** - Stripe checkout/portal/webhooks, API documentation page, usage tracking, profile billing UI (2026-02-07)
 - [x] **Phase 4: Public Verification API** - API key auth, verify endpoints (text/url/image/batch), key management UI, admin tier setter (2026-02-07)
 - [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)
 - [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)
@@ -1158,10 +1251,14 @@ Decisions made during development that should persist across sessions.
 ### High Priority (Pre-Funding)
 - [ ] **Run backfill on production** - Call `POST /api/admin/backfill-explainability` to populate JSONB data for existing content
 - [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
-- [ ] **Implement check-tier.ts** - Replace stub with actual billing tier lookup (depends on Phase 2)
+- [x] **Implement check-tier.ts** - ~~Replace stub with actual billing tier lookup~~ Done in Phase 5 with Stripe integration (2026-02-07)
 - [ ] **Link search results to content detail page** - Add `/content/[id]` links from search result items
-- [ ] **API documentation page** - Public docs for `/api/v1/verify/*` with code examples (curl, JS, Python)
-- [ ] **API key usage tracking** - Track request counts per key for billing/analytics
+- [x] **API documentation page** - ~~Public docs for `/api/v1/verify/*` with code examples~~ Done at `/docs` (2026-02-07)
+- [x] **API key usage tracking** - ~~Track request counts per key for billing/analytics~~ Done with ApiUsage model + `/profile/usage` dashboard (2026-02-07)
+- [ ] **Configure Stripe products** - Create Pro and Enterprise products/prices in Stripe Dashboard, set env vars
+- [ ] **Configure Stripe Customer Portal** - Enable portal in Stripe Dashboard for subscription management
+- [ ] **Configure Stripe webhook endpoint** - Add `https://www.real.press/api/billing/webhook` in Stripe Dashboard, set `STRIPE_WEBHOOK_SECRET`
+- [ ] **Add usage-based rate limiting** - Enforce monthly request quotas per tier (currently only per-minute rate limits)
 - [ ] **Malicious submission protection** - Validate URLs, block known bad actors
 - [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
 

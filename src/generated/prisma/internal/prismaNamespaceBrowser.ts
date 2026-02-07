@@ -137,7 +137,10 @@ export const AiScoreScalarFieldEnum = {
   imageConfidence: 'imageConfidence',
   videoScore: 'videoScore',
   videoConfidence: 'videoConfidence',
-  analyzedTypes: 'analyzedTypes'
+  analyzedTypes: 'analyzedTypes',
+  providerDetails: 'providerDetails',
+  heuristicMetrics: 'heuristicMetrics',
+  fusionDetails: 'fusionDetails'
 } as const
 
 export type AiScoreScalarFieldEnum = (typeof AiScoreScalarFieldEnum)[keyof typeof AiScoreScalarFieldEnum]
@@ -160,6 +163,7 @@ export const MediaScoreScalarFieldEnum = {
   score: 'score',
   confidence: 'confidence',
   providerName: 'providerName',
+  frameScores: 'frameScores',
   createdAt: 'createdAt'
 } as const
 

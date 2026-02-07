@@ -90,6 +90,11 @@ model AiScore {
   videoConfidence Float?   @map("video_confidence")
   analyzedTypes   String[] @default([]) @map("analyzed_types")
 
+  // Explainability data (Phase 7)
+  providerDetails    Json?    @map("provider_details")
+  heuristicMetrics   Json?    @map("heuristic_metrics")
+  fusionDetails      Json?    @map("fusion_details")
+
   content         Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@map("ai_scores")
@@ -114,6 +119,7 @@ model MediaScore {
   score        Float
   confidence   Float
   providerName String   @map("provider_name")
+  frameScores  Json?    @map("frame_scores")
   createdAt    DateTime @default(now()) @map("created_at")
 
   media        ContentMedia @relation(fields: [mediaId], references: [id], onDelete: Cascade)

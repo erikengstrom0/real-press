@@ -12,6 +12,7 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.2.0 | 2026-02-07 | Phase 7 Wave 1: Explainability pipeline, schema, formatters, UI |
 | v1.1.0 | 2026-02-05 | Admin route protection with middleware authentication |
 | v1.0.0 | 2026-02-04 | Production deployment with web scraper |
 
@@ -103,7 +104,16 @@ src/
 │   ├── SearchResults.tsx
 │   ├── AIScoreBadge.tsx      # Color-coded AI score indicator (Sprint 3)
 │   ├── SubmitForm.tsx
-│   └── FilterPanel.tsx       # Classification filter (Sprint 3)
+│   ├── FilterPanel.tsx       # Classification filter (Sprint 3)
+│   └── explainability/       # Phase 7 explainability dashboard
+│       ├── BreakdownPanel.tsx        # Container component
+│       ├── ProviderAgreement.tsx     # Provider consensus badge
+│       ├── HeuristicRadar.tsx        # SVG radar chart (4 axes)
+│       ├── ModalityBreakdown.tsx     # Stacked weight bar
+│       ├── ImageGrid.tsx             # Per-image score grid
+│       ├── FrameTimeline.tsx         # Video frame timeline
+│       ├── ParagraphHighlighter.tsx  # Per-paragraph coloring
+│       └── BreakdownTeaser.tsx       # Free user upgrade CTA
 └── lib/
     ├── db/prisma.ts          # Prisma client singleton
     ├── services/
@@ -118,11 +128,15 @@ src/
     │   ├── metadata-extraction.service.ts # HTML metadata extraction
     │   ├── topic-extraction.service.ts  # Topic classification
     │   └── author.service.ts            # Author tracking
+    ├── api/
+    │   └── check-tier.ts             # User/API key tier lookup (Phase 7)
     └── ai-detection/
         ├── index.ts              # Multi-modal orchestrator
         ├── composite-score.ts    # Score calculation
         ├── provider-registry.ts  # Provider management
         ├── types.ts              # Type definitions
+        ├── format-breakdown.ts   # Free/paid response formatters (Phase 7)
+        ├── explain-score.ts      # Plain-English score explanation (Phase 7)
         └── providers/
             ├── base.provider.ts       # Abstract base class
             ├── gptzero.provider.ts    # Text: GPTZero API
@@ -195,6 +209,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Sprint 3 | Search with AI badges | ✅ Complete |
 | Sprint 4 | Polish + demo ready | ✅ Complete |
 | Sprint 5 | Production deployment | ✅ Complete |
+| Phase 7 Wave 1 | Explainability pipeline, schema, formatters, UI | ✅ Complete |
 
 ---
 
@@ -920,11 +935,76 @@ Decisions made during development that should persist across sessions.
    - `YOUTUBE_API_KEY` - Optional, required for YouTube source
    - Other sources work without configuration
 
+### Phase 7 Wave 1: Explainability & Analytics (2026-02-07)
+
+1. **Parallel Agent Architecture**
+   - Phase 7 split into 5 agents (A–E) across 2 waves for parallel development
+   - Wave 1 (A, B, C, D): zero file conflicts, run simultaneously
+   - Wave 2 (E): integration agent merges everything after Wave 1
+   - File ownership prevents merge conflicts between Wave 1 agents
+
+2. **Schema Migration (Agent B)**
+   - Added 3 nullable JSONB columns to `AiScore`: `provider_details`, `heuristic_metrics`, `fusion_details`
+   - Added 1 nullable JSONB column to `MediaScore`: `frame_scores`
+   - All columns nullable (`Json?`) for backwards compatibility with existing rows
+   - Snake_case `@map()` follows existing project convention
+   - Database synced via `npx prisma db push` to Neon
+
+3. **Pipeline Metadata Threading (Agent A)**
+   - All 5 providers now return rich metadata: feature sub-scores, model info, per-paragraph scores, per-image/per-frame data
+   - `CompositeResult.metadata` extended with provider breakdown, fusion weights, feature scores
+   - `MultiModalResult.metadata` extended with per-modality effective weights and contribution percentages
+   - All new fields are optional — fully backwards compatible for existing callers
+   - Heuristic weights extracted to `HEURISTIC_WEIGHTS` constant (0.35/0.30/0.15/0.20)
+
+4. **Response Formatting & Tier Gating (Agent C)**
+   - `formatFreeResponse()`: returns only score, classification, confidence, analyzedTypes
+   - `formatPaidResponse()`: returns full breakdown with provider details, heuristic signals, fusion weights
+   - Anti-gaming: raw thresholds, scoring formulas, feature weights NEVER exposed to users
+   - Heuristic values mapped to `'low' | 'neutral' | 'high'` signals with human-baseline ranges
+   - Provider agreement: `'agree'` (spread ≤ 0.15), `'mixed'` (≤ 0.30), `'disagree'` (> 0.30)
+   - `check-tier.ts` is a stub returning `'free'` — actual tier lookup deferred to Phase 2 (Billing)
+
+5. **Plain-English Explanation Generator**
+   - `generateExplanation()` produces 2–3 sentence summaries of detection results
+   - No jargon, no percentages — describes signals in human-readable terms
+   - Narrates provider agreement, notable heuristic signals, and multi-modal dynamics
+
+6. **Explainability UI Components (Agent D)**
+   - 8 React components + CSS modules in `src/components/explainability/`
+   - `BreakdownPanel`: container that orchestrates sub-components
+   - `ProviderAgreement`: stamp-styled agree/mixed/disagree badge
+   - `HeuristicRadar`: pure SVG radar chart (4 axes, human baseline overlay)
+   - `ModalityBreakdown`: stacked bar with contribution percentages
+   - `ImageGrid`: thumbnail grid with per-image CNN scores
+   - `FrameTimeline`: SVG video timeline chart
+   - `ParagraphHighlighter`: per-paragraph background coloring (GPTZero only)
+   - `BreakdownTeaser`: blurred preview + upgrade CTA for free users
+
+7. **Known Issues from Review**
+   - Minor: `sentenceVariation` key mismatch in `explain-score.ts` `describeMetric()` — falls back to generic text instead of intended description
+   - `check-tier.ts` always returns `'free'` (intentional stub pending Phase 2)
+   - `computeProviderAgreement()` returns `'agree'` when 0 text providers available (edge case, unlikely in practice)
+
+8. **New Files Created**
+   - `src/lib/ai-detection/format-breakdown.ts` — Free/paid response formatting
+   - `src/lib/ai-detection/explain-score.ts` — Plain-English explanation generator
+   - `src/lib/api/check-tier.ts` — User/API key tier lookup
+   - `src/components/explainability/*.tsx` + `*.module.css` — 8 UI components + styles
+
+9. **Files Modified**
+   - `prisma/schema.prisma` — 4 new JSONB columns
+   - `src/lib/ai-detection/types.ts` — 5 new interfaces, extended `CompositeResult` and `MultiModalResult`
+   - `src/lib/ai-detection/composite-score.ts` — returns effective weights and contribution %
+   - `src/lib/ai-detection/index.ts` — threads provider metadata, tracks availability
+   - All 5 providers — enriched metadata (heuristic sub-scores, model info, per-image/frame data)
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)
 - [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
 - [x] **Admin login page** - Token-based login at `/admin/login` (2026-02-05)
 - [x] **Content source integrations** - Hacker News, DEV.to, YouTube, RSS feeds (2026-02-05)
@@ -933,6 +1013,9 @@ Decisions made during development that should persist across sessions.
 - [x] **Cross-browser styling fixes** - Safari/Brave compatibility for AI badges (2026-02-05)
 
 ### High Priority (Pre-Funding)
+- [ ] **Phase 7 Wave 2 (Agent E)** - Integration: service layer persistence, MediaScore wiring, API endpoint integration, backfill, consumer page wiring
+- [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
+- [ ] **Implement check-tier.ts** - Replace stub with actual billing tier lookup (depends on Phase 2)
 - [ ] **User submission rate limiting** - Protect against abuse/spam
 - [ ] **Malicious submission protection** - Validate URLs, block known bad actors
 - [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck

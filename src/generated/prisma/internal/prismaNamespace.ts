@@ -1398,7 +1398,10 @@ export const AiScoreScalarFieldEnum = {
   imageConfidence: 'imageConfidence',
   videoScore: 'videoScore',
   videoConfidence: 'videoConfidence',
-  analyzedTypes: 'analyzedTypes'
+  analyzedTypes: 'analyzedTypes',
+  providerDetails: 'providerDetails',
+  heuristicMetrics: 'heuristicMetrics',
+  fusionDetails: 'fusionDetails'
 } as const
 
 export type AiScoreScalarFieldEnum = (typeof AiScoreScalarFieldEnum)[keyof typeof AiScoreScalarFieldEnum]
@@ -1421,6 +1424,7 @@ export const MediaScoreScalarFieldEnum = {
   score: 'score',
   confidence: 'confidence',
   providerName: 'providerName',
+  frameScores: 'frameScores',
   createdAt: 'createdAt'
 } as const
 
@@ -1688,6 +1692,13 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
 
 
 /**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'CrawlStatus'
  */
 export type EnumCrawlStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrawlStatus'>
@@ -1698,13 +1709,6 @@ export type EnumCrawlStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'CrawlStatus[]'
  */
 export type ListEnumCrawlStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrawlStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 

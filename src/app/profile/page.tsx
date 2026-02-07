@@ -72,6 +72,17 @@ export default function ProfilePage() {
 
         <div className={styles.divider} />
 
+        <div className={styles.apiKeyLink}>
+          <Link href="/profile/api-keys" className={styles.apiKeyBtn}>
+            Manage API Keys
+          </Link>
+          <p className={styles.apiKeyHint}>
+            Generate keys for the public verification API
+          </p>
+        </div>
+
+        <div className={styles.divider} />
+
         <div className={styles.actions}>
           <button
             className={styles.signOutBtn}

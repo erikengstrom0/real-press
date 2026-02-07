@@ -54,7 +54,15 @@ export const ModelName = {
   Content: 'Content',
   AiScore: 'AiScore',
   ContentMedia: 'ContentMedia',
-  MediaScore: 'MediaScore'
+  MediaScore: 'MediaScore',
+  CrawlJob: 'CrawlJob',
+  CrawlDomain: 'CrawlDomain',
+  CrawlSource: 'CrawlSource',
+  CrawlMetric: 'CrawlMetric',
+  Author: 'Author',
+  Topic: 'Topic',
+  ContentTopic: 'ContentTopic',
+  DomainStats: 'DomainStats'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -83,7 +91,33 @@ export const ContentScalarFieldEnum = {
   contentHash: 'contentHash',
   sourceType: 'sourceType',
   status: 'status',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  publishedAt: 'publishedAt',
+  author: 'author',
+  language: 'language',
+  wordCount: 'wordCount',
+  sentenceCount: 'sentenceCount',
+  paragraphCount: 'paragraphCount',
+  readingLevel: 'readingLevel',
+  linkCount: 'linkCount',
+  externalLinkCount: 'externalLinkCount',
+  imageCount: 'imageCount',
+  hasVideo: 'hasVideo',
+  vocabularyDiversity: 'vocabularyDiversity',
+  avgSentenceLength: 'avgSentenceLength',
+  sentenceLengthVariance: 'sentenceLengthVariance',
+  punctuationDiversity: 'punctuationDiversity',
+  repetitionScore: 'repetitionScore',
+  sentimentScore: 'sentimentScore',
+  namedEntityDensity: 'namedEntityDensity',
+  temporalReferenceDensity: 'temporalReferenceDensity',
+  canonicalUrl: 'canonicalUrl',
+  siteName: 'siteName',
+  ogType: 'ogType',
+  schemaType: 'schemaType',
+  contentVersions: 'contentVersions',
+  scoreHistory: 'scoreHistory',
+  authorId: 'authorId'
 } as const
 
 export type ContentScalarFieldEnum = (typeof ContentScalarFieldEnum)[keyof typeof ContentScalarFieldEnum]
@@ -132,12 +166,156 @@ export const MediaScoreScalarFieldEnum = {
 export type MediaScoreScalarFieldEnum = (typeof MediaScoreScalarFieldEnum)[keyof typeof MediaScoreScalarFieldEnum]
 
 
+export const CrawlJobScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  urlHash: 'urlHash',
+  domain: 'domain',
+  priority: 'priority',
+  status: 'status',
+  sourceType: 'sourceType',
+  attempts: 'attempts',
+  maxAttempts: 'maxAttempts',
+  lastError: 'lastError',
+  scheduledAt: 'scheduledAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  contentId: 'contentId',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrawlJobScalarFieldEnum = (typeof CrawlJobScalarFieldEnum)[keyof typeof CrawlJobScalarFieldEnum]
+
+
+export const CrawlDomainScalarFieldEnum = {
+  id: 'id',
+  domain: 'domain',
+  crawlDelayMs: 'crawlDelayMs',
+  maxConcurrent: 'maxConcurrent',
+  requestsInWindow: 'requestsInWindow',
+  windowStart: 'windowStart',
+  robotsTxt: 'robotsTxt',
+  robotsFetchedAt: 'robotsFetchedAt',
+  isAllowed: 'isAllowed',
+  isPriority: 'isPriority',
+  rssUrl: 'rssUrl',
+  sitemapUrl: 'sitemapUrl',
+  totalCrawled: 'totalCrawled',
+  totalFailed: 'totalFailed',
+  avgAiScore: 'avgAiScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrawlDomainScalarFieldEnum = (typeof CrawlDomainScalarFieldEnum)[keyof typeof CrawlDomainScalarFieldEnum]
+
+
+export const CrawlSourceScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  url: 'url',
+  domain: 'domain',
+  name: 'name',
+  isActive: 'isActive',
+  checkInterval: 'checkInterval',
+  lastCheckAt: 'lastCheckAt',
+  nextCheckAt: 'nextCheckAt',
+  totalUrls: 'totalUrls',
+  newUrlsFound: 'newUrlsFound',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrawlSourceScalarFieldEnum = (typeof CrawlSourceScalarFieldEnum)[keyof typeof CrawlSourceScalarFieldEnum]
+
+
+export const CrawlMetricScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  hour: 'hour',
+  jobsCreated: 'jobsCreated',
+  jobsCompleted: 'jobsCompleted',
+  jobsFailed: 'jobsFailed',
+  avgExtractTime: 'avgExtractTime',
+  avgDetectTime: 'avgDetectTime',
+  avgTotalTime: 'avgTotalTime',
+  createdAt: 'createdAt'
+} as const
+
+export type CrawlMetricScalarFieldEnum = (typeof CrawlMetricScalarFieldEnum)[keyof typeof CrawlMetricScalarFieldEnum]
+
+
+export const AuthorScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  normalizedName: 'normalizedName',
+  domain: 'domain',
+  articleCount: 'articleCount',
+  avgScore: 'avgScore',
+  firstSeen: 'firstSeen',
+  lastSeen: 'lastSeen',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AuthorScalarFieldEnum = (typeof AuthorScalarFieldEnum)[keyof typeof AuthorScalarFieldEnum]
+
+
+export const TopicScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  articleCount: 'articleCount',
+  avgScore: 'avgScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TopicScalarFieldEnum = (typeof TopicScalarFieldEnum)[keyof typeof TopicScalarFieldEnum]
+
+
+export const ContentTopicScalarFieldEnum = {
+  id: 'id',
+  contentId: 'contentId',
+  topicId: 'topicId',
+  relevance: 'relevance',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentTopicScalarFieldEnum = (typeof ContentTopicScalarFieldEnum)[keyof typeof ContentTopicScalarFieldEnum]
+
+
+export const DomainStatsScalarFieldEnum = {
+  id: 'id',
+  domain: 'domain',
+  date: 'date',
+  articleCount: 'articleCount',
+  avgScore: 'avgScore',
+  minScore: 'minScore',
+  maxScore: 'maxScore',
+  topTopics: 'topTopics',
+  createdAt: 'createdAt'
+} as const
+
+export type DomainStatsScalarFieldEnum = (typeof DomainStatsScalarFieldEnum)[keyof typeof DomainStatsScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -154,4 +332,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

@@ -59,3 +59,43 @@ export type ContentMedia = Prisma.ContentMediaModel
  * 
  */
 export type MediaScore = Prisma.MediaScoreModel
+/**
+ * Model CrawlJob
+ * 
+ */
+export type CrawlJob = Prisma.CrawlJobModel
+/**
+ * Model CrawlDomain
+ * 
+ */
+export type CrawlDomain = Prisma.CrawlDomainModel
+/**
+ * Model CrawlSource
+ * 
+ */
+export type CrawlSource = Prisma.CrawlSourceModel
+/**
+ * Model CrawlMetric
+ * 
+ */
+export type CrawlMetric = Prisma.CrawlMetricModel
+/**
+ * Model Author
+ * 
+ */
+export type Author = Prisma.AuthorModel
+/**
+ * Model Topic
+ * 
+ */
+export type Topic = Prisma.TopicModel
+/**
+ * Model ContentTopic
+ * 
+ */
+export type ContentTopic = Prisma.ContentTopicModel
+/**
+ * Model DomainStats
+ * 
+ */
+export type DomainStats = Prisma.DomainStatsModel

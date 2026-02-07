@@ -25,6 +25,20 @@ import type {
 
 export const maxDuration = 60
 
+// Per-item timeout: if a single detectAIContent call takes longer than this, skip it.
+// HuggingFace has 30s timeout + 2 retries = up to 96s worst case per item.
+// We cap at 8s so we can fit ~6 items in the 50s budget.
+const PER_ITEM_TIMEOUT_MS = 8_000
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`Detection timed out after ${ms}ms`)), ms)
+    ),
+  ])
+}
+
 export async function POST(request: NextRequest) {
   // Parse body
   let batchSize = 10
@@ -76,8 +90,9 @@ export async function POST(request: NextRequest) {
         continue
       }
 
-      // Re-run detection to get enriched metadata
-      const result = await detectAIContent(content.contentText)
+      // Re-run detection to get enriched metadata (with per-item timeout to avoid
+      // a single slow HuggingFace call consuming the entire function budget)
+      const result = await withTimeout(detectAIContent(content.contentText), PER_ITEM_TIMEOUT_MS)
 
       // Build explainability data from the new result
       const providerDetails: StoredProviderDetail[] = []

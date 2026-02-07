@@ -14,7 +14,7 @@ interface MetricSignal {
 interface HeuristicRadarProps {
   metrics: {
     vocabularyDiversity: MetricSignal
-    sentenceVariation: MetricSignal
+    sentenceLengthVariation: MetricSignal
     avgSentenceLength: MetricSignal
     punctuationVariety: MetricSignal
   }
@@ -30,7 +30,7 @@ const AXES = [
     description: 'Variety of words used. AI text tends to repeat words more often.',
   },
   {
-    key: 'sentenceVariation',
+    key: 'sentenceLengthVariation',
     label: 'Sentence Rhythm',
     fullLabel: 'Sentence Length Variation',
     description: 'Variation in sentence length. Humans write with more varied rhythm.',
@@ -259,7 +259,7 @@ export function HeuristicRadar({ metrics }: HeuristicRadarProps) {
  * {
  *   metrics: {
  *     vocabularyDiversity: { value: 0.68, signal: 'high', humanRange: '0.4-0.7' },
- *     sentenceVariation: { value: 0.55, signal: 'high', humanRange: '0.3-0.6' },
+ *     sentenceLengthVariation: { value: 0.55, signal: 'high', humanRange: '0.3-0.6' },
  *     avgSentenceLength: { value: 17.2, signal: 'neutral', humanRange: 'varies' },
  *     punctuationVariety: { value: 0.75, signal: 'high', humanRange: '0.5-1.0' },
  *   },

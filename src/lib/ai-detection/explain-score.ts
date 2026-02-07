@@ -140,7 +140,7 @@ function describeMetric(name: string, signal: BreakdownSignal): string {
       high: 'strong vocabulary diversity',
       low: 'limited vocabulary range',
     },
-    sentenceVariation: {
+    sentenceLengthVariation: {
       high: 'natural sentence rhythm',
       low: 'unusually uniform sentence structure',
     },

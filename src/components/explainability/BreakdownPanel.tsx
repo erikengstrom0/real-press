@@ -52,7 +52,7 @@ export interface ExplainabilityBreakdown {
   providers: ProviderDetail[]
   heuristicMetrics?: {
     vocabularyDiversity: MetricSignal
-    sentenceVariation: MetricSignal
+    sentenceLengthVariation: MetricSignal
     avgSentenceLength: MetricSignal
     punctuationVariety: MetricSignal
   }
@@ -135,7 +135,7 @@ export function BreakdownPanel({ breakdown, contentText }: BreakdownPanelProps) 
  *     ],
  *     heuristicMetrics: {
  *       vocabularyDiversity: { value: 0.68, signal: 'high', humanRange: '0.4-0.7' },
- *       sentenceVariation: { value: 0.55, signal: 'high', humanRange: '0.3-0.6' },
+ *       sentenceLengthVariation: { value: 0.55, signal: 'high', humanRange: '0.3-0.6' },
  *       avgSentenceLength: { value: 17.2, signal: 'neutral', humanRange: 'varies' },
  *       punctuationVariety: { value: 0.75, signal: 'high', humanRange: '0.5-1.0' },
  *     },

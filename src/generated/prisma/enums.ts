@@ -28,3 +28,12 @@ export const CrawlSourceType = {
 } as const
 
 export type CrawlSourceType = (typeof CrawlSourceType)[keyof typeof CrawlSourceType]
+
+
+export const UserTier = {
+  FREE: 'FREE',
+  PRO: 'PRO',
+  ENTERPRISE: 'ENTERPRISE'
+} as const
+
+export type UserTier = (typeof UserTier)[keyof typeof UserTier]

@@ -341,6 +341,23 @@ export type EnumCrawlSourceTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumCrawlSourceTypeFilter<$PrismaModel>
 }
 
+export type EnumUserTierFilter<$PrismaModel = never> = {
+  equals?: $Enums.UserTier | Prisma.EnumUserTierFieldRefInput<$PrismaModel>
+  in?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumUserTierFilter<$PrismaModel> | $Enums.UserTier
+}
+
+export type EnumUserTierWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.UserTier | Prisma.EnumUserTierFieldRefInput<$PrismaModel>
+  in?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumUserTierWithAggregatesFilter<$PrismaModel> | $Enums.UserTier
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumUserTierFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumUserTierFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -630,6 +647,23 @@ export type NestedEnumCrawlSourceTypeWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCrawlSourceTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCrawlSourceTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumUserTierFilter<$PrismaModel = never> = {
+  equals?: $Enums.UserTier | Prisma.EnumUserTierFieldRefInput<$PrismaModel>
+  in?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumUserTierFilter<$PrismaModel> | $Enums.UserTier
+}
+
+export type NestedEnumUserTierWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.UserTier | Prisma.EnumUserTierFieldRefInput<$PrismaModel>
+  in?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  notIn?: $Enums.UserTier[] | Prisma.ListEnumUserTierFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumUserTierWithAggregatesFilter<$PrismaModel> | $Enums.UserTier
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumUserTierFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumUserTierFilter<$PrismaModel>
 }
 
 

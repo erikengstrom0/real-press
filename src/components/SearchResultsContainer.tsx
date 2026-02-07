@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { SearchResults, type SearchResult } from './SearchResults'
 import { FilterPanel } from './FilterPanel'
+import { SpellSuggestion } from './SpellSuggestion'
 import { LoadingSpinner } from './LoadingSpinner'
+import type { SpellSuggestion as SpellSuggestionType } from '@/lib/services/spell-check.service'
 import styles from './SearchResultsContainer.module.css'
 
 interface SearchResultsContainerProps {
@@ -14,6 +17,7 @@ interface SearchResultsContainerProps {
   initialHasMore: boolean
   initialFilter: string | null
   initialSort: string | null
+  suggestion: SpellSuggestionType | null
 }
 
 export function SearchResultsContainer({
@@ -24,7 +28,9 @@ export function SearchResultsContainer({
   initialHasMore,
   initialFilter,
   initialSort,
+  suggestion: initialSuggestion,
 }: SearchResultsContainerProps) {
+  const router = useRouter()
   const [results, setResults] = useState(initialResults)
   const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(initialPage)
@@ -32,6 +38,7 @@ export function SearchResultsContainer({
   const [filter, setFilter] = useState(initialFilter)
   const [sort, setSort] = useState(initialSort)
   const [isLoading, setIsLoading] = useState(false)
+  const [spellSuggestion, setSpellSuggestion] = useState(initialSuggestion)
 
   const fetchResults = useCallback(async (newFilter: string | null, newSort: string | null, newPage: number = 1) => {
     setIsLoading(true)
@@ -48,6 +55,7 @@ export function SearchResultsContainer({
         setTotal(data.total)
         setPage(data.page)
         setHasMore(data.hasMore)
+        setSpellSuggestion(data.suggestion ?? null)
 
         // Update URL without navigation
         const url = new URL(window.location.href)
@@ -91,6 +99,15 @@ export function SearchResultsContainer({
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
+
+      {total === 0 && spellSuggestion && (
+        <SpellSuggestion
+          original={spellSuggestion.original}
+          suggested={spellSuggestion.suggested}
+          onAccept={() => router.push(`/search?q=${encodeURIComponent(spellSuggestion.suggested)}`)}
+          onDismiss={() => setSpellSuggestion(null)}
+        />
+      )}
 
       {isLoading ? (
         <div className={styles.loading}>

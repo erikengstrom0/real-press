@@ -1175,11 +1175,61 @@ Decisions made during development that should persist across sessions.
    - `src/components/SearchBar.module.css` — Removed `max-width: 600px` from `.form`
    - `src/components/Header.tsx` — Changed profile link text from dynamic user name to "Account"
 
+### "Did You Mean?" Spell Correction for Search (2026-02-07)
+
+1. **pg_trgm Extension for Similarity Matching**
+   - Enabled PostgreSQL `pg_trgm` extension on Neon database for trigram-based fuzzy matching
+   - Created GIN index `idx_content_title_trgm` on `lower(title)` for fast similarity lookups
+   - Similarity threshold set to 0.2 (pg_trgm default is 0.3 — lowered to catch more candidates)
+   - Combined with Levenshtein distance ranking (max 3 edits) for best match selection
+
+2. **Spell Check Only on Zero Results**
+   - Spell check runs only when `total === 0 && page === 1 && query.length >= 3`
+   - Keeps spell check completely off the hot path — no performance impact on normal searches
+   - Wrapped in try/catch so spell check failures never break search
+   - Corrected query is verified to return >0 results before suggesting
+
+3. **Word-Level Correction Strategy**
+   - Query tokenized into words; words <= 2 chars skipped (too short for meaningful correction)
+   - Each word matched independently against words extracted from content titles via `unnest(regexp_split_to_array(...))`
+   - Candidates ranked by Levenshtein distance first, then pg_trgm similarity as tiebreaker
+   - Corrected query reconstructed by replacing only the words that had better matches
+
+4. **fast-levenshtein Package**
+   - Added `fast-levenshtein` as explicit dependency (was only a transitive dep in lock file)
+   - Created TypeScript declaration at `src/types/fast-levenshtein.d.ts` (no `@types` package exists)
+   - Used for candidate ranking and confidence scoring
+
+5. **UI: Inline Banner Component**
+   - `SpellSuggestion` component renders between FilterPanel and search results
+   - Retro newspaper aesthetic: cream background, green left border, Caudex headline font
+   - Suggested query is a clickable button that navigates to `/search?q=<corrected>`
+   - Dismiss button (x) hides the banner by setting state to null
+   - Mobile responsive with smaller font sizes at 480px breakpoint
+
+6. **State Management in SearchResultsContainer**
+   - Suggestion passed as prop from server-side render (initial page load / navigation from home)
+   - Also read from client-side refetch responses (filter/sort/page changes)
+   - Dismiss is local state only — re-searching resets it
+   - `useRouter().push()` used for accept navigation (triggers full server-side re-render via `key={query}`)
+
+7. **Files Created**
+   - `src/lib/services/spell-check.service.ts` — Core spell correction logic
+   - `src/types/fast-levenshtein.d.ts` — TypeScript declaration
+   - `src/components/SpellSuggestion.tsx` — Banner UI component
+   - `src/components/SpellSuggestion.module.css` — Banner styles
+
+8. **Files Modified**
+   - `src/app/api/search/route.ts` — Added `suggestion` to `SearchResponse`, calls spell check on 0 results
+   - `src/app/search/page.tsx` — Passes `suggestion` prop to `SearchResultsContainer`
+   - `src/components/SearchResultsContainer.tsx` — Accepts prop, manages dismiss state, renders banner
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **"Did You Mean?" spell correction** - pg_trgm + Levenshtein spell suggestion banner when search returns 0 results (2026-02-07)
 - [x] **Search page layout alignment** - Aligned SearchBar right edge with FilterPanel by removing max-width constraint (2026-02-07)
 - [x] **Header "Account" link** - Changed dynamic user name to static "Account" label for clearer navigation (2026-02-07)
 - [x] **Fix search results not updating on subsequent searches** - Added `key={query}` to force remount of SearchResultsContainer (2026-02-07)

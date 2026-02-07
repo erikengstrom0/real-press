@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db/prisma'
 import type { Classification } from '@/lib/ai-detection'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { auth } from '@/lib/auth'
+import { getUserTier } from '@/lib/api/check-tier'
+import { recordSearch } from '@/lib/services/search-history.service'
 
 export interface SearchResult {
   id: string
@@ -116,7 +119,7 @@ export async function GET(request: NextRequest) {
       createdAt: item.createdAt.toISOString(),
     }))
 
-    return NextResponse.json<SearchResponse>({
+    const response = NextResponse.json<SearchResponse>({
       results,
       query,
       filter,
@@ -126,6 +129,24 @@ export async function GET(request: NextRequest) {
       pageSize: PAGE_SIZE,
       hasMore: page * PAGE_SIZE < total,
     })
+
+    // Fire-and-forget: record search in history if user is authenticated
+    auth()
+      .then(async (session) => {
+        if (session?.user?.id) {
+          const tier = await getUserTier(session.user.id)
+          await recordSearch(session.user.id, tier, {
+            query,
+            resultsCount: total,
+            filters: filter ? { filter, sort } : undefined,
+          })
+        }
+      })
+      .catch(() => {
+        // Silently ignore history recording failures
+      })
+
+    return response
   } catch (error) {
     console.error('Search error:', error)
     return NextResponse.json(

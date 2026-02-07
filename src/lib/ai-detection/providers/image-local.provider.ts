@@ -110,6 +110,7 @@ export class LocalImageProvider extends BaseProvider {
         metadata: {
           model: data.model,
           provider: this.name,
+          imageUrl: input.imageUrl || undefined,
         },
       }
     } catch (error) {

@@ -11,7 +11,12 @@
  * - Overly structured paragraphs
  */
 
-import type { ProviderResult, HeuristicMetrics } from '../types'
+import type {
+  ProviderResult,
+  HeuristicMetrics,
+  HeuristicFeatureScores,
+  HeuristicFeatureWeights,
+} from '../types'
 import { BaseProvider, type ProviderInput, type ProviderCapabilities } from './base.provider'
 
 const MIN_WORDS_FOR_ANALYSIS = 50
@@ -39,13 +44,23 @@ export class HeuristicProvider extends BaseProvider {
     return {
       score: result.score,
       confidence: result.confidence,
-      metadata: { metrics: result.metrics },
+      metadata: {
+        metrics: result.metrics,
+        featureScores: result.featureScores,
+        featureWeights: result.featureWeights,
+      },
     }
   }
 }
 
+export interface HeuristicAnalysisResult extends ProviderResult {
+  metrics: HeuristicMetrics
+  featureScores: HeuristicFeatureScores
+  featureWeights: HeuristicFeatureWeights
+}
+
 // Legacy function export for backwards compatibility
-export async function analyzeWithHeuristics(text: string): Promise<ProviderResult & { metrics: HeuristicMetrics }> {
+export async function analyzeWithHeuristics(text: string): Promise<HeuristicAnalysisResult> {
   const cleanText = text.trim()
   const words = tokenizeWords(cleanText)
   const sentences = tokenizeSentences(cleanText)
@@ -55,16 +70,20 @@ export async function analyzeWithHeuristics(text: string): Promise<ProviderResul
       score: 0.5,
       confidence: 0.3,
       metrics: getEmptyMetrics(words.length),
+      featureScores: { vocabularyScore: 0, variationScore: 0, punctuationScore: 0, lengthScore: 0 },
+      featureWeights: HEURISTIC_WEIGHTS,
     }
   }
 
   const metrics = calculateMetrics(words, sentences, cleanText)
-  const score = calculateScore(metrics)
+  const breakdown = calculateScore(metrics)
 
   return {
-    score,
+    score: breakdown.score,
     confidence: calculateConfidence(words.length, sentences.length),
     metrics,
+    featureScores: breakdown.featureScores,
+    featureWeights: breakdown.featureWeights,
   }
 }
 
@@ -123,7 +142,20 @@ function calculateVariation(values: number[]): number {
   return mean > 0 ? Math.min(stdDev / mean, 1) : 0
 }
 
-function calculateScore(metrics: HeuristicMetrics): number {
+interface ScoreBreakdown {
+  score: number
+  featureScores: HeuristicFeatureScores
+  featureWeights: HeuristicFeatureWeights
+}
+
+const HEURISTIC_WEIGHTS: HeuristicFeatureWeights = {
+  vocabulary: 0.35,
+  variation: 0.30,
+  punctuation: 0.15,
+  length: 0.20,
+}
+
+function calculateScore(metrics: HeuristicMetrics): ScoreBreakdown {
   // AI-generated text tends to have:
   // - Lower vocabulary diversity (score increases)
   // - More uniform sentence lengths (score increases)
@@ -131,7 +163,7 @@ function calculateScore(metrics: HeuristicMetrics): number {
 
   // Vocabulary diversity: human text typically 0.4-0.7, AI tends to be lower
   // Invert so lower diversity = higher AI score
-  const vocabScore = 1 - Math.min(metrics.vocabularyDiversity / 0.6, 1)
+  const vocabularyScore = 1 - Math.min(metrics.vocabularyDiversity / 0.6, 1)
 
   // Sentence variation: human text has more variation (0.3-0.6 CV)
   // AI text tends to be more uniform (0.1-0.3 CV)
@@ -149,21 +181,23 @@ function calculateScore(metrics: HeuristicMetrics): number {
   const lengthScore = 1 - Math.min(lengthDeviation / 15, 1)
 
   // Weighted combination
-  const weights = {
-    vocab: 0.35,
-    variation: 0.30,
-    punctuation: 0.15,
-    length: 0.20,
-  }
-
   const score =
-    vocabScore * weights.vocab +
-    variationScore * weights.variation +
-    punctuationScore * weights.punctuation +
-    lengthScore * weights.length
+    vocabularyScore * HEURISTIC_WEIGHTS.vocabulary +
+    variationScore * HEURISTIC_WEIGHTS.variation +
+    punctuationScore * HEURISTIC_WEIGHTS.punctuation +
+    lengthScore * HEURISTIC_WEIGHTS.length
 
   // Clamp to [0, 1]
-  return Math.max(0, Math.min(1, score))
+  return {
+    score: Math.max(0, Math.min(1, score)),
+    featureScores: {
+      vocabularyScore,
+      variationScore,
+      punctuationScore,
+      lengthScore,
+    },
+    featureWeights: HEURISTIC_WEIGHTS,
+  }
 }
 
 function calculateConfidence(wordCount: number, sentenceCount: number): number {

@@ -97,6 +97,9 @@ export type AiScoreCountAggregateOutputType = {
   videoScore: number
   videoConfidence: number
   analyzedTypes: number
+  providerDetails: number
+  heuristicMetrics: number
+  fusionDetails: number
   _all: number
 }
 
@@ -172,6 +175,9 @@ export type AiScoreCountAggregateInputType = {
   videoScore?: true
   videoConfidence?: true
   analyzedTypes?: true
+  providerDetails?: true
+  heuristicMetrics?: true
+  fusionDetails?: true
   _all?: true
 }
 
@@ -276,6 +282,9 @@ export type AiScoreGroupByOutputType = {
   videoScore: number | null
   videoConfidence: number | null
   analyzedTypes: string[]
+  providerDetails: runtime.JsonValue | null
+  heuristicMetrics: runtime.JsonValue | null
+  fusionDetails: runtime.JsonValue | null
   _count: AiScoreCountAggregateOutputType | null
   _avg: AiScoreAvgAggregateOutputType | null
   _sum: AiScoreSumAggregateOutputType | null
@@ -316,6 +325,9 @@ export type AiScoreWhereInput = {
   videoScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   videoConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   analyzedTypes?: Prisma.StringNullableListFilter<"AiScore">
+  providerDetails?: Prisma.JsonNullableFilter<"AiScore">
+  heuristicMetrics?: Prisma.JsonNullableFilter<"AiScore">
+  fusionDetails?: Prisma.JsonNullableFilter<"AiScore">
   content?: Prisma.XOR<Prisma.ContentScalarRelationFilter, Prisma.ContentWhereInput>
 }
 
@@ -334,6 +346,9 @@ export type AiScoreOrderByWithRelationInput = {
   videoScore?: Prisma.SortOrderInput | Prisma.SortOrder
   videoConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
   analyzedTypes?: Prisma.SortOrder
+  providerDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  heuristicMetrics?: Prisma.SortOrderInput | Prisma.SortOrder
+  fusionDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.ContentOrderByWithRelationInput
 }
 
@@ -355,6 +370,9 @@ export type AiScoreWhereUniqueInput = Prisma.AtLeast<{
   videoScore?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   videoConfidence?: Prisma.FloatNullableFilter<"AiScore"> | number | null
   analyzedTypes?: Prisma.StringNullableListFilter<"AiScore">
+  providerDetails?: Prisma.JsonNullableFilter<"AiScore">
+  heuristicMetrics?: Prisma.JsonNullableFilter<"AiScore">
+  fusionDetails?: Prisma.JsonNullableFilter<"AiScore">
   content?: Prisma.XOR<Prisma.ContentScalarRelationFilter, Prisma.ContentWhereInput>
 }, "id" | "contentId">
 
@@ -373,6 +391,9 @@ export type AiScoreOrderByWithAggregationInput = {
   videoScore?: Prisma.SortOrderInput | Prisma.SortOrder
   videoConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
   analyzedTypes?: Prisma.SortOrder
+  providerDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  heuristicMetrics?: Prisma.SortOrderInput | Prisma.SortOrder
+  fusionDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AiScoreCountOrderByAggregateInput
   _avg?: Prisma.AiScoreAvgOrderByAggregateInput
   _max?: Prisma.AiScoreMaxOrderByAggregateInput
@@ -398,6 +419,9 @@ export type AiScoreScalarWhereWithAggregatesInput = {
   videoScore?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
   videoConfidence?: Prisma.FloatNullableWithAggregatesFilter<"AiScore"> | number | null
   analyzedTypes?: Prisma.StringNullableListFilter<"AiScore">
+  providerDetails?: Prisma.JsonNullableWithAggregatesFilter<"AiScore">
+  heuristicMetrics?: Prisma.JsonNullableWithAggregatesFilter<"AiScore">
+  fusionDetails?: Prisma.JsonNullableWithAggregatesFilter<"AiScore">
 }
 
 export type AiScoreCreateInput = {
@@ -414,6 +438,9 @@ export type AiScoreCreateInput = {
   videoScore?: number | null
   videoConfidence?: number | null
   analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   content: Prisma.ContentCreateNestedOneWithoutAiScoreInput
 }
 
@@ -432,6 +459,9 @@ export type AiScoreUncheckedCreateInput = {
   videoScore?: number | null
   videoConfidence?: number | null
   analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreUpdateInput = {
@@ -448,6 +478,9 @@ export type AiScoreUpdateInput = {
   videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   content?: Prisma.ContentUpdateOneRequiredWithoutAiScoreNestedInput
 }
 
@@ -466,6 +499,9 @@ export type AiScoreUncheckedUpdateInput = {
   videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreCreateManyInput = {
@@ -483,6 +519,9 @@ export type AiScoreCreateManyInput = {
   videoScore?: number | null
   videoConfidence?: number | null
   analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreUpdateManyMutationInput = {
@@ -499,6 +538,9 @@ export type AiScoreUpdateManyMutationInput = {
   videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreUncheckedUpdateManyInput = {
@@ -516,6 +558,9 @@ export type AiScoreUncheckedUpdateManyInput = {
   videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreNullableScalarRelationFilter = {
@@ -546,6 +591,9 @@ export type AiScoreCountOrderByAggregateInput = {
   videoScore?: Prisma.SortOrder
   videoConfidence?: Prisma.SortOrder
   analyzedTypes?: Prisma.SortOrder
+  providerDetails?: Prisma.SortOrder
+  heuristicMetrics?: Prisma.SortOrder
+  fusionDetails?: Prisma.SortOrder
 }
 
 export type AiScoreAvgOrderByAggregateInput = {
@@ -667,6 +715,9 @@ export type AiScoreCreateWithoutContentInput = {
   videoScore?: number | null
   videoConfidence?: number | null
   analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreUncheckedCreateWithoutContentInput = {
@@ -683,6 +734,9 @@ export type AiScoreUncheckedCreateWithoutContentInput = {
   videoScore?: number | null
   videoConfidence?: number | null
   analyzedTypes?: Prisma.AiScoreCreateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreCreateOrConnectWithoutContentInput = {
@@ -715,6 +769,9 @@ export type AiScoreUpdateWithoutContentInput = {
   videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type AiScoreUncheckedUpdateWithoutContentInput = {
@@ -731,6 +788,9 @@ export type AiScoreUncheckedUpdateWithoutContentInput = {
   videoScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   videoConfidence?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   analyzedTypes?: Prisma.AiScoreUpdateanalyzedTypesInput | string[]
+  providerDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  heuristicMetrics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fusionDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -750,6 +810,9 @@ export type AiScoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   videoScore?: boolean
   videoConfidence?: boolean
   analyzedTypes?: boolean
+  providerDetails?: boolean
+  heuristicMetrics?: boolean
+  fusionDetails?: boolean
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiScore"]>
 
@@ -768,6 +831,9 @@ export type AiScoreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   videoScore?: boolean
   videoConfidence?: boolean
   analyzedTypes?: boolean
+  providerDetails?: boolean
+  heuristicMetrics?: boolean
+  fusionDetails?: boolean
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiScore"]>
 
@@ -786,6 +852,9 @@ export type AiScoreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   videoScore?: boolean
   videoConfidence?: boolean
   analyzedTypes?: boolean
+  providerDetails?: boolean
+  heuristicMetrics?: boolean
+  fusionDetails?: boolean
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiScore"]>
 
@@ -804,9 +873,12 @@ export type AiScoreSelectScalar = {
   videoScore?: boolean
   videoConfidence?: boolean
   analyzedTypes?: boolean
+  providerDetails?: boolean
+  heuristicMetrics?: boolean
+  fusionDetails?: boolean
 }
 
-export type AiScoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "contentId" | "compositeScore" | "classification" | "gptzeroScore" | "heuristicScore" | "createdAt" | "textScore" | "textConfidence" | "imageScore" | "imageConfidence" | "videoScore" | "videoConfidence" | "analyzedTypes", ExtArgs["result"]["aiScore"]>
+export type AiScoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "contentId" | "compositeScore" | "classification" | "gptzeroScore" | "heuristicScore" | "createdAt" | "textScore" | "textConfidence" | "imageScore" | "imageConfidence" | "videoScore" | "videoConfidence" | "analyzedTypes" | "providerDetails" | "heuristicMetrics" | "fusionDetails", ExtArgs["result"]["aiScore"]>
 export type AiScoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   content?: boolean | Prisma.ContentDefaultArgs<ExtArgs>
 }
@@ -837,6 +909,9 @@ export type $AiScorePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     videoScore: number | null
     videoConfidence: number | null
     analyzedTypes: string[]
+    providerDetails: runtime.JsonValue | null
+    heuristicMetrics: runtime.JsonValue | null
+    fusionDetails: runtime.JsonValue | null
   }, ExtArgs["result"]["aiScore"]>
   composites: {}
 }
@@ -1275,6 +1350,9 @@ export interface AiScoreFieldRefs {
   readonly videoScore: Prisma.FieldRef<"AiScore", 'Float'>
   readonly videoConfidence: Prisma.FieldRef<"AiScore", 'Float'>
   readonly analyzedTypes: Prisma.FieldRef<"AiScore", 'String[]'>
+  readonly providerDetails: Prisma.FieldRef<"AiScore", 'Json'>
+  readonly heuristicMetrics: Prisma.FieldRef<"AiScore", 'Json'>
+  readonly fusionDetails: Prisma.FieldRef<"AiScore", 'Json'>
 }
     
 

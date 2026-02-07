@@ -20,8 +20,46 @@ export type ContentModel = runtime.Types.Result.DefaultSelection<Prisma.$Content
 
 export type AggregateContent = {
   _count: ContentCountAggregateOutputType | null
+  _avg: ContentAvgAggregateOutputType | null
+  _sum: ContentSumAggregateOutputType | null
   _min: ContentMinAggregateOutputType | null
   _max: ContentMaxAggregateOutputType | null
+}
+
+export type ContentAvgAggregateOutputType = {
+  wordCount: number | null
+  sentenceCount: number | null
+  paragraphCount: number | null
+  readingLevel: number | null
+  linkCount: number | null
+  externalLinkCount: number | null
+  imageCount: number | null
+  vocabularyDiversity: number | null
+  avgSentenceLength: number | null
+  sentenceLengthVariance: number | null
+  punctuationDiversity: number | null
+  repetitionScore: number | null
+  sentimentScore: number | null
+  namedEntityDensity: number | null
+  temporalReferenceDensity: number | null
+}
+
+export type ContentSumAggregateOutputType = {
+  wordCount: number | null
+  sentenceCount: number | null
+  paragraphCount: number | null
+  readingLevel: number | null
+  linkCount: number | null
+  externalLinkCount: number | null
+  imageCount: number | null
+  vocabularyDiversity: number | null
+  avgSentenceLength: number | null
+  sentenceLengthVariance: number | null
+  punctuationDiversity: number | null
+  repetitionScore: number | null
+  sentimentScore: number | null
+  namedEntityDensity: number | null
+  temporalReferenceDensity: number | null
 }
 
 export type ContentMinAggregateOutputType = {
@@ -35,6 +73,30 @@ export type ContentMinAggregateOutputType = {
   sourceType: string | null
   status: string | null
   createdAt: Date | null
+  publishedAt: Date | null
+  author: string | null
+  language: string | null
+  wordCount: number | null
+  sentenceCount: number | null
+  paragraphCount: number | null
+  readingLevel: number | null
+  linkCount: number | null
+  externalLinkCount: number | null
+  imageCount: number | null
+  hasVideo: boolean | null
+  vocabularyDiversity: number | null
+  avgSentenceLength: number | null
+  sentenceLengthVariance: number | null
+  punctuationDiversity: number | null
+  repetitionScore: number | null
+  sentimentScore: number | null
+  namedEntityDensity: number | null
+  temporalReferenceDensity: number | null
+  canonicalUrl: string | null
+  siteName: string | null
+  ogType: string | null
+  schemaType: string | null
+  authorId: string | null
 }
 
 export type ContentMaxAggregateOutputType = {
@@ -48,6 +110,30 @@ export type ContentMaxAggregateOutputType = {
   sourceType: string | null
   status: string | null
   createdAt: Date | null
+  publishedAt: Date | null
+  author: string | null
+  language: string | null
+  wordCount: number | null
+  sentenceCount: number | null
+  paragraphCount: number | null
+  readingLevel: number | null
+  linkCount: number | null
+  externalLinkCount: number | null
+  imageCount: number | null
+  hasVideo: boolean | null
+  vocabularyDiversity: number | null
+  avgSentenceLength: number | null
+  sentenceLengthVariance: number | null
+  punctuationDiversity: number | null
+  repetitionScore: number | null
+  sentimentScore: number | null
+  namedEntityDensity: number | null
+  temporalReferenceDensity: number | null
+  canonicalUrl: string | null
+  siteName: string | null
+  ogType: string | null
+  schemaType: string | null
+  authorId: string | null
 }
 
 export type ContentCountAggregateOutputType = {
@@ -61,9 +147,71 @@ export type ContentCountAggregateOutputType = {
   sourceType: number
   status: number
   createdAt: number
+  publishedAt: number
+  author: number
+  language: number
+  wordCount: number
+  sentenceCount: number
+  paragraphCount: number
+  readingLevel: number
+  linkCount: number
+  externalLinkCount: number
+  imageCount: number
+  hasVideo: number
+  vocabularyDiversity: number
+  avgSentenceLength: number
+  sentenceLengthVariance: number
+  punctuationDiversity: number
+  repetitionScore: number
+  sentimentScore: number
+  namedEntityDensity: number
+  temporalReferenceDensity: number
+  canonicalUrl: number
+  siteName: number
+  ogType: number
+  schemaType: number
+  contentVersions: number
+  scoreHistory: number
+  authorId: number
   _all: number
 }
 
+
+export type ContentAvgAggregateInputType = {
+  wordCount?: true
+  sentenceCount?: true
+  paragraphCount?: true
+  readingLevel?: true
+  linkCount?: true
+  externalLinkCount?: true
+  imageCount?: true
+  vocabularyDiversity?: true
+  avgSentenceLength?: true
+  sentenceLengthVariance?: true
+  punctuationDiversity?: true
+  repetitionScore?: true
+  sentimentScore?: true
+  namedEntityDensity?: true
+  temporalReferenceDensity?: true
+}
+
+export type ContentSumAggregateInputType = {
+  wordCount?: true
+  sentenceCount?: true
+  paragraphCount?: true
+  readingLevel?: true
+  linkCount?: true
+  externalLinkCount?: true
+  imageCount?: true
+  vocabularyDiversity?: true
+  avgSentenceLength?: true
+  sentenceLengthVariance?: true
+  punctuationDiversity?: true
+  repetitionScore?: true
+  sentimentScore?: true
+  namedEntityDensity?: true
+  temporalReferenceDensity?: true
+}
 
 export type ContentMinAggregateInputType = {
   id?: true
@@ -76,6 +224,30 @@ export type ContentMinAggregateInputType = {
   sourceType?: true
   status?: true
   createdAt?: true
+  publishedAt?: true
+  author?: true
+  language?: true
+  wordCount?: true
+  sentenceCount?: true
+  paragraphCount?: true
+  readingLevel?: true
+  linkCount?: true
+  externalLinkCount?: true
+  imageCount?: true
+  hasVideo?: true
+  vocabularyDiversity?: true
+  avgSentenceLength?: true
+  sentenceLengthVariance?: true
+  punctuationDiversity?: true
+  repetitionScore?: true
+  sentimentScore?: true
+  namedEntityDensity?: true
+  temporalReferenceDensity?: true
+  canonicalUrl?: true
+  siteName?: true
+  ogType?: true
+  schemaType?: true
+  authorId?: true
 }
 
 export type ContentMaxAggregateInputType = {
@@ -89,6 +261,30 @@ export type ContentMaxAggregateInputType = {
   sourceType?: true
   status?: true
   createdAt?: true
+  publishedAt?: true
+  author?: true
+  language?: true
+  wordCount?: true
+  sentenceCount?: true
+  paragraphCount?: true
+  readingLevel?: true
+  linkCount?: true
+  externalLinkCount?: true
+  imageCount?: true
+  hasVideo?: true
+  vocabularyDiversity?: true
+  avgSentenceLength?: true
+  sentenceLengthVariance?: true
+  punctuationDiversity?: true
+  repetitionScore?: true
+  sentimentScore?: true
+  namedEntityDensity?: true
+  temporalReferenceDensity?: true
+  canonicalUrl?: true
+  siteName?: true
+  ogType?: true
+  schemaType?: true
+  authorId?: true
 }
 
 export type ContentCountAggregateInputType = {
@@ -102,6 +298,32 @@ export type ContentCountAggregateInputType = {
   sourceType?: true
   status?: true
   createdAt?: true
+  publishedAt?: true
+  author?: true
+  language?: true
+  wordCount?: true
+  sentenceCount?: true
+  paragraphCount?: true
+  readingLevel?: true
+  linkCount?: true
+  externalLinkCount?: true
+  imageCount?: true
+  hasVideo?: true
+  vocabularyDiversity?: true
+  avgSentenceLength?: true
+  sentenceLengthVariance?: true
+  punctuationDiversity?: true
+  repetitionScore?: true
+  sentimentScore?: true
+  namedEntityDensity?: true
+  temporalReferenceDensity?: true
+  canonicalUrl?: true
+  siteName?: true
+  ogType?: true
+  schemaType?: true
+  contentVersions?: true
+  scoreHistory?: true
+  authorId?: true
   _all?: true
 }
 
@@ -143,6 +365,18 @@ export type ContentAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ContentAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ContentSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ContentMinAggregateInputType
@@ -173,6 +407,8 @@ export type ContentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ContentCountAggregateInputType | true
+  _avg?: ContentAvgAggregateInputType
+  _sum?: ContentSumAggregateInputType
   _min?: ContentMinAggregateInputType
   _max?: ContentMaxAggregateInputType
 }
@@ -188,7 +424,35 @@ export type ContentGroupByOutputType = {
   sourceType: string
   status: string
   createdAt: Date
+  publishedAt: Date | null
+  author: string | null
+  language: string | null
+  wordCount: number | null
+  sentenceCount: number | null
+  paragraphCount: number | null
+  readingLevel: number | null
+  linkCount: number | null
+  externalLinkCount: number | null
+  imageCount: number | null
+  hasVideo: boolean
+  vocabularyDiversity: number | null
+  avgSentenceLength: number | null
+  sentenceLengthVariance: number | null
+  punctuationDiversity: number | null
+  repetitionScore: number | null
+  sentimentScore: number | null
+  namedEntityDensity: number | null
+  temporalReferenceDensity: number | null
+  canonicalUrl: string | null
+  siteName: string | null
+  ogType: string | null
+  schemaType: string | null
+  contentVersions: runtime.JsonValue[]
+  scoreHistory: runtime.JsonValue[]
+  authorId: string | null
   _count: ContentCountAggregateOutputType | null
+  _avg: ContentAvgAggregateOutputType | null
+  _sum: ContentSumAggregateOutputType | null
   _min: ContentMinAggregateOutputType | null
   _max: ContentMaxAggregateOutputType | null
 }
@@ -222,8 +486,36 @@ export type ContentWhereInput = {
   sourceType?: Prisma.StringFilter<"Content"> | string
   status?: Prisma.StringFilter<"Content"> | string
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
+  publishedAt?: Prisma.DateTimeNullableFilter<"Content"> | Date | string | null
+  author?: Prisma.StringNullableFilter<"Content"> | string | null
+  language?: Prisma.StringNullableFilter<"Content"> | string | null
+  wordCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  sentenceCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  paragraphCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  readingLevel?: Prisma.FloatNullableFilter<"Content"> | number | null
+  linkCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  externalLinkCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  imageCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  hasVideo?: Prisma.BoolFilter<"Content"> | boolean
+  vocabularyDiversity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  avgSentenceLength?: Prisma.FloatNullableFilter<"Content"> | number | null
+  sentenceLengthVariance?: Prisma.FloatNullableFilter<"Content"> | number | null
+  punctuationDiversity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  repetitionScore?: Prisma.FloatNullableFilter<"Content"> | number | null
+  sentimentScore?: Prisma.FloatNullableFilter<"Content"> | number | null
+  namedEntityDensity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  temporalReferenceDensity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  canonicalUrl?: Prisma.StringNullableFilter<"Content"> | string | null
+  siteName?: Prisma.StringNullableFilter<"Content"> | string | null
+  ogType?: Prisma.StringNullableFilter<"Content"> | string | null
+  schemaType?: Prisma.StringNullableFilter<"Content"> | string | null
+  contentVersions?: Prisma.JsonNullableListFilter<"Content">
+  scoreHistory?: Prisma.JsonNullableListFilter<"Content">
+  authorId?: Prisma.StringNullableFilter<"Content"> | string | null
   aiScore?: Prisma.XOR<Prisma.AiScoreNullableScalarRelationFilter, Prisma.AiScoreWhereInput> | null
   media?: Prisma.ContentMediaListRelationFilter
+  authorRef?: Prisma.XOR<Prisma.AuthorNullableScalarRelationFilter, Prisma.AuthorWhereInput> | null
+  topics?: Prisma.ContentTopicListRelationFilter
 }
 
 export type ContentOrderByWithRelationInput = {
@@ -237,8 +529,36 @@ export type ContentOrderByWithRelationInput = {
   sourceType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  author?: Prisma.SortOrderInput | Prisma.SortOrder
+  language?: Prisma.SortOrderInput | Prisma.SortOrder
+  wordCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  hasVideo?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrderInput | Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrderInput | Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrderInput | Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrderInput | Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrderInput | Prisma.SortOrder
+  canonicalUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  siteName?: Prisma.SortOrderInput | Prisma.SortOrder
+  ogType?: Prisma.SortOrderInput | Prisma.SortOrder
+  schemaType?: Prisma.SortOrderInput | Prisma.SortOrder
+  contentVersions?: Prisma.SortOrder
+  scoreHistory?: Prisma.SortOrder
+  authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   aiScore?: Prisma.AiScoreOrderByWithRelationInput
   media?: Prisma.ContentMediaOrderByRelationAggregateInput
+  authorRef?: Prisma.AuthorOrderByWithRelationInput
+  topics?: Prisma.ContentTopicOrderByRelationAggregateInput
 }
 
 export type ContentWhereUniqueInput = Prisma.AtLeast<{
@@ -255,8 +575,36 @@ export type ContentWhereUniqueInput = Prisma.AtLeast<{
   sourceType?: Prisma.StringFilter<"Content"> | string
   status?: Prisma.StringFilter<"Content"> | string
   createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
+  publishedAt?: Prisma.DateTimeNullableFilter<"Content"> | Date | string | null
+  author?: Prisma.StringNullableFilter<"Content"> | string | null
+  language?: Prisma.StringNullableFilter<"Content"> | string | null
+  wordCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  sentenceCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  paragraphCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  readingLevel?: Prisma.FloatNullableFilter<"Content"> | number | null
+  linkCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  externalLinkCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  imageCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  hasVideo?: Prisma.BoolFilter<"Content"> | boolean
+  vocabularyDiversity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  avgSentenceLength?: Prisma.FloatNullableFilter<"Content"> | number | null
+  sentenceLengthVariance?: Prisma.FloatNullableFilter<"Content"> | number | null
+  punctuationDiversity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  repetitionScore?: Prisma.FloatNullableFilter<"Content"> | number | null
+  sentimentScore?: Prisma.FloatNullableFilter<"Content"> | number | null
+  namedEntityDensity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  temporalReferenceDensity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  canonicalUrl?: Prisma.StringNullableFilter<"Content"> | string | null
+  siteName?: Prisma.StringNullableFilter<"Content"> | string | null
+  ogType?: Prisma.StringNullableFilter<"Content"> | string | null
+  schemaType?: Prisma.StringNullableFilter<"Content"> | string | null
+  contentVersions?: Prisma.JsonNullableListFilter<"Content">
+  scoreHistory?: Prisma.JsonNullableListFilter<"Content">
+  authorId?: Prisma.StringNullableFilter<"Content"> | string | null
   aiScore?: Prisma.XOR<Prisma.AiScoreNullableScalarRelationFilter, Prisma.AiScoreWhereInput> | null
   media?: Prisma.ContentMediaListRelationFilter
+  authorRef?: Prisma.XOR<Prisma.AuthorNullableScalarRelationFilter, Prisma.AuthorWhereInput> | null
+  topics?: Prisma.ContentTopicListRelationFilter
 }, "id" | "url">
 
 export type ContentOrderByWithAggregationInput = {
@@ -270,9 +618,37 @@ export type ContentOrderByWithAggregationInput = {
   sourceType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  author?: Prisma.SortOrderInput | Prisma.SortOrder
+  language?: Prisma.SortOrderInput | Prisma.SortOrder
+  wordCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  imageCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  hasVideo?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrderInput | Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrderInput | Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrderInput | Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrderInput | Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrderInput | Prisma.SortOrder
+  canonicalUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  siteName?: Prisma.SortOrderInput | Prisma.SortOrder
+  ogType?: Prisma.SortOrderInput | Prisma.SortOrder
+  schemaType?: Prisma.SortOrderInput | Prisma.SortOrder
+  contentVersions?: Prisma.SortOrder
+  scoreHistory?: Prisma.SortOrder
+  authorId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ContentCountOrderByAggregateInput
+  _avg?: Prisma.ContentAvgOrderByAggregateInput
   _max?: Prisma.ContentMaxOrderByAggregateInput
   _min?: Prisma.ContentMinOrderByAggregateInput
+  _sum?: Prisma.ContentSumOrderByAggregateInput
 }
 
 export type ContentScalarWhereWithAggregatesInput = {
@@ -289,6 +665,32 @@ export type ContentScalarWhereWithAggregatesInput = {
   sourceType?: Prisma.StringWithAggregatesFilter<"Content"> | string
   status?: Prisma.StringWithAggregatesFilter<"Content"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Content"> | Date | string
+  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Content"> | Date | string | null
+  author?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  language?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  wordCount?: Prisma.IntNullableWithAggregatesFilter<"Content"> | number | null
+  sentenceCount?: Prisma.IntNullableWithAggregatesFilter<"Content"> | number | null
+  paragraphCount?: Prisma.IntNullableWithAggregatesFilter<"Content"> | number | null
+  readingLevel?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  linkCount?: Prisma.IntNullableWithAggregatesFilter<"Content"> | number | null
+  externalLinkCount?: Prisma.IntNullableWithAggregatesFilter<"Content"> | number | null
+  imageCount?: Prisma.IntNullableWithAggregatesFilter<"Content"> | number | null
+  hasVideo?: Prisma.BoolWithAggregatesFilter<"Content"> | boolean
+  vocabularyDiversity?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  avgSentenceLength?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  sentenceLengthVariance?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  punctuationDiversity?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  repetitionScore?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  sentimentScore?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  namedEntityDensity?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  temporalReferenceDensity?: Prisma.FloatNullableWithAggregatesFilter<"Content"> | number | null
+  canonicalUrl?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  siteName?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  ogType?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  schemaType?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
+  contentVersions?: Prisma.JsonNullableListFilter<"Content">
+  scoreHistory?: Prisma.JsonNullableListFilter<"Content">
+  authorId?: Prisma.StringNullableWithAggregatesFilter<"Content"> | string | null
 }
 
 export type ContentCreateInput = {
@@ -302,8 +704,35 @@ export type ContentCreateInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
   aiScore?: Prisma.AiScoreCreateNestedOneWithoutContentInput
   media?: Prisma.ContentMediaCreateNestedManyWithoutContentInput
+  authorRef?: Prisma.AuthorCreateNestedOneWithoutContentInput
+  topics?: Prisma.ContentTopicCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateInput = {
@@ -317,8 +746,35 @@ export type ContentUncheckedCreateInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: string | null
   aiScore?: Prisma.AiScoreUncheckedCreateNestedOneWithoutContentInput
   media?: Prisma.ContentMediaUncheckedCreateNestedManyWithoutContentInput
+  topics?: Prisma.ContentTopicUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentUpdateInput = {
@@ -332,8 +788,35 @@ export type ContentUpdateInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
   aiScore?: Prisma.AiScoreUpdateOneWithoutContentNestedInput
   media?: Prisma.ContentMediaUpdateManyWithoutContentNestedInput
+  authorRef?: Prisma.AuthorUpdateOneWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateInput = {
@@ -347,8 +830,35 @@ export type ContentUncheckedUpdateInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiScore?: Prisma.AiScoreUncheckedUpdateOneWithoutContentNestedInput
   media?: Prisma.ContentMediaUncheckedUpdateManyWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateManyInput = {
@@ -362,6 +872,32 @@ export type ContentCreateManyInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: string | null
 }
 
 export type ContentUpdateManyMutationInput = {
@@ -375,6 +911,31 @@ export type ContentUpdateManyMutationInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
 }
 
 export type ContentUncheckedUpdateManyInput = {
@@ -388,6 +949,47 @@ export type ContentUncheckedUpdateManyInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type JsonNullableListFilter<$PrismaModel = never> =
+| Prisma.PatchUndefined<
+    Prisma.Either<Required<JsonNullableListFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>,
+    Required<JsonNullableListFilterBase<$PrismaModel>>
+  >
+| Prisma.OptionalFlat<Omit<Required<JsonNullableListFilterBase<$PrismaModel>>, 'path'>>
+
+export type JsonNullableListFilterBase<$PrismaModel = never> = {
+  equals?: runtime.InputJsonValue[] | Prisma.ListJsonFieldRefInput<$PrismaModel> | null
+  has?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | null
+  hasEvery?: runtime.InputJsonValue[] | Prisma.ListJsonFieldRefInput<$PrismaModel>
+  hasSome?: runtime.InputJsonValue[] | Prisma.ListJsonFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type ContentCountOrderByAggregateInput = {
@@ -401,6 +1003,50 @@ export type ContentCountOrderByAggregateInput = {
   sourceType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  author?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrder
+  readingLevel?: Prisma.SortOrder
+  linkCount?: Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrder
+  imageCount?: Prisma.SortOrder
+  hasVideo?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrder
+  canonicalUrl?: Prisma.SortOrder
+  siteName?: Prisma.SortOrder
+  ogType?: Prisma.SortOrder
+  schemaType?: Prisma.SortOrder
+  contentVersions?: Prisma.SortOrder
+  scoreHistory?: Prisma.SortOrder
+  authorId?: Prisma.SortOrder
+}
+
+export type ContentAvgOrderByAggregateInput = {
+  wordCount?: Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrder
+  readingLevel?: Prisma.SortOrder
+  linkCount?: Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrder
+  imageCount?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrder
 }
 
 export type ContentMaxOrderByAggregateInput = {
@@ -414,6 +1060,30 @@ export type ContentMaxOrderByAggregateInput = {
   sourceType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  author?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrder
+  readingLevel?: Prisma.SortOrder
+  linkCount?: Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrder
+  imageCount?: Prisma.SortOrder
+  hasVideo?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrder
+  canonicalUrl?: Prisma.SortOrder
+  siteName?: Prisma.SortOrder
+  ogType?: Prisma.SortOrder
+  schemaType?: Prisma.SortOrder
+  authorId?: Prisma.SortOrder
 }
 
 export type ContentMinOrderByAggregateInput = {
@@ -427,11 +1097,71 @@ export type ContentMinOrderByAggregateInput = {
   sourceType?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
+  author?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  wordCount?: Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrder
+  readingLevel?: Prisma.SortOrder
+  linkCount?: Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrder
+  imageCount?: Prisma.SortOrder
+  hasVideo?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrder
+  canonicalUrl?: Prisma.SortOrder
+  siteName?: Prisma.SortOrder
+  ogType?: Prisma.SortOrder
+  schemaType?: Prisma.SortOrder
+  authorId?: Prisma.SortOrder
+}
+
+export type ContentSumOrderByAggregateInput = {
+  wordCount?: Prisma.SortOrder
+  sentenceCount?: Prisma.SortOrder
+  paragraphCount?: Prisma.SortOrder
+  readingLevel?: Prisma.SortOrder
+  linkCount?: Prisma.SortOrder
+  externalLinkCount?: Prisma.SortOrder
+  imageCount?: Prisma.SortOrder
+  vocabularyDiversity?: Prisma.SortOrder
+  avgSentenceLength?: Prisma.SortOrder
+  sentenceLengthVariance?: Prisma.SortOrder
+  punctuationDiversity?: Prisma.SortOrder
+  repetitionScore?: Prisma.SortOrder
+  sentimentScore?: Prisma.SortOrder
+  namedEntityDensity?: Prisma.SortOrder
+  temporalReferenceDensity?: Prisma.SortOrder
 }
 
 export type ContentScalarRelationFilter = {
   is?: Prisma.ContentWhereInput
   isNot?: Prisma.ContentWhereInput
+}
+
+export type ContentListRelationFilter = {
+  every?: Prisma.ContentWhereInput
+  some?: Prisma.ContentWhereInput
+  none?: Prisma.ContentWhereInput
+}
+
+export type ContentOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type ContentCreatecontentVersionsInput = {
+  set: runtime.InputJsonValue[]
+}
+
+export type ContentCreatescoreHistoryInput = {
+  set: runtime.InputJsonValue[]
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -444,6 +1174,40 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type ContentUpdatecontentVersionsInput = {
+  set?: runtime.InputJsonValue[]
+  push?: runtime.InputJsonValue | runtime.InputJsonValue[]
+}
+
+export type ContentUpdatescoreHistoryInput = {
+  set?: runtime.InputJsonValue[]
+  push?: runtime.InputJsonValue | runtime.InputJsonValue[]
 }
 
 export type ContentCreateNestedOneWithoutAiScoreInput = {
@@ -474,6 +1238,62 @@ export type ContentUpdateOneRequiredWithoutMediaNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutMediaInput, Prisma.ContentUpdateWithoutMediaInput>, Prisma.ContentUncheckedUpdateWithoutMediaInput>
 }
 
+export type ContentCreateNestedManyWithoutAuthorRefInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutAuthorRefInput, Prisma.ContentUncheckedCreateWithoutAuthorRefInput> | Prisma.ContentCreateWithoutAuthorRefInput[] | Prisma.ContentUncheckedCreateWithoutAuthorRefInput[]
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutAuthorRefInput | Prisma.ContentCreateOrConnectWithoutAuthorRefInput[]
+  createMany?: Prisma.ContentCreateManyAuthorRefInputEnvelope
+  connect?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+}
+
+export type ContentUncheckedCreateNestedManyWithoutAuthorRefInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutAuthorRefInput, Prisma.ContentUncheckedCreateWithoutAuthorRefInput> | Prisma.ContentCreateWithoutAuthorRefInput[] | Prisma.ContentUncheckedCreateWithoutAuthorRefInput[]
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutAuthorRefInput | Prisma.ContentCreateOrConnectWithoutAuthorRefInput[]
+  createMany?: Prisma.ContentCreateManyAuthorRefInputEnvelope
+  connect?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+}
+
+export type ContentUpdateManyWithoutAuthorRefNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutAuthorRefInput, Prisma.ContentUncheckedCreateWithoutAuthorRefInput> | Prisma.ContentCreateWithoutAuthorRefInput[] | Prisma.ContentUncheckedCreateWithoutAuthorRefInput[]
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutAuthorRefInput | Prisma.ContentCreateOrConnectWithoutAuthorRefInput[]
+  upsert?: Prisma.ContentUpsertWithWhereUniqueWithoutAuthorRefInput | Prisma.ContentUpsertWithWhereUniqueWithoutAuthorRefInput[]
+  createMany?: Prisma.ContentCreateManyAuthorRefInputEnvelope
+  set?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  disconnect?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  delete?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  connect?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  update?: Prisma.ContentUpdateWithWhereUniqueWithoutAuthorRefInput | Prisma.ContentUpdateWithWhereUniqueWithoutAuthorRefInput[]
+  updateMany?: Prisma.ContentUpdateManyWithWhereWithoutAuthorRefInput | Prisma.ContentUpdateManyWithWhereWithoutAuthorRefInput[]
+  deleteMany?: Prisma.ContentScalarWhereInput | Prisma.ContentScalarWhereInput[]
+}
+
+export type ContentUncheckedUpdateManyWithoutAuthorRefNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutAuthorRefInput, Prisma.ContentUncheckedCreateWithoutAuthorRefInput> | Prisma.ContentCreateWithoutAuthorRefInput[] | Prisma.ContentUncheckedCreateWithoutAuthorRefInput[]
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutAuthorRefInput | Prisma.ContentCreateOrConnectWithoutAuthorRefInput[]
+  upsert?: Prisma.ContentUpsertWithWhereUniqueWithoutAuthorRefInput | Prisma.ContentUpsertWithWhereUniqueWithoutAuthorRefInput[]
+  createMany?: Prisma.ContentCreateManyAuthorRefInputEnvelope
+  set?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  disconnect?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  delete?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  connect?: Prisma.ContentWhereUniqueInput | Prisma.ContentWhereUniqueInput[]
+  update?: Prisma.ContentUpdateWithWhereUniqueWithoutAuthorRefInput | Prisma.ContentUpdateWithWhereUniqueWithoutAuthorRefInput[]
+  updateMany?: Prisma.ContentUpdateManyWithWhereWithoutAuthorRefInput | Prisma.ContentUpdateManyWithWhereWithoutAuthorRefInput[]
+  deleteMany?: Prisma.ContentScalarWhereInput | Prisma.ContentScalarWhereInput[]
+}
+
+export type ContentCreateNestedOneWithoutTopicsInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutTopicsInput, Prisma.ContentUncheckedCreateWithoutTopicsInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutTopicsInput
+  connect?: Prisma.ContentWhereUniqueInput
+}
+
+export type ContentUpdateOneRequiredWithoutTopicsNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentCreateWithoutTopicsInput, Prisma.ContentUncheckedCreateWithoutTopicsInput>
+  connectOrCreate?: Prisma.ContentCreateOrConnectWithoutTopicsInput
+  upsert?: Prisma.ContentUpsertWithoutTopicsInput
+  connect?: Prisma.ContentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContentUpdateToOneWithWhereWithoutTopicsInput, Prisma.ContentUpdateWithoutTopicsInput>, Prisma.ContentUncheckedUpdateWithoutTopicsInput>
+}
+
 export type ContentCreateWithoutAiScoreInput = {
   id?: string
   url: string
@@ -485,7 +1305,34 @@ export type ContentCreateWithoutAiScoreInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
   media?: Prisma.ContentMediaCreateNestedManyWithoutContentInput
+  authorRef?: Prisma.AuthorCreateNestedOneWithoutContentInput
+  topics?: Prisma.ContentTopicCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutAiScoreInput = {
@@ -499,7 +1346,34 @@ export type ContentUncheckedCreateWithoutAiScoreInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: string | null
   media?: Prisma.ContentMediaUncheckedCreateNestedManyWithoutContentInput
+  topics?: Prisma.ContentTopicUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutAiScoreInput = {
@@ -529,7 +1403,34 @@ export type ContentUpdateWithoutAiScoreInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
   media?: Prisma.ContentMediaUpdateManyWithoutContentNestedInput
+  authorRef?: Prisma.AuthorUpdateOneWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutAiScoreInput = {
@@ -543,7 +1444,34 @@ export type ContentUncheckedUpdateWithoutAiScoreInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   media?: Prisma.ContentMediaUncheckedUpdateManyWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUncheckedUpdateManyWithoutContentNestedInput
 }
 
 export type ContentCreateWithoutMediaInput = {
@@ -557,7 +1485,34 @@ export type ContentCreateWithoutMediaInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
   aiScore?: Prisma.AiScoreCreateNestedOneWithoutContentInput
+  authorRef?: Prisma.AuthorCreateNestedOneWithoutContentInput
+  topics?: Prisma.ContentTopicCreateNestedManyWithoutContentInput
 }
 
 export type ContentUncheckedCreateWithoutMediaInput = {
@@ -571,7 +1526,34 @@ export type ContentUncheckedCreateWithoutMediaInput = {
   sourceType?: string
   status?: string
   createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: string | null
   aiScore?: Prisma.AiScoreUncheckedCreateNestedOneWithoutContentInput
+  topics?: Prisma.ContentTopicUncheckedCreateNestedManyWithoutContentInput
 }
 
 export type ContentCreateOrConnectWithoutMediaInput = {
@@ -601,7 +1583,34 @@ export type ContentUpdateWithoutMediaInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
   aiScore?: Prisma.AiScoreUpdateOneWithoutContentNestedInput
+  authorRef?: Prisma.AuthorUpdateOneWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUpdateManyWithoutContentNestedInput
 }
 
 export type ContentUncheckedUpdateWithoutMediaInput = {
@@ -615,7 +1624,522 @@ export type ContentUncheckedUpdateWithoutMediaInput = {
   sourceType?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aiScore?: Prisma.AiScoreUncheckedUpdateOneWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUncheckedUpdateManyWithoutContentNestedInput
+}
+
+export type ContentCreateWithoutAuthorRefInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  aiScore?: Prisma.AiScoreCreateNestedOneWithoutContentInput
+  media?: Prisma.ContentMediaCreateNestedManyWithoutContentInput
+  topics?: Prisma.ContentTopicCreateNestedManyWithoutContentInput
+}
+
+export type ContentUncheckedCreateWithoutAuthorRefInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  aiScore?: Prisma.AiScoreUncheckedCreateNestedOneWithoutContentInput
+  media?: Prisma.ContentMediaUncheckedCreateNestedManyWithoutContentInput
+  topics?: Prisma.ContentTopicUncheckedCreateNestedManyWithoutContentInput
+}
+
+export type ContentCreateOrConnectWithoutAuthorRefInput = {
+  where: Prisma.ContentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentCreateWithoutAuthorRefInput, Prisma.ContentUncheckedCreateWithoutAuthorRefInput>
+}
+
+export type ContentCreateManyAuthorRefInputEnvelope = {
+  data: Prisma.ContentCreateManyAuthorRefInput | Prisma.ContentCreateManyAuthorRefInput[]
+  skipDuplicates?: boolean
+}
+
+export type ContentUpsertWithWhereUniqueWithoutAuthorRefInput = {
+  where: Prisma.ContentWhereUniqueInput
+  update: Prisma.XOR<Prisma.ContentUpdateWithoutAuthorRefInput, Prisma.ContentUncheckedUpdateWithoutAuthorRefInput>
+  create: Prisma.XOR<Prisma.ContentCreateWithoutAuthorRefInput, Prisma.ContentUncheckedCreateWithoutAuthorRefInput>
+}
+
+export type ContentUpdateWithWhereUniqueWithoutAuthorRefInput = {
+  where: Prisma.ContentWhereUniqueInput
+  data: Prisma.XOR<Prisma.ContentUpdateWithoutAuthorRefInput, Prisma.ContentUncheckedUpdateWithoutAuthorRefInput>
+}
+
+export type ContentUpdateManyWithWhereWithoutAuthorRefInput = {
+  where: Prisma.ContentScalarWhereInput
+  data: Prisma.XOR<Prisma.ContentUpdateManyMutationInput, Prisma.ContentUncheckedUpdateManyWithoutAuthorRefInput>
+}
+
+export type ContentScalarWhereInput = {
+  AND?: Prisma.ContentScalarWhereInput | Prisma.ContentScalarWhereInput[]
+  OR?: Prisma.ContentScalarWhereInput[]
+  NOT?: Prisma.ContentScalarWhereInput | Prisma.ContentScalarWhereInput[]
+  id?: Prisma.StringFilter<"Content"> | string
+  url?: Prisma.StringFilter<"Content"> | string
+  domain?: Prisma.StringFilter<"Content"> | string
+  title?: Prisma.StringNullableFilter<"Content"> | string | null
+  description?: Prisma.StringNullableFilter<"Content"> | string | null
+  contentText?: Prisma.StringFilter<"Content"> | string
+  contentHash?: Prisma.StringFilter<"Content"> | string
+  sourceType?: Prisma.StringFilter<"Content"> | string
+  status?: Prisma.StringFilter<"Content"> | string
+  createdAt?: Prisma.DateTimeFilter<"Content"> | Date | string
+  publishedAt?: Prisma.DateTimeNullableFilter<"Content"> | Date | string | null
+  author?: Prisma.StringNullableFilter<"Content"> | string | null
+  language?: Prisma.StringNullableFilter<"Content"> | string | null
+  wordCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  sentenceCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  paragraphCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  readingLevel?: Prisma.FloatNullableFilter<"Content"> | number | null
+  linkCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  externalLinkCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  imageCount?: Prisma.IntNullableFilter<"Content"> | number | null
+  hasVideo?: Prisma.BoolFilter<"Content"> | boolean
+  vocabularyDiversity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  avgSentenceLength?: Prisma.FloatNullableFilter<"Content"> | number | null
+  sentenceLengthVariance?: Prisma.FloatNullableFilter<"Content"> | number | null
+  punctuationDiversity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  repetitionScore?: Prisma.FloatNullableFilter<"Content"> | number | null
+  sentimentScore?: Prisma.FloatNullableFilter<"Content"> | number | null
+  namedEntityDensity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  temporalReferenceDensity?: Prisma.FloatNullableFilter<"Content"> | number | null
+  canonicalUrl?: Prisma.StringNullableFilter<"Content"> | string | null
+  siteName?: Prisma.StringNullableFilter<"Content"> | string | null
+  ogType?: Prisma.StringNullableFilter<"Content"> | string | null
+  schemaType?: Prisma.StringNullableFilter<"Content"> | string | null
+  contentVersions?: Prisma.JsonNullableListFilter<"Content">
+  scoreHistory?: Prisma.JsonNullableListFilter<"Content">
+  authorId?: Prisma.StringNullableFilter<"Content"> | string | null
+}
+
+export type ContentCreateWithoutTopicsInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  aiScore?: Prisma.AiScoreCreateNestedOneWithoutContentInput
+  media?: Prisma.ContentMediaCreateNestedManyWithoutContentInput
+  authorRef?: Prisma.AuthorCreateNestedOneWithoutContentInput
+}
+
+export type ContentUncheckedCreateWithoutTopicsInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: string | null
+  aiScore?: Prisma.AiScoreUncheckedCreateNestedOneWithoutContentInput
+  media?: Prisma.ContentMediaUncheckedCreateNestedManyWithoutContentInput
+}
+
+export type ContentCreateOrConnectWithoutTopicsInput = {
+  where: Prisma.ContentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentCreateWithoutTopicsInput, Prisma.ContentUncheckedCreateWithoutTopicsInput>
+}
+
+export type ContentUpsertWithoutTopicsInput = {
+  update: Prisma.XOR<Prisma.ContentUpdateWithoutTopicsInput, Prisma.ContentUncheckedUpdateWithoutTopicsInput>
+  create: Prisma.XOR<Prisma.ContentCreateWithoutTopicsInput, Prisma.ContentUncheckedCreateWithoutTopicsInput>
+  where?: Prisma.ContentWhereInput
+}
+
+export type ContentUpdateToOneWithWhereWithoutTopicsInput = {
+  where?: Prisma.ContentWhereInput
+  data: Prisma.XOR<Prisma.ContentUpdateWithoutTopicsInput, Prisma.ContentUncheckedUpdateWithoutTopicsInput>
+}
+
+export type ContentUpdateWithoutTopicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  aiScore?: Prisma.AiScoreUpdateOneWithoutContentNestedInput
+  media?: Prisma.ContentMediaUpdateManyWithoutContentNestedInput
+  authorRef?: Prisma.AuthorUpdateOneWithoutContentNestedInput
+}
+
+export type ContentUncheckedUpdateWithoutTopicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiScore?: Prisma.AiScoreUncheckedUpdateOneWithoutContentNestedInput
+  media?: Prisma.ContentMediaUncheckedUpdateManyWithoutContentNestedInput
+}
+
+export type ContentCreateManyAuthorRefInput = {
+  id?: string
+  url: string
+  domain: string
+  title?: string | null
+  description?: string | null
+  contentText: string
+  contentHash: string
+  sourceType?: string
+  status?: string
+  createdAt?: Date | string
+  publishedAt?: Date | string | null
+  author?: string | null
+  language?: string | null
+  wordCount?: number | null
+  sentenceCount?: number | null
+  paragraphCount?: number | null
+  readingLevel?: number | null
+  linkCount?: number | null
+  externalLinkCount?: number | null
+  imageCount?: number | null
+  hasVideo?: boolean
+  vocabularyDiversity?: number | null
+  avgSentenceLength?: number | null
+  sentenceLengthVariance?: number | null
+  punctuationDiversity?: number | null
+  repetitionScore?: number | null
+  sentimentScore?: number | null
+  namedEntityDensity?: number | null
+  temporalReferenceDensity?: number | null
+  canonicalUrl?: string | null
+  siteName?: string | null
+  ogType?: string | null
+  schemaType?: string | null
+  contentVersions?: Prisma.ContentCreatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentCreatescoreHistoryInput | runtime.InputJsonValue[]
+}
+
+export type ContentUpdateWithoutAuthorRefInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  aiScore?: Prisma.AiScoreUpdateOneWithoutContentNestedInput
+  media?: Prisma.ContentMediaUpdateManyWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUpdateManyWithoutContentNestedInput
+}
+
+export type ContentUncheckedUpdateWithoutAuthorRefInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
+  aiScore?: Prisma.AiScoreUncheckedUpdateOneWithoutContentNestedInput
+  media?: Prisma.ContentMediaUncheckedUpdateManyWithoutContentNestedInput
+  topics?: Prisma.ContentTopicUncheckedUpdateManyWithoutContentNestedInput
+}
+
+export type ContentUncheckedUpdateManyWithoutAuthorRefInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentText?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wordCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sentenceCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  paragraphCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  readingLevel?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  linkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalLinkCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  imageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hasVideo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vocabularyDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  avgSentenceLength?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentenceLengthVariance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  punctuationDiversity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repetitionScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  sentimentScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  namedEntityDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  temporalReferenceDensity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  canonicalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  schemaType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentVersions?: Prisma.ContentUpdatecontentVersionsInput | runtime.InputJsonValue[]
+  scoreHistory?: Prisma.ContentUpdatescoreHistoryInput | runtime.InputJsonValue[]
 }
 
 
@@ -625,10 +2149,12 @@ export type ContentUncheckedUpdateWithoutMediaInput = {
 
 export type ContentCountOutputType = {
   media: number
+  topics: number
 }
 
 export type ContentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   media?: boolean | ContentCountOutputTypeCountMediaArgs
+  topics?: boolean | ContentCountOutputTypeCountTopicsArgs
 }
 
 /**
@@ -648,6 +2174,13 @@ export type ContentCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.ContentMediaWhereInput
 }
 
+/**
+ * ContentCountOutputType without action
+ */
+export type ContentCountOutputTypeCountTopicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentTopicWhereInput
+}
+
 
 export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -660,8 +2193,36 @@ export type ContentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   sourceType?: boolean
   status?: boolean
   createdAt?: boolean
+  publishedAt?: boolean
+  author?: boolean
+  language?: boolean
+  wordCount?: boolean
+  sentenceCount?: boolean
+  paragraphCount?: boolean
+  readingLevel?: boolean
+  linkCount?: boolean
+  externalLinkCount?: boolean
+  imageCount?: boolean
+  hasVideo?: boolean
+  vocabularyDiversity?: boolean
+  avgSentenceLength?: boolean
+  sentenceLengthVariance?: boolean
+  punctuationDiversity?: boolean
+  repetitionScore?: boolean
+  sentimentScore?: boolean
+  namedEntityDensity?: boolean
+  temporalReferenceDensity?: boolean
+  canonicalUrl?: boolean
+  siteName?: boolean
+  ogType?: boolean
+  schemaType?: boolean
+  contentVersions?: boolean
+  scoreHistory?: boolean
+  authorId?: boolean
   aiScore?: boolean | Prisma.Content$aiScoreArgs<ExtArgs>
   media?: boolean | Prisma.Content$mediaArgs<ExtArgs>
+  authorRef?: boolean | Prisma.Content$authorRefArgs<ExtArgs>
+  topics?: boolean | Prisma.Content$topicsArgs<ExtArgs>
   _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["content"]>
 
@@ -676,6 +2237,33 @@ export type ContentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sourceType?: boolean
   status?: boolean
   createdAt?: boolean
+  publishedAt?: boolean
+  author?: boolean
+  language?: boolean
+  wordCount?: boolean
+  sentenceCount?: boolean
+  paragraphCount?: boolean
+  readingLevel?: boolean
+  linkCount?: boolean
+  externalLinkCount?: boolean
+  imageCount?: boolean
+  hasVideo?: boolean
+  vocabularyDiversity?: boolean
+  avgSentenceLength?: boolean
+  sentenceLengthVariance?: boolean
+  punctuationDiversity?: boolean
+  repetitionScore?: boolean
+  sentimentScore?: boolean
+  namedEntityDensity?: boolean
+  temporalReferenceDensity?: boolean
+  canonicalUrl?: boolean
+  siteName?: boolean
+  ogType?: boolean
+  schemaType?: boolean
+  contentVersions?: boolean
+  scoreHistory?: boolean
+  authorId?: boolean
+  authorRef?: boolean | Prisma.Content$authorRefArgs<ExtArgs>
 }, ExtArgs["result"]["content"]>
 
 export type ContentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -689,6 +2277,33 @@ export type ContentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sourceType?: boolean
   status?: boolean
   createdAt?: boolean
+  publishedAt?: boolean
+  author?: boolean
+  language?: boolean
+  wordCount?: boolean
+  sentenceCount?: boolean
+  paragraphCount?: boolean
+  readingLevel?: boolean
+  linkCount?: boolean
+  externalLinkCount?: boolean
+  imageCount?: boolean
+  hasVideo?: boolean
+  vocabularyDiversity?: boolean
+  avgSentenceLength?: boolean
+  sentenceLengthVariance?: boolean
+  punctuationDiversity?: boolean
+  repetitionScore?: boolean
+  sentimentScore?: boolean
+  namedEntityDensity?: boolean
+  temporalReferenceDensity?: boolean
+  canonicalUrl?: boolean
+  siteName?: boolean
+  ogType?: boolean
+  schemaType?: boolean
+  contentVersions?: boolean
+  scoreHistory?: boolean
+  authorId?: boolean
+  authorRef?: boolean | Prisma.Content$authorRefArgs<ExtArgs>
 }, ExtArgs["result"]["content"]>
 
 export type ContentSelectScalar = {
@@ -702,22 +2317,56 @@ export type ContentSelectScalar = {
   sourceType?: boolean
   status?: boolean
   createdAt?: boolean
+  publishedAt?: boolean
+  author?: boolean
+  language?: boolean
+  wordCount?: boolean
+  sentenceCount?: boolean
+  paragraphCount?: boolean
+  readingLevel?: boolean
+  linkCount?: boolean
+  externalLinkCount?: boolean
+  imageCount?: boolean
+  hasVideo?: boolean
+  vocabularyDiversity?: boolean
+  avgSentenceLength?: boolean
+  sentenceLengthVariance?: boolean
+  punctuationDiversity?: boolean
+  repetitionScore?: boolean
+  sentimentScore?: boolean
+  namedEntityDensity?: boolean
+  temporalReferenceDensity?: boolean
+  canonicalUrl?: boolean
+  siteName?: boolean
+  ogType?: boolean
+  schemaType?: boolean
+  contentVersions?: boolean
+  scoreHistory?: boolean
+  authorId?: boolean
 }
 
-export type ContentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "domain" | "title" | "description" | "contentText" | "contentHash" | "sourceType" | "status" | "createdAt", ExtArgs["result"]["content"]>
+export type ContentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "domain" | "title" | "description" | "contentText" | "contentHash" | "sourceType" | "status" | "createdAt" | "publishedAt" | "author" | "language" | "wordCount" | "sentenceCount" | "paragraphCount" | "readingLevel" | "linkCount" | "externalLinkCount" | "imageCount" | "hasVideo" | "vocabularyDiversity" | "avgSentenceLength" | "sentenceLengthVariance" | "punctuationDiversity" | "repetitionScore" | "sentimentScore" | "namedEntityDensity" | "temporalReferenceDensity" | "canonicalUrl" | "siteName" | "ogType" | "schemaType" | "contentVersions" | "scoreHistory" | "authorId", ExtArgs["result"]["content"]>
 export type ContentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   aiScore?: boolean | Prisma.Content$aiScoreArgs<ExtArgs>
   media?: boolean | Prisma.Content$mediaArgs<ExtArgs>
+  authorRef?: boolean | Prisma.Content$authorRefArgs<ExtArgs>
+  topics?: boolean | Prisma.Content$topicsArgs<ExtArgs>
   _count?: boolean | Prisma.ContentCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ContentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ContentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ContentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  authorRef?: boolean | Prisma.Content$authorRefArgs<ExtArgs>
+}
+export type ContentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  authorRef?: boolean | Prisma.Content$authorRefArgs<ExtArgs>
+}
 
 export type $ContentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Content"
   objects: {
     aiScore: Prisma.$AiScorePayload<ExtArgs> | null
     media: Prisma.$ContentMediaPayload<ExtArgs>[]
+    authorRef: Prisma.$AuthorPayload<ExtArgs> | null
+    topics: Prisma.$ContentTopicPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -730,6 +2379,32 @@ export type $ContentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     sourceType: string
     status: string
     createdAt: Date
+    publishedAt: Date | null
+    author: string | null
+    language: string | null
+    wordCount: number | null
+    sentenceCount: number | null
+    paragraphCount: number | null
+    readingLevel: number | null
+    linkCount: number | null
+    externalLinkCount: number | null
+    imageCount: number | null
+    hasVideo: boolean
+    vocabularyDiversity: number | null
+    avgSentenceLength: number | null
+    sentenceLengthVariance: number | null
+    punctuationDiversity: number | null
+    repetitionScore: number | null
+    sentimentScore: number | null
+    namedEntityDensity: number | null
+    temporalReferenceDensity: number | null
+    canonicalUrl: string | null
+    siteName: string | null
+    ogType: string | null
+    schemaType: string | null
+    contentVersions: runtime.JsonValue[]
+    scoreHistory: runtime.JsonValue[]
+    authorId: string | null
   }, ExtArgs["result"]["content"]>
   composites: {}
 }
@@ -1126,6 +2801,8 @@ export interface Prisma__ContentClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   aiScore<T extends Prisma.Content$aiScoreArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$aiScoreArgs<ExtArgs>>): Prisma.Prisma__AiScoreClient<runtime.Types.Result.GetResult<Prisma.$AiScorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   media<T extends Prisma.Content$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  authorRef<T extends Prisma.Content$authorRefArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$authorRefArgs<ExtArgs>>): Prisma.Prisma__AuthorClient<runtime.Types.Result.GetResult<Prisma.$AuthorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  topics<T extends Prisma.Content$topicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Content$topicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentTopicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1165,6 +2842,32 @@ export interface ContentFieldRefs {
   readonly sourceType: Prisma.FieldRef<"Content", 'String'>
   readonly status: Prisma.FieldRef<"Content", 'String'>
   readonly createdAt: Prisma.FieldRef<"Content", 'DateTime'>
+  readonly publishedAt: Prisma.FieldRef<"Content", 'DateTime'>
+  readonly author: Prisma.FieldRef<"Content", 'String'>
+  readonly language: Prisma.FieldRef<"Content", 'String'>
+  readonly wordCount: Prisma.FieldRef<"Content", 'Int'>
+  readonly sentenceCount: Prisma.FieldRef<"Content", 'Int'>
+  readonly paragraphCount: Prisma.FieldRef<"Content", 'Int'>
+  readonly readingLevel: Prisma.FieldRef<"Content", 'Float'>
+  readonly linkCount: Prisma.FieldRef<"Content", 'Int'>
+  readonly externalLinkCount: Prisma.FieldRef<"Content", 'Int'>
+  readonly imageCount: Prisma.FieldRef<"Content", 'Int'>
+  readonly hasVideo: Prisma.FieldRef<"Content", 'Boolean'>
+  readonly vocabularyDiversity: Prisma.FieldRef<"Content", 'Float'>
+  readonly avgSentenceLength: Prisma.FieldRef<"Content", 'Float'>
+  readonly sentenceLengthVariance: Prisma.FieldRef<"Content", 'Float'>
+  readonly punctuationDiversity: Prisma.FieldRef<"Content", 'Float'>
+  readonly repetitionScore: Prisma.FieldRef<"Content", 'Float'>
+  readonly sentimentScore: Prisma.FieldRef<"Content", 'Float'>
+  readonly namedEntityDensity: Prisma.FieldRef<"Content", 'Float'>
+  readonly temporalReferenceDensity: Prisma.FieldRef<"Content", 'Float'>
+  readonly canonicalUrl: Prisma.FieldRef<"Content", 'String'>
+  readonly siteName: Prisma.FieldRef<"Content", 'String'>
+  readonly ogType: Prisma.FieldRef<"Content", 'String'>
+  readonly schemaType: Prisma.FieldRef<"Content", 'String'>
+  readonly contentVersions: Prisma.FieldRef<"Content", 'Json[]'>
+  readonly scoreHistory: Prisma.FieldRef<"Content", 'Json[]'>
+  readonly authorId: Prisma.FieldRef<"Content", 'String'>
 }
     
 
@@ -1414,6 +3117,10 @@ export type ContentCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.ContentCreateManyInput | Prisma.ContentCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1484,6 +3191,10 @@ export type ContentUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many Contents to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1593,6 +3304,49 @@ export type Content$mediaArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.ContentMediaScalarFieldEnum | Prisma.ContentMediaScalarFieldEnum[]
+}
+
+/**
+ * Content.authorRef
+ */
+export type Content$authorRefArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Author
+   */
+  select?: Prisma.AuthorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Author
+   */
+  omit?: Prisma.AuthorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuthorInclude<ExtArgs> | null
+  where?: Prisma.AuthorWhereInput
+}
+
+/**
+ * Content.topics
+ */
+export type Content$topicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentTopic
+   */
+  select?: Prisma.ContentTopicSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentTopic
+   */
+  omit?: Prisma.ContentTopicOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentTopicInclude<ExtArgs> | null
+  where?: Prisma.ContentTopicWhereInput
+  orderBy?: Prisma.ContentTopicOrderByWithRelationInput | Prisma.ContentTopicOrderByWithRelationInput[]
+  cursor?: Prisma.ContentTopicWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentTopicScalarFieldEnum | Prisma.ContentTopicScalarFieldEnum[]
 }
 
 /**

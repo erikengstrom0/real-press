@@ -8,13 +8,75 @@
  * Only expose signal levels and human-expected ranges.
  */
 
-import type {
-  Classification,
-  ContentType,
-  StoredProviderDetail,
-  StoredHeuristicMetrics,
-  StoredFusionDetails,
-} from './types'
+import type { Classification, ContentType } from './types'
+
+// ---------------------------------------------------------------------------
+// Stored JSONB shapes (defined locally so Agent C is self-contained;
+// Agent A adds matching interfaces to types.ts — they will unify at merge)
+// ---------------------------------------------------------------------------
+
+export interface StoredProviderDetail {
+  name: string
+  type: string
+  score: number
+  confidence: number
+  isPrimary: boolean
+  available: boolean
+  metadata?: {
+    model?: string
+    truncated?: boolean
+    labels?: Array<{ label: string; score: number }>
+    burstiness?: number
+    averageGeneratedProb?: number
+    completelyGeneratedProb?: number
+    paragraphScores?: Array<{ index: number; score: number }>
+    imageUrl?: string
+    imageIndex?: number
+    frameIndex?: number
+    frameTimestamp?: number
+  }
+}
+
+export interface StoredHeuristicMetrics {
+  vocabularyDiversity: number
+  sentenceLengthVariation: number
+  avgSentenceLength: number
+  punctuationVariety: number
+  paragraphCount: number
+  wordCount: number
+  featureScores: {
+    vocabularyScore: number
+    variationScore: number
+    punctuationScore: number
+    lengthScore: number
+  }
+  featureWeights: {
+    vocabulary: number
+    variation: number
+    punctuation: number
+    length: number
+  }
+}
+
+export interface StoredFusionDetails {
+  method: 'text_only' | 'multi_modal'
+  textFusion?: {
+    primaryProvider: string
+    apiWeight: number
+    heuristicWeight: number
+    apiScore: number
+    heuristicScore: number
+  }
+  modalityWeights?: Array<{
+    type: string
+    baseWeight: number
+    confidence: number
+    effectiveWeight: number
+    score: number
+    contribution: number
+  }>
+  totalEffectiveWeight?: number
+}
 
 // ---------------------------------------------------------------------------
 // Input row types (match DB column shapes without importing Prisma)

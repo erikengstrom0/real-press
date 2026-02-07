@@ -78,6 +78,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <section className={styles.content}>
         {query ? (
           <SearchResultsContainer
+            key={query}
             initialResults={searchResponse.results}
             query={query}
             initialTotal={searchResponse.total}

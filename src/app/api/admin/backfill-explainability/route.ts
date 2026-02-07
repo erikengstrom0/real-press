@@ -55,8 +55,15 @@ export async function POST(request: NextRequest) {
 
   const errors: string[] = []
   let processed = 0
+  const startTime = Date.now()
+  const TIME_LIMIT_MS = 50_000 // Exit at 50s to leave margin before 60s timeout
 
   for (const row of toBackfillRaw) {
+    // Exit early if approaching the Vercel function timeout
+    if (Date.now() - startTime > TIME_LIMIT_MS) {
+      break
+    }
+
     try {
       // Fetch the content text for re-analysis
       const content = await prisma.content.findUnique({
@@ -138,10 +145,15 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  const timedOut = Date.now() - startTime > TIME_LIMIT_MS
+  // Adjust remaining to account for items we fetched but didn't process due to time limit
+  const actualRemaining = remaining + (toBackfillRaw.length - processed - errors.length)
+
   return NextResponse.json({
     processed,
-    remaining,
+    remaining: actualRemaining,
     errors,
+    timedOut,
     timestamp: new Date().toISOString(),
   })
 }

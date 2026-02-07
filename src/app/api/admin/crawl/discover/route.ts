@@ -4,12 +4,110 @@ import { z } from 'zod'
 const discoverSchema = z.object({
   topic: z.string().min(2).max(200),
   count: z.number().int().min(1).max(50).optional().default(20),
+  useCurated: z.boolean().optional().default(false), // Use curated sources instead of web search
 })
 
 interface SearchResult {
   url: string
   title: string
   snippet: string
+}
+
+interface BraveSearchResult {
+  web?: {
+    results: Array<{
+      url: string
+      title: string
+      description: string
+    }>
+  }
+}
+
+/**
+ * Search the web using Brave Search API
+ * Free tier: 2,000 queries/month
+ * Get your key at: https://brave.com/search/api/
+ */
+async function searchWithBrave(query: string, count: number = 20): Promise<SearchResult[]> {
+  const apiKey = process.env.BRAVE_SEARCH_API_KEY
+
+  if (!apiKey) {
+    return []
+  }
+
+  const params = new URLSearchParams({
+    q: query,
+    count: String(Math.min(count * 2, 40)), // Request extra for filtering
+    text_decorations: 'false',
+    search_lang: 'en',
+    result_filter: 'web',
+  })
+
+  try {
+    const response = await fetch(`https://api.search.brave.com/res/v1/web/search?${params}`, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Subscription-Token': apiKey,
+      },
+    })
+
+    if (!response.ok) {
+      console.error(`Brave Search error: ${response.status}`)
+      return []
+    }
+
+    const data: BraveSearchResult = await response.json()
+
+    if (!data.web?.results) {
+      return []
+    }
+
+    return data.web.results.map(result => ({
+      url: result.url,
+      title: result.title,
+      snippet: result.description,
+    }))
+  } catch (error) {
+    console.error('Brave Search failed:', error)
+    return []
+  }
+}
+
+/**
+ * Filter results to prefer article-like URLs
+ */
+function filterArticleUrls(results: SearchResult[]): SearchResult[] {
+  const excludeDomains = [
+    'youtube.com', 'youtu.be',
+    'twitter.com', 'x.com',
+    'facebook.com', 'instagram.com',
+    'tiktok.com', 'reddit.com',
+    'linkedin.com', 'pinterest.com',
+    'amazon.com', 'ebay.com',
+    'wikipedia.org',
+  ]
+
+  return results.filter(result => {
+    try {
+      const url = new URL(result.url)
+      const domain = url.hostname.replace('www.', '')
+
+      // Exclude social media and shopping sites
+      if (excludeDomains.some(d => domain.includes(d))) {
+        return false
+      }
+
+      // Exclude homepages (want articles, not landing pages)
+      const path = url.pathname
+      if (path === '/' || path === '/index.html' || path === '') {
+        return false
+      }
+
+      return true
+    } catch {
+      return false
+    }
+  })
 }
 
 // Comprehensive curated sources organized by topic
@@ -180,34 +278,67 @@ function getCuratedSources(topic: string): SearchResult[] {
   return results
 }
 
-// List available topics
+// List available topics and search config
 export async function GET() {
   const topics = Object.keys(CURATED_SOURCES).sort()
+  const braveConfigured = !!process.env.BRAVE_SEARCH_API_KEY
+
   return NextResponse.json({
     topics,
     count: topics.length,
+    webSearch: {
+      enabled: braveConfigured,
+      provider: braveConfigured ? 'brave' : 'none',
+      hint: braveConfigured
+        ? 'Web search enabled - search for any topic'
+        : 'Set BRAVE_SEARCH_API_KEY for web search (free: 2000 queries/month at brave.com/search/api)',
+    },
   })
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { topic, count } = discoverSchema.parse(body)
+    const { topic, count, useCurated } = discoverSchema.parse(body)
 
-    // Get curated sources for the topic
-    const results = getCuratedSources(topic).slice(0, count)
+    let results: SearchResult[] = []
+    let source = 'none'
 
-    // Find what topics matched
+    // If useCurated flag is set, only use curated sources
+    if (useCurated) {
+      results = getCuratedSources(topic).slice(0, count)
+      source = 'curated'
+    } else {
+      // Try web search first (Brave)
+      const searchQuery = `${topic} article OR blog OR essay`
+      const webResults = await searchWithBrave(searchQuery, count)
+
+      if (webResults.length > 0) {
+        results = filterArticleUrls(webResults).slice(0, count)
+        source = 'brave'
+      }
+
+      // Fall back to curated sources if no web results
+      if (results.length === 0) {
+        results = getCuratedSources(topic).slice(0, count)
+        source = results.length > 0 ? 'curated' : 'none'
+      }
+    }
+
+    // Find what curated topics matched (for reference)
     const matchedTopics = findMatchingTopics(topic)
 
     return NextResponse.json({
       success: true,
       query: topic,
-      matchedTopics,
+      source,
+      matchedTopics: matchedTopics.length > 0 ? matchedTopics : undefined,
       results,
       count: results.length,
       hint: results.length === 0
-        ? `No sources found for "${topic}". Try: ${Object.keys(CURATED_SOURCES).slice(0, 5).join(', ')}`
+        ? process.env.BRAVE_SEARCH_API_KEY
+          ? `No results found for "${topic}". Try a different search term.`
+          : `No curated sources for "${topic}". Add BRAVE_SEARCH_API_KEY for web search. Available topics: ${Object.keys(CURATED_SOURCES).slice(0, 5).join(', ')}`
         : undefined,
     })
   } catch (error) {

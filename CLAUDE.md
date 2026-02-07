@@ -1157,11 +1157,31 @@ Decisions made during development that should persist across sessions.
 3. **Files Modified**
    - `src/app/search/page.tsx` — Added `key={query}` prop (1-line change)
 
+### Search Page Layout & Header UX Polish (2026-02-07)
+
+1. **Search Bar / Filter Panel Right-Edge Alignment**
+   - Problem: SearchBar form had `max-width: 600px` while FilterPanel fills the full container width (~800px), causing misaligned right edges
+   - Fix: Removed `max-width: 600px` from `.form` in `SearchBar.module.css`
+   - Both elements now fill their parent container equally, so left and right edges align
+   - The search input uses `flex: 1` to absorb remaining space after the Search button
+
+2. **Header Profile Link → "Account"**
+   - Problem: The nav link after the divider displayed `session.user.name || session.user.email`, which showed "REAL PRESS" (the user's display name) — confusing because it matches the site logo
+   - Fix: Changed the link text to a static `"Account"` label
+   - The link still navigates to `/profile` for account management
+   - Clearer UX: distinguishes site branding from user navigation
+
+3. **Files Modified**
+   - `src/components/SearchBar.module.css` — Removed `max-width: 600px` from `.form`
+   - `src/components/Header.tsx` — Changed profile link text from dynamic user name to "Account"
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Search page layout alignment** - Aligned SearchBar right edge with FilterPanel by removing max-width constraint (2026-02-07)
+- [x] **Header "Account" link** - Changed dynamic user name to static "Account" label for clearer navigation (2026-02-07)
 - [x] **Fix search results not updating on subsequent searches** - Added `key={query}` to force remount of SearchResultsContainer (2026-02-07)
 - [x] **Phase 4: Public Verification API** - API key auth, verify endpoints (text/url/image/batch), key management UI, admin tier setter (2026-02-07)
 - [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)

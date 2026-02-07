@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  font-family: var(--font-headline);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+}
+
+.note {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-charcoal-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.paragraph {
+  position: relative;
+  padding: var(--space-3);
+  border-radius: 2px;
+  transition: background-color var(--transition-fast);
+}
+
+.paragraphText {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-charcoal);
+  margin: 0;
+}
+
+.scoreLabel {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-charcoal-light);
+  background: var(--color-cream);
+  padding: var(--space-1) var(--space-2);
+  border: var(--border-thin) solid var(--color-charcoal-muted);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: var(--z-above);
+}

@@ -1385,6 +1385,7 @@ Decisions made during development that should persist across sessions.
 - [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
 
 ### High Priority (Pre-Funding)
+- [ ] **Push ApiUsage schema to Neon** - Run `npx prisma db push` to create the `api_usage` table in production. Without this, quota tracking will fail at runtime.
 - [ ] **Run backfill on production** - Call `POST /api/admin/backfill-explainability` to populate JSONB data for existing content
 - [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
 - [x] ~~**Implement check-tier.ts**~~ - Done in Phase 5 with Stripe integration (2026-02-07)
@@ -1394,6 +1395,13 @@ Decisions made during development that should persist across sessions.
 - [ ] **Admin blocklist UI** - Build admin panel page for managing blocked domains (currently API-only via curl)
 - [ ] **URL shortener resolution for verify endpoint** - Currently only submit endpoint resolves shorteners; verify/url should too
 - [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
+
+### Phase 6 Known Gaps & Limitations
+- [ ] **Quota race condition** - Concurrent requests can slightly exceed the monthly limit because usage is recorded after processing (fire-and-forget), not atomically with the check. Acceptable for MVP traffic; fix with atomic counter or Redis at scale.
+- [ ] **Quota status off-by-one in response headers** - The `X-Quota-Used`/`X-Quota-Remaining` headers reflect the count at check time, not after the current request is recorded. Slightly stale for the in-flight request.
+- [ ] **No quota info in 429 JSON body** - When quota is exceeded, the error response includes quota headers but the JSON body only has a generic error message. Could add a `quota` field to the 429 body for easier programmatic handling.
+- [ ] **Quota cache** - `getQuotaStatus()` runs a `COUNT(*)` query on every API request. At high volume, add an in-memory or Redis cache with short TTL (e.g. 30s) to reduce DB pressure.
+- [ ] **Per-key usage breakdown** - `ApiUsage` records `apiKeyId` but there's no endpoint or dashboard to view per-key breakdowns. Users with multiple keys can't see which key is consuming their quota.
 
 ### Post-Funding Scale
 - [ ] Migrate scraper queue from PostgreSQL to Redis/BullMQ

@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
 import { getContentByUrl, createContentFromExtraction } from '@/lib/services/content.service'
 import {
-  analyzeAndStoreScore,
   analyzeMultiModalAndStore,
 } from '@/lib/services/ai-detection.service'
 import { normalizeUrl } from '@/lib/utils/url'
@@ -27,7 +26,7 @@ const submitSchema = z.object({
   // Optional: explicit video URL to analyze
   videoUrl: z.string().url().optional(),
   // Whether to extract and analyze media from the page
-  extractMedia: z.boolean().optional().default(false),
+  extractMedia: z.boolean().optional().default(true),
 })
 
 // Threshold: if queue has fewer than this many items, process synchronously
@@ -239,52 +238,29 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Determine if we need multi-modal analysis
-    const hasMedia = images.length > 0 || videoUrl
+    // Always run multi-modal analysis (handles text-only gracefully when no media found)
+    const analysisResult = await analyzeMultiModalAndStore(content.id, {
+      text: extracted.contentText,
+      images: images.length > 0 ? images : undefined,
+      videoUrl,
+    })
 
-    let analysisResult
+    logSubmission({ ip, url, outcome: 'success' })
 
-    if (hasMedia) {
-      // Run multi-modal AI detection
-      analysisResult = await analyzeMultiModalAndStore(content.id, {
-        text: extracted.contentText,
-        images: images.length > 0 ? images : undefined,
-        videoUrl,
-      })
-
-      logSubmission({ ip, url, outcome: 'success' })
-
-      return NextResponse.json({
-        success: true,
-        async: false,
-        contentId: content.id,
-        message: 'Content submitted and analyzed successfully',
-        aiScore: {
-          score: analysisResult.aiScore.compositeScore,
-          classification: analysisResult.aiScore.classification,
-          analyzedTypes: analysisResult.aiScore.analyzedTypes,
-          textScore: analysisResult.aiScore.textScore,
-          imageScore: analysisResult.aiScore.imageScore,
-          videoScore: analysisResult.aiScore.videoScore,
-        },
-      })
-    } else {
-      // Run text-only AI detection (backwards compatible)
-      analysisResult = await analyzeAndStoreScore(content.id, extracted.contentText)
-
-      logSubmission({ ip, url, outcome: 'success' })
-
-      return NextResponse.json({
-        success: true,
-        async: false,
-        contentId: content.id,
-        message: 'Content submitted and analyzed successfully',
-        aiScore: {
-          score: analysisResult.aiScore.compositeScore,
-          classification: analysisResult.aiScore.classification,
-        },
-      })
-    }
+    return NextResponse.json({
+      success: true,
+      async: false,
+      contentId: content.id,
+      message: 'Content submitted and analyzed successfully',
+      aiScore: {
+        score: analysisResult.aiScore.compositeScore,
+        classification: analysisResult.aiScore.classification,
+        analyzedTypes: analysisResult.aiScore.analyzedTypes,
+        textScore: analysisResult.aiScore.textScore,
+        imageScore: analysisResult.aiScore.imageScore,
+        videoScore: analysisResult.aiScore.videoScore,
+      },
+    })
   } catch (error) {
     if (error instanceof ExtractionError) {
       return NextResponse.json(

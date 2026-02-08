@@ -607,8 +607,8 @@ Decisions made during development that should persist across sessions.
    - All components updated to use `var(--color-*)`, `var(--font-*)`, etc.
    - Removed hardcoded colors (e.g., `#0070f3` → `var(--color-accent-primary)`)
 
-6. **Demo/Style Guide Page**
-   - `/demo` route shows all design system elements
+6. **Style Guide Page**
+   - `/styleguide` route shows all design system elements (renamed from `/demo` for clarity)
    - Color swatches, stamps, typography, buttons, cards
    - Sample search results with all classifications
    - Useful for testing and demonstrating the design
@@ -895,7 +895,7 @@ Decisions made during development that should persist across sessions.
 1. **Middleware-Based Authentication**
    - Created `src/middleware.ts` to protect `/admin/*` and `/api/admin/*` routes
    - Matches paths and checks for valid authentication before allowing access
-   - Public routes remain unprotected: `/`, `/search`, `/submit`, `/demo`
+   - Public routes remain unprotected: `/`, `/search`, `/submit`, `/styleguide`
    - Login page (`/admin/login`) explicitly excluded from protection to avoid redirect loops
 
 2. **Authentication Methods**

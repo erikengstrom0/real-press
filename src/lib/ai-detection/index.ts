@@ -231,7 +231,12 @@ async function analyzeImages(images: ImageInput[]): Promise<ContentTypeScore | n
   }
 
   if (!localImageProvider.isAvailable()) {
-    console.warn('Image detection is not available')
+    const mlUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000'
+    const enabled = process.env.PROVIDER_IMAGE_ENABLED
+    console.warn(
+      `Image detection is not available. ML_SERVICE_URL=${mlUrl}, PROVIDER_IMAGE_ENABLED=${enabled ?? '(not set, defaults to true)'}. ` +
+      `${images.length} image(s) will be skipped.`
+    )
     return null
   }
 

@@ -3,7 +3,6 @@ import { SubmissionStatus } from '@/generated/prisma/client'
 import { extractContent, ExtractionError } from './extraction.service'
 import { getContentByUrl, createContentFromExtraction } from './content.service'
 import {
-  analyzeAndStoreScore,
   analyzeMultiModalAndStore,
 } from './ai-detection.service'
 import {
@@ -56,7 +55,7 @@ export async function enqueueSubmission(
       userId: input.userId || null,
       url: input.url,
       priority,
-      extractMedia: input.extractMedia ?? false,
+      extractMedia: input.extractMedia ?? true,
       imageUrls: input.imageUrls ?? [],
       videoUrl: input.videoUrl || null,
     },
@@ -254,17 +253,12 @@ async function processSubmissionJob(
       data: { progress: 70 },
     })
 
-    const hasMedia = images.length > 0 || videoUrl
-
-    if (hasMedia) {
-      await analyzeMultiModalAndStore(content.id, {
-        text: extracted.contentText,
-        images: images.length > 0 ? images : undefined,
-        videoUrl,
-      })
-    } else {
-      await analyzeAndStoreScore(content.id, extracted.contentText)
-    }
+    // Always run multi-modal analysis (handles text-only gracefully when no media found)
+    await analyzeMultiModalAndStore(content.id, {
+      text: extracted.contentText,
+      images: images.length > 0 ? images : undefined,
+      videoUrl,
+    })
 
     // Stage 3: Complete
     await prisma.submissionJob.update({

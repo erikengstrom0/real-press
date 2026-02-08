@@ -9,18 +9,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
 import { verifyAuth, isAuthError, quotaHeaders } from '@/lib/api/verify-auth'
-import { detectAIContent, detectMultiModalContent } from '@/lib/ai-detection'
+import { detectMultiModalContent } from '@/lib/ai-detection'
 import { hasBreakdownAccess } from '@/lib/api/check-tier'
 import { formatFreeResponse, formatPaidResponse } from '@/lib/ai-detection/format-breakdown'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
 import { extractMediaFromUrl } from '@/lib/services/media-extraction.service'
-import { buildAiScoreRowFromComposite, buildAiScoreRowFromMultiModal } from '../_lib/build-score-row'
+import { buildAiScoreRowFromMultiModal } from '../_lib/build-score-row'
 import { recordApiUsage } from '@/lib/services/quota.service'
 import { isDomainBlocked } from '@/lib/security/domain-blocklist'
 
 const requestSchema = z.object({
   url: z.string().url('Must be a valid URL'),
-  extractMedia: z.boolean().optional().default(false),
+  extractMedia: z.boolean().optional().default(true),
 })
 
 export async function POST(request: NextRequest) {
@@ -77,22 +77,17 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 5. Detect
+  // 5. Detect (always multi-modal — handles text-only gracefully when no media found)
   try {
-    let scoreRow
-
-    if (parsed.data.extractMedia) {
-      const media = await extractMediaFromUrl(parsed.data.url)
-      const result = await detectMultiModalContent({
-        text: extracted.contentText,
-        images: media.images,
-        video: media.video ?? undefined,
-      })
-      scoreRow = buildAiScoreRowFromMultiModal(result)
-    } else {
-      const result = await detectAIContent(extracted.contentText)
-      scoreRow = buildAiScoreRowFromComposite(result)
-    }
+    const media = parsed.data.extractMedia
+      ? await extractMediaFromUrl(parsed.data.url)
+      : { images: [], video: null }
+    const result = await detectMultiModalContent({
+      text: extracted.contentText,
+      images: media.images.length > 0 ? media.images : undefined,
+      video: media.video ?? undefined,
+    })
+    const scoreRow = buildAiScoreRowFromMultiModal(result)
 
     // 6. Record usage
     recordApiUsage(authResult.userId, authResult.apiKeyId, 'verify-url').catch(() => {})

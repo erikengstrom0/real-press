@@ -12,6 +12,8 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.6.0 | 2026-02-07 | Phase 8: Malicious submission protection — domain blocklist, URL resolver, content validator, submission guard |
+| v1.5.0 | 2026-02-07 | API Usage Quotas — monthly quota enforcement, usage tracking, quota dashboard, API docs page |
 | v1.4.0 | 2026-02-07 | Phase 4: Public Verification API — API key auth, verify endpoints, key management UI |
 | v1.3.0 | 2026-02-07 | Phase 7 Wave 2: Integration — service persistence, breakdown API, backfill, content detail page |
 | v1.2.0 | 2026-02-07 | Phase 7 Wave 1: Explainability pipeline, schema, formatters, UI |
@@ -96,25 +98,29 @@ src/
 │   │   ├── page.tsx                    # Server component: article + score
 │   │   ├── ContentBreakdownSection.tsx # Client component: fetches & renders breakdown
 │   │   └── page.module.css
+│   ├── docs/page.tsx            # Public API documentation page
+│   ├── profile/usage/page.tsx   # API quota usage dashboard
 │   └── api/
 │       ├── search/route.ts   # Search endpoint
-│       ├── submit/route.ts   # Submission endpoint
+│       ├── submit/route.ts   # Submission endpoint (+ Phase 8 security)
 │       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
 │       ├── content/[id]/breakdown/route.ts  # Tier-gated breakdown API (Phase 7)
 │       ├── user/api-keys/route.ts           # User API key CRUD (Phase 4)
+│       ├── user/quota/route.ts              # User quota status API
 │       ├── v1/verify/                       # Public verification API (Phase 4)
 │       │   ├── _lib/build-score-row.ts      # Detection result → AiScoreRow mapper
-│       │   ├── text/route.ts                # POST text verification
-│       │   ├── url/route.ts                 # POST URL extraction + verification
-│       │   ├── image/route.ts               # POST image verification
-│       │   └── batch/route.ts               # POST batch verification
+│       │   ├── text/route.ts                # POST text verification (+ quota)
+│       │   ├── url/route.ts                 # POST URL verification (+ blocklist + quota)
+│       │   ├── image/route.ts               # POST image verification (+ quota)
+│       │   └── batch/route.ts               # POST batch verification (+ quota)
 │       └── admin/
 │           ├── crawl/worker/route.ts  # Job worker (Vercel Cron target)
 │           ├── crawl/jobs/route.ts    # Job queue management
 │           ├── crawl/seeds/route.ts   # Seed list import
 │           ├── content/[id]/route.ts  # Content inspection
 │           ├── users/[id]/tier/route.ts     # Admin tier setter (Phase 4)
-│           └── backfill-explainability/route.ts  # Backfill JSONB data (Phase 7)
+│           ├── backfill-explainability/route.ts  # Backfill JSONB data (Phase 7)
+│           └── blocklist/route.ts     # Admin domain blocklist CRUD (Phase 8)
 ├── components/
 │   ├── SearchBar.tsx
 │   ├── SearchResults.tsx
@@ -132,11 +138,20 @@ src/
 │       └── BreakdownTeaser.tsx       # Free user upgrade CTA
 └── lib/
     ├── db/prisma.ts          # Prisma client singleton
+    ├── config/
+    │   └── quotas.ts                 # Monthly quota limits per tier
+    ├── security/                     # Phase 8: Malicious submission protection
+    │   ├── domain-blocklist.ts       # Hardcoded + DB-backed domain blocklist
+    │   ├── url-resolver.ts           # Redirect follower with hop limit
+    │   ├── content-validator.ts      # Post-extraction content quality checks
+    │   ├── submission-guard.ts       # Per-user/IP submission rate limits
+    │   └── submission-log.ts         # Structured JSON logging for forensics
     ├── services/
     │   ├── content.service.ts
     │   ├── extraction.service.ts
     │   ├── ai-detection.service.ts
     │   ├── api-key.service.ts           # API key CRUD + SHA-256 hashing (Phase 4)
+    │   ├── quota.service.ts             # Monthly quota tracking + enforcement
     │   ├── media-extraction.service.ts  # Extract images/videos from URLs
     │   ├── crawl-job.service.ts         # Job queue management
     │   ├── crawl-worker.service.ts      # Job processing
@@ -147,7 +162,7 @@ src/
     │   └── author.service.ts            # Author tracking
     ├── api/
     │   ├── check-tier.ts             # User/API key tier lookup (Phase 7)
-    │   └── verify-auth.ts            # Dual auth: API key + session (Phase 4)
+    │   └── verify-auth.ts            # Dual auth + quota check (Phase 4 + Quotas)
     └── ai-detection/
         ├── index.ts              # Multi-modal orchestrator
         ├── composite-score.ts    # Score calculation
@@ -230,6 +245,8 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Phase 7 Wave 1 | Explainability pipeline, schema, formatters, UI | ✅ Complete |
 | Phase 7 Wave 2 | Integration: persistence, breakdown API, backfill, content page | ✅ Complete |
 | Phase 4 | Public Verification API, API key auth, key management UI | ✅ Complete |
+| API Quotas | Monthly quota enforcement, usage tracking, quota dashboard, API docs | ✅ Complete |
+| Phase 8 | Malicious submission protection — blocklist, URL resolver, content validator, submission guard | ✅ Complete |
 
 ---
 
@@ -1230,33 +1247,152 @@ Decisions made during development that should persist across sessions.
    - `src/app/api/search/route.ts` — Removed spell check (moved to dedicated endpoint)
    - `src/components/SearchResultsContainer.tsx` — Removed suggestion prop (no longer needed)
 
+### API Usage Quotas (2026-02-07)
+
+1. **Monthly Quota Limits by Tier**
+   - Free: 100 requests/month
+   - Pro: 5,000 requests/month
+   - Enterprise: 50,000 requests/month
+   - Quota resets on the 1st of each month (UTC)
+   - Batch endpoint: each item counts as one request toward quota
+
+2. **Quota Enforcement in `verify-auth.ts`**
+   - `verifyAuth()` now checks `checkQuota()` after authentication, before processing
+   - Returns `429` with `X-Quota-*` headers when monthly quota exceeded
+   - All verify endpoints return `X-Quota-Limit`, `X-Quota-Remaining`, `X-Quota-Used`, `X-Quota-Reset` headers
+   - `quotaHeaders()` utility builds standard header object from `QuotaStatus`
+
+3. **ApiUsage Model (Schema)**
+   - New `ApiUsage` model in `prisma/schema.prisma` tracks individual API requests
+   - Fields: `userId`, `apiKeyId` (nullable), `endpoint`, `createdAt`
+   - Indexed on `[userId, createdAt]` for efficient monthly count queries
+   - `recordApiUsage()` is fire-and-forget (`.catch(() => {})`) to avoid blocking responses
+
+4. **Quota Dashboard (`/profile/usage`)**
+   - Visual progress bar with color-coded states (green → orange at 80% → red at 100%)
+   - Shows used/limit counts, percentage, remaining, and reset date
+   - Fetches from `GET /api/user/quota` endpoint (NextAuth session auth)
+
+5. **API Documentation Page (`/docs`)**
+   - Public page documenting all verification endpoints with curl examples
+   - Documents authentication, quotas, response formats, classifications, error codes
+   - Links to API key management and usage dashboard
+
+6. **Batch Quota Pre-Check**
+   - Batch endpoint checks `authResult.quotaStatus.remaining < itemCount` before processing
+   - Returns descriptive error with remaining vs. requested counts
+
+7. **New Files Created**
+   - `src/lib/config/quotas.ts` — Quota constants and `QuotaStatus` interface
+   - `src/lib/services/quota.service.ts` — `getQuotaStatus()`, `checkQuota()`, `recordApiUsage()`
+   - `src/app/api/user/quota/route.ts` — User quota status API
+   - `src/app/profile/usage/page.tsx` + `page.module.css` — Quota dashboard UI
+   - `src/app/docs/page.tsx` + `page.module.css` — Public API documentation
+
+8. **Files Modified**
+   - `prisma/schema.prisma` — Added `ApiUsage` model, added `apiUsage` relation on `User`
+   - `src/lib/api/verify-auth.ts` — Integrated quota check, added `apiKeyId`/`quotaStatus` to result, added `quotaHeaders()`
+   - `src/app/api/v1/verify/{text,url,image,batch}/route.ts` — Added quota headers and usage recording
+   - `src/app/profile/page.tsx` — Added "View API Usage" link
+   - `src/lib/services/api-key.service.ts` — Returns `apiKeyId` from validation
+
+### Phase 8: Malicious Submission Protection (2026-02-07)
+
+1. **Domain Blocklist Architecture**
+   - Two-layer approach: hardcoded blocklists (URL shorteners, spam TLDs) + dynamic database table (`BlockedDomain`)
+   - `isDomainBlocked()` checks hardcoded list first, then queries DB — fail-open on database errors
+   - Pattern matching supports exact domain, wildcard prefix (`*.example.com`), and suffix match
+   - `isSuspiciousUrl()` runs heuristic checks: TLD, URL length, encoding density, subdomain depth, query string length
+   - URL shorteners detected by hostname against a curated set of 22 known shortener domains
+
+2. **URL Redirect Resolution**
+   - `resolveUrl()` follows HTTP redirects with configurable hop limit (default 5)
+   - Each hop validated against SSRF protection AND domain blocklist
+   - Uses `HEAD` requests with `redirect: 'manual'` to avoid downloading content
+   - 10-second timeout per resolution attempt
+   - Only triggered when `isUrlShortener()` returns true (not for all URLs)
+
+3. **Content Validation**
+   - Minimum 200 characters of meaningful text (up from 100 in extraction service)
+   - Maximum 500,000 characters to prevent memory abuse
+   - Pattern matching detects login/paywall/cookie-consent pages (10 patterns)
+   - Index/listing page detection (4 patterns) on first line
+   - Non-text content rejection (HTML-only, numbers/punctuation-only)
+   - TypeScript regex compatibility: avoided `s` (dotAll) and `u` (unicode) flags since tsconfig has no explicit target
+
+4. **Per-User Submission Guard**
+   - Authenticated users: 20 submissions/day, 100/week
+   - Burst detection: 3+ submissions in 5 minutes triggers temporary cooldown
+   - Anonymous: global safety valve (50/day across all anonymous users)
+   - Uses `Content` table counts (sourceType='user_submitted') — no additional tables needed
+   - Fail-open on database errors to avoid blocking legitimate users
+
+5. **Structured Submission Logging**
+   - `logSubmission()` writes JSON to stdout (captured by Vercel logs)
+   - Fields: type, timestamp, userId, ip, url, outcome (success/blocked/failed), reason
+   - Fire-and-forget, wrapped in try/catch — never throws
+   - All blocked and successful submissions logged for abuse forensics
+
+6. **Admin Blocklist API**
+   - `GET /api/admin/blocklist` — List all blocked domains (sorted by createdAt desc)
+   - `POST /api/admin/blocklist` — Add domain pattern with optional reason (409 on duplicate)
+   - `DELETE /api/admin/blocklist` — Remove domain pattern (404 if not found)
+   - Protected by existing admin middleware (ADMIN_SECRET)
+   - Patterns stored lowercase, trimmed
+
+7. **Submit Endpoint Security Pipeline**
+   - After SSRF check, new pipeline runs: blocklist → suspicious URL → URL shortener resolution → submission guard → (extraction) → content validation
+   - Suspicious URLs blocked with 403 (not just logged)
+   - URL shorteners resolved to final destination before processing
+   - Content validation runs post-extraction, before database insert
+
+8. **Verify URL Endpoint Protection**
+   - `isDomainBlocked()` check added to `/api/v1/verify/url` before content extraction
+   - Returns 403 "This URL cannot be verified" for blocked domains
+
+9. **Schema Changes**
+   - `BlockedDomain` model: `pattern` (unique), `reason`, `addedBy`, `createdAt`
+   - Mapped to `blocked_domains` table
+   - Pushed to Neon production database
+
+10. **New Files Created**
+    - `src/lib/security/domain-blocklist.ts` — Hardcoded + DB-backed domain blocklist
+    - `src/lib/security/url-resolver.ts` — Redirect follower with hop limit
+    - `src/lib/security/content-validator.ts` — Post-extraction content quality checks
+    - `src/lib/security/submission-guard.ts` — Per-user/IP submission rate limits
+    - `src/lib/security/submission-log.ts` — Structured JSON logging for forensics
+    - `src/app/api/admin/blocklist/route.ts` — Admin CRUD for domain blocklist
+
+11. **Files Modified**
+    - `prisma/schema.prisma` — Added `BlockedDomain` model
+    - `src/app/api/submit/route.ts` — Full security pipeline integration
+    - `src/app/api/v1/verify/url/route.ts` — Domain blocklist check
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Phase 8: Malicious submission protection** - Domain blocklist, URL resolver, content validator, submission guard, admin blocklist API (2026-02-07)
+- [x] **API Usage Quotas** - Monthly quota enforcement, usage tracking, quota dashboard, API docs page (2026-02-07)
+- [x] **API documentation page** - Public docs at `/docs` with code examples (2026-02-07)
+- [x] **API key usage tracking** - `ApiUsage` model + `/profile/usage` dashboard (2026-02-07)
+- [x] **Malicious submission protection** - Blocklist, URL shortener resolution, content validation, per-user rate limits (2026-02-07)
 - [x] **"Did You Mean?" spell correction** - Pre-search spell check in SearchBar with two-option prompt before navigation (2026-02-07)
-- [x] **Search page layout alignment** - Aligned SearchBar right edge with FilterPanel by removing max-width constraint (2026-02-07)
-- [x] **Header "Account" link** - Changed dynamic user name to static "Account" label for clearer navigation (2026-02-07)
-- [x] **Fix search results not updating on subsequent searches** - Added `key={query}` to force remount of SearchResultsContainer (2026-02-07)
 - [x] **Phase 4: Public Verification API** - API key auth, verify endpoints (text/url/image/batch), key management UI, admin tier setter (2026-02-07)
 - [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)
 - [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)
 - [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
-- [x] **Admin login page** - Token-based login at `/admin/login` (2026-02-05)
-- [x] **Content source integrations** - Hacker News, DEV.to, YouTube, RSS feeds (2026-02-05)
-- [x] **Admin URL import page** - Bulk import and topic discovery at `/admin/import` (2026-02-05)
-- [x] **External cron setup** - cron-job.org triggers scraper worker every 5 min (2026-02-05)
-- [x] **Cross-browser styling fixes** - Safari/Brave compatibility for AI badges (2026-02-05)
 
 ### High Priority (Pre-Funding)
 - [ ] **Run backfill on production** - Call `POST /api/admin/backfill-explainability` to populate JSONB data for existing content
 - [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
-- [ ] **Implement check-tier.ts** - Replace stub with actual billing tier lookup (depends on Phase 2)
+- [x] ~~**Implement check-tier.ts**~~ - Done in Phase 5 with Stripe integration (2026-02-07)
 - [ ] **Link search results to content detail page** - Add `/content/[id]` links from search result items
-- [ ] **API documentation page** - Public docs for `/api/v1/verify/*` with code examples (curl, JS, Python)
-- [ ] **API key usage tracking** - Track request counts per key for billing/analytics
-- [ ] **Malicious submission protection** - Validate URLs, block known bad actors
+- [ ] **Per-IP submission tracking** - Submission guard uses global Content table counts; a dedicated SubmissionLog table would enable true per-IP anonymous rate limiting
+- [ ] **Blocklist cache layer** - `isDomainBlocked()` queries DB on every call; add in-memory cache with TTL to reduce DB load
+- [ ] **Admin blocklist UI** - Build admin panel page for managing blocked domains (currently API-only via curl)
+- [ ] **URL shortener resolution for verify endpoint** - Currently only submit endpoint resolves shorteners; verify/url should too
 - [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
 
 ### Post-Funding Scale

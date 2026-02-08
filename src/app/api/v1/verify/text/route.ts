@@ -8,11 +8,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { verifyAuth, isAuthError } from '@/lib/api/verify-auth'
+import { verifyAuth, isAuthError, quotaHeaders } from '@/lib/api/verify-auth'
 import { detectAIContent } from '@/lib/ai-detection'
 import { hasBreakdownAccess } from '@/lib/api/check-tier'
 import { formatFreeResponse, formatPaidResponse } from '@/lib/ai-detection/format-breakdown'
 import { buildAiScoreRowFromComposite } from '../_lib/build-score-row'
+import { recordApiUsage } from '@/lib/services/quota.service'
 
 const requestSchema = z.object({
   text: z.string().min(50, 'Text must be at least 50 characters').max(50000, 'Text must be at most 50000 characters'),
@@ -23,10 +24,14 @@ export async function POST(request: NextRequest) {
   const rateLimited = await checkRateLimit(request, 'verify-text')
   if (rateLimited) return rateLimited
 
-  // 2. Auth
+  // 2. Auth + quota check
   const authResult = await verifyAuth(request)
   if (isAuthError(authResult)) {
-    return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+    const headers = authResult.quotaStatus ? quotaHeaders(authResult.quotaStatus) : {}
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status, headers }
+    )
   }
 
   // 3. Validate
@@ -50,12 +55,16 @@ export async function POST(request: NextRequest) {
     const result = await detectAIContent(parsed.data.text)
     const scoreRow = buildAiScoreRowFromComposite(result)
 
-    // 5. Format per tier
-    if (hasBreakdownAccess(authResult.tier)) {
-      return NextResponse.json(formatPaidResponse(scoreRow))
-    }
+    // 5. Record usage
+    recordApiUsage(authResult.userId, authResult.apiKeyId, 'verify-text').catch(() => {})
 
-    return NextResponse.json(formatFreeResponse(scoreRow))
+    // 6. Format per tier with quota headers
+    const headers = quotaHeaders(authResult.quotaStatus)
+    const payload = hasBreakdownAccess(authResult.tier)
+      ? formatPaidResponse(scoreRow)
+      : formatFreeResponse(scoreRow)
+
+    return NextResponse.json(payload, { headers })
   } catch (error) {
     console.error('Verification error:', error)
     return NextResponse.json(

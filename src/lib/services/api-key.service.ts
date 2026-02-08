@@ -96,6 +96,7 @@ export async function validateApiKey(rawKey: string) {
   return {
     userId: apiKey.user.id,
     tier: apiKey.user.tier,
+    apiKeyId: apiKey.id,
   }
 }
 

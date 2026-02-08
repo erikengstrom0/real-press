@@ -364,11 +364,25 @@ model User {
   savedSearches SavedSearch[]
   searchHistory SearchHistory[]
   apiKeys       ApiKey[]
+  apiUsage      ApiUsage[]
 
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model ApiUsage {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  apiKeyId  String?  @map("api_key_id")
+  endpoint  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("api_usage")
 }
 
 model ApiKey {
@@ -430,6 +444,16 @@ model VerificationToken {
 // ============================================
 // PREMIUM FEATURE MODELS
 // ============================================
+
+model BlockedDomain {
+  id        String   @id @default(cuid())
+  pattern   String   @unique  // domain or glob pattern
+  reason    String?
+  addedBy   String?  @map("added_by")  // admin user ID
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("blocked_domains")
+}
 
 model SavedSearch {
   id           String   @id @default(cuid())

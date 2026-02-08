@@ -3,22 +3,30 @@
  *
  * Checks Bearer token first (API key), falls back to NextAuth session.
  * Used by /api/v1/verify/* endpoints.
+ * Includes monthly quota enforcement after authentication.
  */
 
 import { NextRequest } from 'next/server'
 import { auth } from '@/lib/auth'
 import { validateApiKey } from '@/lib/services/api-key.service'
 import { getUserTier, type UserTier } from '@/lib/api/check-tier'
+import { checkQuota } from '@/lib/services/quota.service'
+import type { QuotaStatus } from '@/lib/config/quotas'
+
+export type { QuotaStatus }
 
 export interface VerifyAuthResult {
   userId: string
   tier: UserTier
   authMethod: 'session' | 'api_key'
+  apiKeyId: string | null
+  quotaStatus: QuotaStatus
 }
 
 export interface VerifyAuthError {
   error: string
-  status: 401 | 403
+  status: 401 | 403 | 429
+  quotaStatus?: QuotaStatus
 }
 
 const tierMap: Record<string, UserTier> = {
@@ -32,11 +40,17 @@ const tierMap: Record<string, UserTier> = {
  *
  * 1. If Authorization: Bearer <token> is present, validate as API key.
  * 2. Otherwise, fall back to NextAuth session cookie.
- * 3. Returns user info on success, or an error object on failure.
+ * 3. After authentication, checks monthly quota.
+ * 4. Returns user info on success, or an error object on failure.
  */
 export async function verifyAuth(
   request: NextRequest
 ): Promise<VerifyAuthResult | VerifyAuthError> {
+  let userId: string
+  let tier: UserTier
+  let authMethod: 'session' | 'api_key'
+  let apiKeyId: string | null = null
+
   // Check for Bearer token (API key)
   const authHeader = request.headers.get('authorization')
 
@@ -51,26 +65,41 @@ export async function verifyAuth(
         return { error: 'Invalid or revoked API key', status: 401 }
       }
 
-      const tier = tierMap[result.tier] ?? 'free'
-      return { userId: result.userId, tier, authMethod: 'api_key' }
+      tier = tierMap[result.tier] ?? 'free'
+      userId = result.userId
+      authMethod = 'api_key'
+      apiKeyId = result.apiKeyId
+    } else {
+      // Non-API-key Bearer tokens are invalid for this endpoint
+      return { error: 'Invalid authorization token', status: 401 }
+    }
+  } else {
+    // Fall back to NextAuth session
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return {
+        error: 'Authentication required. Provide an API key via Authorization header or sign in.',
+        status: 401,
+      }
     }
 
-    // Non-API-key Bearer tokens are invalid for this endpoint
-    return { error: 'Invalid authorization token', status: 401 }
+    userId = session.user.id
+    tier = await getUserTier(userId)
+    authMethod = 'session'
   }
 
-  // Fall back to NextAuth session
-  const session = await auth()
-
-  if (!session?.user?.id) {
+  // Check monthly quota
+  const quotaResult = await checkQuota(userId, tier)
+  if (!quotaResult.allowed) {
     return {
-      error: 'Authentication required. Provide an API key via Authorization header or sign in.',
-      status: 401,
+      error: 'Monthly API quota exceeded. Upgrade your plan for more requests.',
+      status: 429,
+      quotaStatus: quotaResult.status,
     }
   }
 
-  const tier = await getUserTier(session.user.id)
-  return { userId: session.user.id, tier, authMethod: 'session' }
+  return { userId, tier, authMethod, apiKeyId, quotaStatus: quotaResult.status }
 }
 
 /**
@@ -80,4 +109,16 @@ export function isAuthError(
   result: VerifyAuthResult | VerifyAuthError
 ): result is VerifyAuthError {
   return 'error' in result
+}
+
+/**
+ * Build X-Quota-* response headers from a QuotaStatus.
+ */
+export function quotaHeaders(status: QuotaStatus): Record<string, string> {
+  return {
+    'X-Quota-Limit': String(status.limit),
+    'X-Quota-Remaining': String(status.remaining),
+    'X-Quota-Used': String(status.used),
+    'X-Quota-Reset': status.resetsAt,
+  }
 }

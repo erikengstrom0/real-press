@@ -8,11 +8,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { verifyAuth, isAuthError } from '@/lib/api/verify-auth'
+import { verifyAuth, isAuthError, quotaHeaders } from '@/lib/api/verify-auth'
 import { detectMultiModalContent } from '@/lib/ai-detection'
 import { hasBreakdownAccess } from '@/lib/api/check-tier'
 import { formatFreeResponse, formatPaidResponse } from '@/lib/ai-detection/format-breakdown'
 import { buildAiScoreRowFromMultiModal } from '../_lib/build-score-row'
+import { recordApiUsage } from '@/lib/services/quota.service'
 
 const requestSchema = z.object({
   imageUrl: z.string().url().optional(),
@@ -27,10 +28,14 @@ export async function POST(request: NextRequest) {
   const rateLimited = await checkRateLimit(request, 'verify-image')
   if (rateLimited) return rateLimited
 
-  // 2. Auth
+  // 2. Auth + quota check
   const authResult = await verifyAuth(request)
   if (isAuthError(authResult)) {
-    return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+    const headers = authResult.quotaStatus ? quotaHeaders(authResult.quotaStatus) : {}
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status, headers }
+    )
   }
 
   // 3. Validate
@@ -60,12 +65,16 @@ export async function POST(request: NextRequest) {
 
     const scoreRow = buildAiScoreRowFromMultiModal(result)
 
-    // 5. Format per tier
-    if (hasBreakdownAccess(authResult.tier)) {
-      return NextResponse.json(formatPaidResponse(scoreRow))
-    }
+    // 5. Record usage
+    recordApiUsage(authResult.userId, authResult.apiKeyId, 'verify-image').catch(() => {})
 
-    return NextResponse.json(formatFreeResponse(scoreRow))
+    // 6. Format per tier with quota headers
+    const headers = quotaHeaders(authResult.quotaStatus)
+    const payload = hasBreakdownAccess(authResult.tier)
+      ? formatPaidResponse(scoreRow)
+      : formatFreeResponse(scoreRow)
+
+    return NextResponse.json(payload, { headers })
   } catch (error) {
     console.error('Image verification error:', error)
     return NextResponse.json(

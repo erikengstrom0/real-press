@@ -71,7 +71,8 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   BlockedDomain: 'BlockedDomain',
   SavedSearch: 'SavedSearch',
-  SearchHistory: 'SearchHistory'
+  SearchHistory: 'SearchHistory',
+  ApiUsage: 'ApiUsage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -323,6 +324,11 @@ export const UserScalarFieldEnum = {
   image: 'image',
   passwordHash: 'passwordHash',
   tier: 'tier',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  stripeSubscriptionStatus: 'stripeSubscriptionStatus',
+  stripePriceId: 'stripePriceId',
+  stripeCurrentPeriodEnd: 'stripeCurrentPeriodEnd',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -427,6 +433,21 @@ export const SearchHistoryScalarFieldEnum = {
 } as const
 
 export type SearchHistoryScalarFieldEnum = (typeof SearchHistoryScalarFieldEnum)[keyof typeof SearchHistoryScalarFieldEnum]
+
+
+export const ApiUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  apiKeyId: 'apiKeyId',
+  endpoint: 'endpoint',
+  date: 'date',
+  requestCount: 'requestCount',
+  errorCount: 'errorCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ApiUsageScalarFieldEnum = (typeof ApiUsageScalarFieldEnum)[keyof typeof ApiUsageScalarFieldEnum]
 
 
 export const SortOrder = {

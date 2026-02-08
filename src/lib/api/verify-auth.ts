@@ -36,6 +36,15 @@ const tierMap: Record<string, UserTier> = {
 }
 
 /**
+ * Extract endpoint key from pathname.
+ * e.g. /api/v1/verify/text -> 'verify-text'
+ */
+function extractEndpointKey(pathname: string): string {
+  const match = pathname.match(/\/api\/v1\/verify\/(\w+)/)
+  return match ? `verify-${match[1]}` : 'unknown'
+}
+
+/**
  * Authenticate a verification API request.
  *
  * 1. If Authorization: Bearer <token> is present, validate as API key.

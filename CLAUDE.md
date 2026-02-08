@@ -93,6 +93,7 @@ src/
 ├── app/
 │   ├── page.tsx              # Landing page
 │   ├── layout.tsx            # Root layout
+│   ├── docs/page.tsx             # API documentation (Phase 5)
 │   ├── search/page.tsx       # Search results
 │   ├── submit/page.tsx       # URL submission
 │   ├── content/[id]/         # Content detail page (Phase 7)
@@ -232,13 +233,21 @@ ML_SERVICE_URL="http://localhost:8000"  # Python ML service URL
 PROVIDER_IMAGE_ENABLED="true"       # Enable image detection
 PROVIDER_VIDEO_ENABLED="true"       # Enable video detection
 
+# Stripe Billing (Phase 5)
+STRIPE_SECRET_KEY="sk_..."                   # Stripe server-side API key
+STRIPE_WEBHOOK_SECRET="whsec_..."            # Stripe webhook signing secret
+STRIPE_PRO_PRICE_ID="price_..."              # Stripe price ID for Pro monthly
+STRIPE_ENTERPRISE_PRICE_ID="price_..."       # Stripe price ID for Enterprise monthly
+NEXT_PUBLIC_STRIPE_PRO_PRICE_ID="price_..."  # Same as STRIPE_PRO_PRICE_ID (client-side)
+
 # App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ## Development Plan
 
-Full plan: `DEVELOPMENT_PLAN.md`
+**This file (`CLAUDE.md`) is the sole source of truth for all project planning, architecture, and decisions.**
+Do not rely on standalone plan files — they are archived. If you find `DEVELOPMENT_PLAN.md`, `PHASE5_PLAN.md`, or files in `docs/development-plans/`, those are archived references only. Always use this file for current state.
 
 | Sprint | Focus | Status |
 |--------|-------|--------|

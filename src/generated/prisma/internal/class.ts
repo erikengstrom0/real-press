@@ -385,6 +385,16 @@ export interface PrismaClient<
     * ```
     */
   get searchHistory(): Prisma.SearchHistoryDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.apiUsage`: Exposes CRUD operations for the **ApiUsage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ApiUsages
+    * const apiUsages = await prisma.apiUsage.findMany()
+    * ```
+    */
+  get apiUsage(): Prisma.ApiUsageDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

@@ -122,3 +122,8 @@ export type SavedSearch = Prisma.SavedSearchModel
  * 
  */
 export type SearchHistory = Prisma.SearchHistoryModel
+/**
+ * Model ApiUsage
+ * 
+ */
+export type ApiUsage = Prisma.ApiUsageModel

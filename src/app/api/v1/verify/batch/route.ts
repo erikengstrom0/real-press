@@ -4,17 +4,19 @@
  * Batch verification of multiple items (text, url, or image).
  * Max items per tier: free=10, pro=25, enterprise=50.
  * Processes sequentially with per-item error handling.
+ * Each item in the batch counts as one request toward the monthly quota.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { verifyAuth, isAuthError, type VerifyAuthResult } from '@/lib/api/verify-auth'
+import { verifyAuth, isAuthError, quotaHeaders, type VerifyAuthResult } from '@/lib/api/verify-auth'
 import { detectAIContent, detectMultiModalContent } from '@/lib/ai-detection'
 import { hasBreakdownAccess, type UserTier } from '@/lib/api/check-tier'
 import { formatFreeResponse, formatPaidResponse } from '@/lib/ai-detection/format-breakdown'
 import { extractContent } from '@/lib/services/extraction.service'
 import { buildAiScoreRowFromComposite, buildAiScoreRowFromMultiModal } from '../_lib/build-score-row'
+import { recordApiUsage } from '@/lib/services/quota.service'
 
 const batchItemSchema = z.discriminatedUnion('type', [
   z.object({
@@ -106,10 +108,14 @@ export async function POST(request: NextRequest) {
   const rateLimited = await checkRateLimit(request, 'verify-batch')
   if (rateLimited) return rateLimited
 
-  // 2. Auth
+  // 2. Auth + quota check
   const authResult = await verifyAuth(request)
   if (isAuthError(authResult)) {
-    return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+    const headers = authResult.quotaStatus ? quotaHeaders(authResult.quotaStatus) : {}
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status, headers }
+    )
   }
 
   // 3. Validate
@@ -137,12 +143,28 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 5. Process sequentially
+  // 5. Check quota covers the full batch
+  const itemCount = parsed.data.items.length
+  if (authResult.quotaStatus.remaining < itemCount) {
+    return NextResponse.json(
+      {
+        error: `Insufficient quota. This batch has ${itemCount} items but you only have ${authResult.quotaStatus.remaining} requests remaining this month.`,
+      },
+      { status: 429, headers: quotaHeaders(authResult.quotaStatus) }
+    )
+  }
+
+  // 6. Process sequentially
   const results = []
   for (const item of parsed.data.items) {
     const itemResult = await processItem(item, authResult)
     results.push(itemResult)
   }
 
-  return NextResponse.json({ results })
+  // 7. Record usage (count = number of items)
+  recordApiUsage(authResult.userId, authResult.apiKeyId, 'verify-batch', itemCount).catch(() => {})
+
+  // 8. Return with quota headers
+  const headers = quotaHeaders(authResult.quotaStatus)
+  return NextResponse.json({ results }, { headers })
 }

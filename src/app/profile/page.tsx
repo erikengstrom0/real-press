@@ -83,6 +83,17 @@ export default function ProfilePage() {
 
         <div className={styles.divider} />
 
+        <div className={styles.apiKeyLink}>
+          <Link href="/profile/usage" className={styles.apiKeyBtn}>
+            View API Usage
+          </Link>
+          <p className={styles.apiKeyHint}>
+            Monitor your monthly quota and request history
+          </p>
+        </div>
+
+        <div className={styles.divider} />
+
         <div className={styles.actions}>
           <button
             className={styles.signOutBtn}

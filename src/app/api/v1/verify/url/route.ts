@@ -8,13 +8,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import { verifyAuth, isAuthError } from '@/lib/api/verify-auth'
+import { verifyAuth, isAuthError, quotaHeaders } from '@/lib/api/verify-auth'
 import { detectAIContent, detectMultiModalContent } from '@/lib/ai-detection'
 import { hasBreakdownAccess } from '@/lib/api/check-tier'
 import { formatFreeResponse, formatPaidResponse } from '@/lib/ai-detection/format-breakdown'
 import { extractContent, ExtractionError } from '@/lib/services/extraction.service'
 import { extractMediaFromUrl } from '@/lib/services/media-extraction.service'
 import { buildAiScoreRowFromComposite, buildAiScoreRowFromMultiModal } from '../_lib/build-score-row'
+import { recordApiUsage } from '@/lib/services/quota.service'
+import { isDomainBlocked } from '@/lib/security/domain-blocklist'
 
 const requestSchema = z.object({
   url: z.string().url('Must be a valid URL'),
@@ -26,10 +28,14 @@ export async function POST(request: NextRequest) {
   const rateLimited = await checkRateLimit(request, 'verify-url')
   if (rateLimited) return rateLimited
 
-  // 2. Auth
+  // 2. Auth + quota check
   const authResult = await verifyAuth(request)
   if (isAuthError(authResult)) {
-    return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+    const headers = authResult.quotaStatus ? quotaHeaders(authResult.quotaStatus) : {}
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status, headers }
+    )
   }
 
   // 3. Validate
@@ -45,6 +51,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
       { status: 400 }
+    )
+  }
+
+  // 3.5. Domain blocklist check
+  const blockCheck = await isDomainBlocked(parsed.data.url)
+  if (blockCheck.blocked) {
+    return NextResponse.json(
+      { error: 'This URL cannot be verified' },
+      { status: 403 }
     )
   }
 
@@ -79,7 +94,11 @@ export async function POST(request: NextRequest) {
       scoreRow = buildAiScoreRowFromComposite(result)
     }
 
-    // 6. Format per tier
+    // 6. Record usage
+    recordApiUsage(authResult.userId, authResult.apiKeyId, 'verify-url').catch(() => {})
+
+    // 7. Format per tier with quota headers
+    const headers = quotaHeaders(authResult.quotaStatus)
     const response = hasBreakdownAccess(authResult.tier)
       ? formatPaidResponse(scoreRow)
       : formatFreeResponse(scoreRow)
@@ -91,7 +110,7 @@ export async function POST(request: NextRequest) {
         domain: extracted.domain,
         title: extracted.title,
       },
-    })
+    }, { headers })
   } catch (error) {
     console.error('Verification error:', error)
     return NextResponse.json(

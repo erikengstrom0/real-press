@@ -214,7 +214,7 @@ Deploy the MVP to production for investor demos with polished visual design.
 - [x] Implement 1920s-30s retro newspaper design system
 - [x] Create rubber stamp AI score badges with random variations
 - [x] Update all components to use design system CSS variables
-- [x] Create `/demo` style guide page
+- [x] Create `/styleguide` style guide page
 - [x] Remove paper texture (too noisy)
 - [x] Update toggle switches to match retro aesthetic
 

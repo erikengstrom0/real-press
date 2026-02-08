@@ -12,6 +12,7 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.7.0 | 2026-02-07 | Phase 9: Async submission queue — SubmissionJob model, queue service, worker endpoint, status polling, progress UI |
 | v1.6.0 | 2026-02-07 | Phase 8: Malicious submission protection — domain blocklist, URL resolver, content validator, submission guard |
 | v1.5.0 | 2026-02-07 | API Usage Quotas — monthly quota enforcement, usage tracking, quota dashboard, API docs page |
 | v1.4.0 | 2026-02-07 | Phase 4: Public Verification API — API key auth, verify endpoints, key management UI |
@@ -102,7 +103,10 @@ src/
 │   ├── profile/usage/page.tsx   # API quota usage dashboard
 │   └── api/
 │       ├── search/route.ts   # Search endpoint
-│       ├── submit/route.ts   # Submission endpoint (+ Phase 8 security)
+│       ├── submit/
+│       │   ├── route.ts                 # Submission endpoint (async/sync, Phase 9)
+│       │   ├── status/[id]/route.ts     # Job status polling (Phase 9)
+│       │   └── worker/route.ts          # Cron-triggered queue worker (Phase 9)
 │       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
 │       ├── content/[id]/breakdown/route.ts  # Tier-gated breakdown API (Phase 7)
 │       ├── user/api-keys/route.ts           # User API key CRUD (Phase 4)
@@ -159,7 +163,8 @@ src/
     │   ├── content-analysis.service.ts  # Stylometric analysis
     │   ├── metadata-extraction.service.ts # HTML metadata extraction
     │   ├── topic-extraction.service.ts  # Topic classification
-    │   └── author.service.ts            # Author tracking
+    │   ├── author.service.ts            # Author tracking
+    │   └── submission-queue.service.ts  # Async submission queue (Phase 9)
     ├── api/
     │   ├── check-tier.ts             # User/API key tier lookup (Phase 7)
     │   └── verify-auth.ts            # Dual auth + quota check (Phase 4 + Quotas)
@@ -247,6 +252,7 @@ Full plan: `DEVELOPMENT_PLAN.md`
 | Phase 4 | Public Verification API, API key auth, key management UI | ✅ Complete |
 | API Quotas | Monthly quota enforcement, usage tracking, quota dashboard, API docs | ✅ Complete |
 | Phase 8 | Malicious submission protection — blocklist, URL resolver, content validator, submission guard | ✅ Complete |
+| Phase 9 | Async submission queue — SubmissionJob model, worker endpoint, status polling, progress UI | ✅ Complete |
 
 ---
 
@@ -1368,11 +1374,87 @@ Decisions made during development that should persist across sessions.
     - `src/app/api/submit/route.ts` — Full security pipeline integration
     - `src/app/api/v1/verify/url/route.ts` — Domain blocklist check
 
+### Phase 9: Async Submission Queue (2026-02-07)
+
+1. **Async/Sync Hybrid Architecture**
+   - Not a full cutover: submit endpoint dynamically chooses sync vs async per-request
+   - Decision based on queue depth: if < 3 items queued and nothing processing → sync (instant results)
+   - If ≥ 3 queued or any jobs processing → async (enqueue + return job ID)
+   - Rationale: avoids degrading UX during light load while scaling under heavy load
+   - Threshold constant `SYNC_THRESHOLD = 3` is tunable without code changes
+
+2. **Separate Queue from Crawler**
+   - Created `SubmissionJob` model separate from `CrawlJob` — different lifecycle and fields
+   - User submissions need: userId, tier-based priority, stage progress, media options
+   - Crawl jobs need: domain rate limiting, robots.txt, source tracking, metadata
+   - Shared infrastructure would over-couple two distinct use cases
+   - Both share the same `Content` + `AiScore` tables as output
+
+3. **Priority Queue Design**
+   - Priority is an integer column: FREE=0, PRO=10, ENTERPRISE=20
+   - Query orders by `priority DESC, createdAt ASC` (highest priority first, then FIFO)
+   - Gap between tiers (0, 10, 20) leaves room for future granularity (e.g., priority boosts)
+   - Claim uses `updateMany` with status guard for atomic job acquisition (prevents double-processing)
+
+4. **Retry Strategy**
+   - Jobs retry up to 3 times on transient failures (network errors, timeouts, 5xx)
+   - Permanent errors (403 Forbidden, 404 Not Found, 401 Unauthorized) fail immediately
+   - On retry: job returns to QUEUED with `startedAt` cleared, `attempts` incremented
+   - On permanent fail: job set to FAILED with `completedAt` and error message preserved
+
+5. **Progress Tracking Stages**
+   - Three stages tracked in `stage` column: `'extracting'` → `'analyzing'` → `'complete'`
+   - `progress` column (0-100) updated at key milestones: 10 (start), 40 (extracted), 50 (analyzing), 70 (detection running), 100 (done)
+   - Frontend maps stages to human-readable labels: "Extracting content..." → "Running AI detection..." → "Complete!"
+   - Stage + progress cleared on retry to reset UI state
+
+6. **Duplicate Detection During Queue Wait**
+   - Worker checks `getContentByUrl()` before extracting, in case another submission or crawl job analyzed the same URL while this job waited
+   - If duplicate found: marks job as COMPLETED linking to existing content, skips extraction + detection
+   - Prevents wasted processing for popular URLs submitted by multiple users
+
+7. **Frontend Polling State Machine**
+   - Five states: `idle → submitting → queued → processing → complete/error`
+   - Polling interval: 2 seconds via `setInterval` (cleared on completion, error, or unmount)
+   - Sync submissions skip polling entirely — result displayed immediately
+   - Error state shows retry button that resets to idle
+   - Progress bar width transitions smoothly via CSS `transition: width 0.4s ease`
+
+8. **Worker Authentication**
+   - Reuses same `CRON_SECRET` pattern as crawl worker
+   - Both dev mode (no secret = allow all) and production (Bearer token required)
+   - No need for a separate secret — worker is non-admin, same trust level as crawl
+   - Worker route is under `/api/submit/worker` (not `/api/admin/`) so admin middleware doesn't intercept
+
+9. **Status Endpoint Design**
+   - Job ID is a CUID (unguessable), so no auth required for polling — avoids session dependency
+   - Terminal states (completed/failed) return `Cache-Control: public, max-age=60`
+   - Active states (queued/processing) return `Cache-Control: no-cache, no-store`
+   - Queue position calculated on each poll for accuracy (not cached from enqueue time)
+
+10. **Schema Decisions**
+    - `contentId` is `@unique` on SubmissionJob — a URL can only produce one content record per job
+    - `userId` uses `onDelete: SetNull` (not Cascade) — job history preserved even if user deleted
+    - `imageUrls` stored as `String[]` array — simpler than separate table for MVP
+    - Composite index `[status, priority, createdAt]` optimizes the claim query directly
+
+11. **New Files Created**
+    - `prisma/schema.prisma` — `SubmissionJob` model + `SubmissionStatus` enum
+    - `src/lib/services/submission-queue.service.ts` — Queue operations (enqueue, process, status, stats)
+    - `src/app/api/submit/worker/route.ts` — Cron-triggered worker endpoint
+    - `src/app/api/submit/status/[id]/route.ts` — Job status polling endpoint
+
+12. **Files Modified**
+    - `src/app/api/submit/route.ts` — Added async/sync decision logic, enqueue path
+    - `src/components/SubmitForm.tsx` — Polling state machine, progress bar, retry button
+    - `src/components/SubmitForm.module.css` — Progress bar, stage label, retry button styles
+
 ---
 
 ## Future TODOs
 
 ### Recently Completed
+- [x] **Phase 9: Async submission queue** - SubmissionJob model, queue service, worker, status polling, progress UI (2026-02-07)
 - [x] **Phase 8: Malicious submission protection** - Domain blocklist, URL resolver, content validator, submission guard, admin blocklist API (2026-02-07)
 - [x] **API Usage Quotas** - Monthly quota enforcement, usage tracking, quota dashboard, API docs page (2026-02-07)
 - [x] **API documentation page** - Public docs at `/docs` with code examples (2026-02-07)
@@ -1394,7 +1476,7 @@ Decisions made during development that should persist across sessions.
 - [ ] **Blocklist cache layer** - `isDomainBlocked()` queries DB on every call; add in-memory cache with TTL to reduce DB load
 - [ ] **Admin blocklist UI** - Build admin panel page for managing blocked domains (currently API-only via curl)
 - [ ] **URL shortener resolution for verify endpoint** - Currently only submit endpoint resolves shorteners; verify/url should too
-- [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
+- [x] **Scale user submissions** - Async queue system with SubmissionJob model, worker, polling (2026-02-07)
 
 ### Phase 6 Known Gaps & Limitations
 - [ ] **Quota race condition** - Concurrent requests can slightly exceed the monthly limit because usage is recorded after processing (fire-and-forget), not atomically with the check. Acceptable for MVP traffic; fix with atomic counter or Redis at scale.
@@ -1403,8 +1485,20 @@ Decisions made during development that should persist across sessions.
 - [ ] **Quota cache** - `getQuotaStatus()` runs a `COUNT(*)` query on every API request. At high volume, add an in-memory or Redis cache with short TTL (e.g. 30s) to reduce DB pressure.
 - [ ] **Per-key usage breakdown** - `ApiUsage` records `apiKeyId` but there's no endpoint or dashboard to view per-key breakdowns. Users with multiple keys can't see which key is consuming their quota.
 
+### Phase 9 Known Gaps & Limitations
+- [ ] **User tier not looked up from session** - Submit route currently hardcodes `tier: 'free'` when enqueuing. Should look up the authenticated user's tier from NextAuth session for proper priority assignment. PRO/ENTERPRISE users currently get no priority boost.
+- [ ] **Cron job not yet configured for submission worker** - The `/api/submit/worker` endpoint exists but no external cron is triggering it. Need to add a second cron job at cron-job.org (like the crawl worker) to call `POST https://www.real.press/api/submit/worker` with `Authorization: Bearer <CRON_SECRET>`. Recommended schedule: every 1 minute during peak, every 5 minutes otherwise.
+- [ ] **No content validation in async path** - The sync path runs `validateContent()` post-extraction to reject paywalls/login pages/thin content. The async worker skips this check. Should add content validation to `processSubmissionJob()` before AI detection.
+- [ ] **No stale job cleanup** - Jobs stuck in PROCESSING (e.g., worker crashed mid-process) are never reclaimed. Need a cleanup sweep that resets PROCESSING jobs older than 5 minutes back to QUEUED.
+- [ ] **No estimated wait time** - Status endpoint returns queue position but not estimated wait time. Could calculate from average processing duration of recent completed jobs.
+- [ ] **Sequential job processing in worker** - Worker processes jobs one-at-a-time in a loop (`processNextJob` called sequentially). Could parallelize with `Promise.all` for a concurrency of 2-3 to process faster within the 60s function limit.
+- [ ] **No WebSocket/SSE for real-time updates** - Polling every 2 seconds works but adds latency and unnecessary requests. WebSocket or Server-Sent Events would provide instant updates. Acceptable for MVP; consider for post-funding.
+- [ ] **Job history cleanup** - Completed/failed jobs accumulate in `submission_jobs` table forever. Need a periodic cleanup to delete old terminal jobs (e.g., older than 7 days).
+- [ ] **No admin visibility into submission queue** - Unlike crawl jobs (which have `/api/admin/crawl/jobs`), there's no admin endpoint to view, inspect, or cancel submission jobs.
+
 ### Post-Funding Scale
 - [ ] Migrate scraper queue from PostgreSQL to Redis/BullMQ
+- [ ] Migrate submission queue from PostgreSQL to Redis/BullMQ
 - [ ] Deploy dedicated worker on Railway (vs Vercel Cron)
 - [ ] Bloom filter for fast URL deduplication
 - [ ] OpenTelemetry metrics and Grafana dashboards

@@ -259,6 +259,53 @@ model CrawlMetric {
 }
 
 // ============================================
+// USER SUBMISSION QUEUE
+// ============================================
+
+model SubmissionJob {
+  id          String           @id @default(cuid())
+  userId      String?          @map("user_id")
+  url         String
+  status      SubmissionStatus @default(QUEUED)
+  priority    Int              @default(0) // Higher = processed first (Pro=10, Enterprise=20)
+
+  // Processing state
+  stage       String?          // 'extracting' | 'analyzing' | 'storing'
+  progress    Int              @default(0) // 0-100
+
+  // Input options
+  extractMedia Boolean         @default(false) @map("extract_media")
+  imageUrls    String[]        @default([]) @map("image_urls")
+  videoUrl     String?         @map("video_url")
+
+  // Result
+  contentId   String?          @unique @map("content_id")
+  error       String?
+
+  // Retry
+  attempts    Int              @default(0)
+  maxAttempts Int              @default(3) @map("max_attempts")
+
+  // Timing
+  createdAt   DateTime         @default(now()) @map("created_at")
+  startedAt   DateTime?        @map("started_at")
+  completedAt DateTime?        @map("completed_at")
+
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, priority, createdAt])
+  @@index([userId, createdAt])
+  @@map("submission_jobs")
+}
+
+enum SubmissionStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ============================================
 // AUTHOR & TOPIC MODELS
 // ============================================
 
@@ -365,6 +412,7 @@ model User {
   searchHistory SearchHistory[]
   apiKeys       ApiKey[]
   apiUsage      ApiUsage[]
+  submissionJobs SubmissionJob[]
 
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")

@@ -18,6 +18,7 @@ import { resolveUrl } from '@/lib/security/url-resolver'
 import { validateContent } from '@/lib/security/content-validator'
 import { logSubmission } from '@/lib/security/submission-log'
 import { checkSubmissionAllowed } from '@/lib/security/submission-guard'
+import { enqueueSubmission, getQueueStats } from '@/lib/services/submission-queue.service'
 
 const submitSchema = z.object({
   url: z.string().min(1, 'Please enter a URL'),
@@ -28,6 +29,9 @@ const submitSchema = z.object({
   // Whether to extract and analyze media from the page
   extractMedia: z.boolean().optional().default(false),
 })
+
+// Threshold: if queue has fewer than this many items, process synchronously
+const SYNC_THRESHOLD = 3
 
 export async function POST(request: NextRequest) {
   const rateLimitResponse = await checkRateLimit(request, 'submit')
@@ -154,6 +158,35 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // ---- ASYNC/SYNC DECISION ----
+    // Check queue depth to decide whether to process synchronously or async
+    const queueStats = await getQueueStats()
+    const useAsync = queueStats.queued >= SYNC_THRESHOLD || queueStats.processing > 0
+
+    if (useAsync) {
+      // ASYNC PATH: Enqueue and return immediately
+      const { jobId, position } = await enqueueSubmission({
+        url,
+        tier: 'free', // TODO: look up user tier from session
+        extractMedia: validation.data.extractMedia,
+        imageUrls: validation.data.imageUrls,
+        videoUrl: validation.data.videoUrl,
+      })
+
+      logSubmission({ ip, url, outcome: 'success' })
+
+      return NextResponse.json({
+        success: true,
+        async: true,
+        jobId,
+        status: 'queued',
+        position,
+        statusUrl: `/api/submit/status/${jobId}`,
+        message: 'Your submission has been queued for processing',
+      })
+    }
+
+    // SYNC PATH: Process immediately (light load)
     const extracted = await extractContent(url)
 
     // Post-extraction content quality validation
@@ -223,6 +256,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
+        async: false,
         contentId: content.id,
         message: 'Content submitted and analyzed successfully',
         aiScore: {
@@ -242,6 +276,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
+        async: false,
         contentId: content.id,
         message: 'Content submitted and analyzed successfully',
         aiScore: {

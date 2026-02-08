@@ -98,26 +98,18 @@ function ProfileContent() {
 
       <div className={styles.divider} />
 
-      <div className={styles.info}>
-        <div className={styles.row}>
-          <span className={styles.label}>Name</span>
-          <span className={styles.value}>{session.user.name || "Not set"}</span>
-        </div>
-        <div className={styles.row}>
-          <span className={styles.label}>Email</span>
-          <span className={styles.value}>{session.user.email}</span>
-        </div>
-        <div className={styles.row}>
-          <span className={styles.label}>Your Tier</span>
-          <span className={styles.tierBadge}>{tierLabels[tier] || tier}</span>
-        </div>
-      </div>
-
-      {tier === "FREE" ? (
-        <div className={styles.upgradeNotice}>
-          <p className={styles.upgradeText}>
-            Upgrade to <strong>Pro</strong> for full AI detection breakdowns, provider details, and heuristic analysis.
+        <div className={styles.apiKeyLink}>
+          <Link href="/profile/usage" className={styles.apiKeyBtn}>
+            View API Usage
+          </Link>
+          <p className={styles.apiKeyHint}>
+            Monitor your monthly quota and request history
           </p>
+        </div>
+
+        <div className={styles.divider} />
+
+        <div className={styles.actions}>
           <button
             className={styles.upgradeBtn}
             onClick={handleUpgrade}

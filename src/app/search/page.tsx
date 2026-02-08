@@ -72,12 +72,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           Real Press
         </a>
         <p className={styles.tagline}>Search the Human Web</p>
-        <SearchBar defaultValue={query} />
+        <SearchBar key={query} defaultValue={query} />
       </header>
 
       <section className={styles.content}>
         {query ? (
           <SearchResultsContainer
+            key={query}
             initialResults={searchResponse.results}
             query={query}
             initialTotal={searchResponse.total}

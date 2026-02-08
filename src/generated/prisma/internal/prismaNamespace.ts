@@ -397,10 +397,12 @@ export const ModelName = {
   ContentTopic: 'ContentTopic',
   DomainStats: 'DomainStats',
   User: 'User',
+  ApiUsage: 'ApiUsage',
   ApiKey: 'ApiKey',
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
+  BlockedDomain: 'BlockedDomain',
   SavedSearch: 'SavedSearch',
   SearchHistory: 'SearchHistory',
   ApiUsage: 'ApiUsage'
@@ -419,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore" | "crawlJob" | "crawlDomain" | "crawlSource" | "crawlMetric" | "author" | "topic" | "contentTopic" | "domainStats" | "user" | "apiKey" | "account" | "session" | "verificationToken" | "savedSearch" | "searchHistory" | "apiUsage"
+    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore" | "crawlJob" | "crawlDomain" | "crawlSource" | "crawlMetric" | "author" | "topic" | "contentTopic" | "domainStats" | "user" | "apiUsage" | "apiKey" | "account" | "session" | "verificationToken" | "blockedDomain" | "savedSearch" | "searchHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1385,6 +1387,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ApiUsage: {
+      payload: Prisma.$ApiUsagePayload<ExtArgs>
+      fields: Prisma.ApiUsageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApiUsageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApiUsageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>
+        }
+        findFirst: {
+          args: Prisma.ApiUsageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApiUsageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>
+        }
+        findMany: {
+          args: Prisma.ApiUsageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>[]
+        }
+        create: {
+          args: Prisma.ApiUsageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>
+        }
+        createMany: {
+          args: Prisma.ApiUsageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ApiUsageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>[]
+        }
+        delete: {
+          args: Prisma.ApiUsageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>
+        }
+        update: {
+          args: Prisma.ApiUsageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>
+        }
+        deleteMany: {
+          args: Prisma.ApiUsageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApiUsageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ApiUsageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>[]
+        }
+        upsert: {
+          args: Prisma.ApiUsageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiUsagePayload>
+        }
+        aggregate: {
+          args: Prisma.ApiUsageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApiUsage>
+        }
+        groupBy: {
+          args: Prisma.ApiUsageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiUsageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApiUsageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiUsageCountAggregateOutputType> | number
+        }
+      }
+    }
     ApiKey: {
       payload: Prisma.$ApiKeyPayload<ExtArgs>
       fields: Prisma.ApiKeyFieldRefs
@@ -1678,6 +1754,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.VerificationTokenCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.VerificationTokenCountAggregateOutputType> | number
+        }
+      }
+    }
+    BlockedDomain: {
+      payload: Prisma.$BlockedDomainPayload<ExtArgs>
+      fields: Prisma.BlockedDomainFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BlockedDomainFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BlockedDomainFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>
+        }
+        findFirst: {
+          args: Prisma.BlockedDomainFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BlockedDomainFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>
+        }
+        findMany: {
+          args: Prisma.BlockedDomainFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>[]
+        }
+        create: {
+          args: Prisma.BlockedDomainCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>
+        }
+        createMany: {
+          args: Prisma.BlockedDomainCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BlockedDomainCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>[]
+        }
+        delete: {
+          args: Prisma.BlockedDomainDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>
+        }
+        update: {
+          args: Prisma.BlockedDomainUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>
+        }
+        deleteMany: {
+          args: Prisma.BlockedDomainDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BlockedDomainUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BlockedDomainUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>[]
+        }
+        upsert: {
+          args: Prisma.BlockedDomainUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedDomainPayload>
+        }
+        aggregate: {
+          args: Prisma.BlockedDomainAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBlockedDomain>
+        }
+        groupBy: {
+          args: Prisma.BlockedDomainGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BlockedDomainGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BlockedDomainCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BlockedDomainCountAggregateOutputType> | number
         }
       }
     }
@@ -2187,6 +2337,17 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const ApiUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  apiKeyId: 'apiKeyId',
+  endpoint: 'endpoint',
+  createdAt: 'createdAt'
+} as const
+
+export type ApiUsageScalarFieldEnum = (typeof ApiUsageScalarFieldEnum)[keyof typeof ApiUsageScalarFieldEnum]
+
+
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2236,6 +2397,17 @@ export const VerificationTokenScalarFieldEnum = {
 } as const
 
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
+
+
+export const BlockedDomainScalarFieldEnum = {
+  id: 'id',
+  pattern: 'pattern',
+  reason: 'reason',
+  addedBy: 'addedBy',
+  createdAt: 'createdAt'
+} as const
+
+export type BlockedDomainScalarFieldEnum = (typeof BlockedDomainScalarFieldEnum)[keyof typeof BlockedDomainScalarFieldEnum]
 
 
 export const SavedSearchScalarFieldEnum = {
@@ -2559,10 +2731,12 @@ export type GlobalOmitConfig = {
   contentTopic?: Prisma.ContentTopicOmit
   domainStats?: Prisma.DomainStatsOmit
   user?: Prisma.UserOmit
+  apiUsage?: Prisma.ApiUsageOmit
   apiKey?: Prisma.ApiKeyOmit
   account?: Prisma.AccountOmit
   session?: Prisma.SessionOmit
   verificationToken?: Prisma.VerificationTokenOmit
+  blockedDomain?: Prisma.BlockedDomainOmit
   savedSearch?: Prisma.SavedSearchOmit
   searchHistory?: Prisma.SearchHistoryOmit
   apiUsage?: Prisma.ApiUsageOmit

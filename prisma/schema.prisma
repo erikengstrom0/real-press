@@ -259,6 +259,53 @@ model CrawlMetric {
 }
 
 // ============================================
+// USER SUBMISSION QUEUE
+// ============================================
+
+model SubmissionJob {
+  id          String           @id @default(cuid())
+  userId      String?          @map("user_id")
+  url         String
+  status      SubmissionStatus @default(QUEUED)
+  priority    Int              @default(0) // Higher = processed first (Pro=10, Enterprise=20)
+
+  // Processing state
+  stage       String?          // 'extracting' | 'analyzing' | 'storing'
+  progress    Int              @default(0) // 0-100
+
+  // Input options
+  extractMedia Boolean         @default(false) @map("extract_media")
+  imageUrls    String[]        @default([]) @map("image_urls")
+  videoUrl     String?         @map("video_url")
+
+  // Result
+  contentId   String?          @unique @map("content_id")
+  error       String?
+
+  // Retry
+  attempts    Int              @default(0)
+  maxAttempts Int              @default(3) @map("max_attempts")
+
+  // Timing
+  createdAt   DateTime         @default(now()) @map("created_at")
+  startedAt   DateTime?        @map("started_at")
+  completedAt DateTime?        @map("completed_at")
+
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, priority, createdAt])
+  @@index([userId, createdAt])
+  @@map("submission_jobs")
+}
+
+enum SubmissionStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ============================================
 // AUTHOR & TOPIC MODELS
 // ============================================
 
@@ -364,6 +411,8 @@ model User {
   savedSearches SavedSearch[]
   searchHistory SearchHistory[]
   apiKeys       ApiKey[]
+  apiUsage      ApiUsage[]
+  submissionJobs SubmissionJob[]
 
   stripeCustomerId         String?   @unique @map("stripe_customer_id")
   stripeSubscriptionId     String?   @unique @map("stripe_subscription_id")
@@ -377,6 +426,19 @@ model User {
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model ApiUsage {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  apiKeyId  String?  @map("api_key_id")
+  endpoint  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("api_usage")
 }
 
 model ApiKey {
@@ -440,6 +502,16 @@ model VerificationToken {
 // ============================================
 // PREMIUM FEATURE MODELS
 // ============================================
+
+model BlockedDomain {
+  id        String   @id @default(cuid())
+  pattern   String   @unique  // domain or glob pattern
+  reason    String?
+  addedBy   String?  @map("added_by")  // admin user ID
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("blocked_domains")
+}
 
 model SavedSearch {
   id           String   @id @default(cuid())

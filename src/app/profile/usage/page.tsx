@@ -2,192 +2,157 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import styles from "./page.module.css"
 
-interface DailyUsage {
-  date: string
-  endpoint: string
-  requestCount: number
-  errorCount: number
+interface QuotaStatus {
+  tier: string
+  used: number
+  limit: number
+  remaining: number
+  resetsAt: string
+  percentUsed: number
 }
 
-interface UsageData {
-  daily: DailyUsage[]
-  totals: Record<string, number>
+const tierLabels: Record<string, string> = {
+  free: "Free",
+  pro: "Pro",
+  enterprise: "Enterprise",
 }
 
 export default function UsagePage() {
-  const { data: session, status } = useSession()
+  const { data: session, status: sessionStatus } = useSession()
   const router = useRouter()
-  const [usage, setUsage] = useState<UsageData | null>(null)
+  const [quota, setQuota] = useState<QuotaStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [days, setDays] = useState(30)
+
+  const fetchQuota = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/quota")
+      if (!res.ok) {
+        throw new Error("Failed to fetch quota")
+      }
+      const data = await res.json()
+      setQuota(data)
+    } catch {
+      setError("Could not load quota information.")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (sessionStatus === "unauthenticated") {
       router.push("/login")
     }
-  }, [status, router])
+  }, [sessionStatus, router])
 
   useEffect(() => {
-    if (status !== "authenticated") return
+    if (sessionStatus === "authenticated") {
+      fetchQuota()
+    }
+  }, [sessionStatus, fetchQuota])
 
-    setLoading(true)
-    fetch(`/api/user/usage?days=${days}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch usage')
-        return res.json()
-      })
-      .then(data => {
-        setUsage(data.usage)
-        setError(null)
-      })
-      .catch(err => {
-        setError(err.message)
-      })
-      .finally(() => setLoading(false))
-  }, [status, days])
-
-  if (status === "loading" || (status === "authenticated" && loading)) {
+  if (sessionStatus === "loading" || loading) {
     return (
       <main className={styles.main}>
-        <p className={styles.loading}>Loading usage data...</p>
+        <p className={styles.loading}>Loading...</p>
       </main>
     )
   }
 
-  if (!session?.user || error) {
-    return (
-      <main className={styles.main}>
-        <div className={styles.card}>
-          <p className={styles.error}>{error || "Unable to load usage data"}</p>
-          <Link href="/profile" className={styles.backLink}>Back to Profile</Link>
-        </div>
-      </main>
-    )
+  if (!session?.user) {
+    return null
   }
 
-  const totalRequests = usage?.totals?.total || 0
-  const totalErrors = usage?.daily?.reduce((sum, d) => sum + d.errorCount, 0) || 0
-  const errorRate = totalRequests > 0 ? ((totalErrors / totalRequests) * 100).toFixed(1) : '0'
+  const resetDate = quota?.resetsAt
+    ? new Date(quota.resetsAt).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "—"
 
-  // Calculate today's requests
-  const today = new Date().toISOString().split('T')[0]
-  const todayRequests = usage?.daily
-    ?.filter(d => d.date === today)
-    ?.reduce((sum, d) => sum + d.requestCount, 0) || 0
-
-  // Aggregate daily totals for chart
-  const dailyTotals: Record<string, number> = {}
-  usage?.daily?.forEach(d => {
-    dailyTotals[d.date] = (dailyTotals[d.date] || 0) + d.requestCount
-  })
-  const dailyEntries = Object.entries(dailyTotals).sort((a, b) => a[0].localeCompare(b[0]))
-  const maxDaily = Math.max(...Object.values(dailyTotals), 1)
-
-  // Endpoint breakdown
-  const endpointTotals: Record<string, number> = { ...usage?.totals }
-  delete endpointTotals.total
+  const fillClass = quota
+    ? quota.percentUsed >= 100
+      ? `${styles.quotaFill} ${styles.quotaFillExhausted}`
+      : quota.percentUsed >= 80
+        ? `${styles.quotaFill} ${styles.quotaFillWarning}`
+        : styles.quotaFill
+    : styles.quotaFill
 
   return (
     <main className={styles.main}>
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className={styles.title}>API Usage</h1>
-          <Link href="/profile" className={styles.backLink}>Back to Profile</Link>
+          <p className={styles.subtitle}>Monitor your monthly verification API quota</p>
         </div>
 
         <div className={styles.divider} />
 
-        {/* Summary Cards */}
-        <div className={styles.summaryGrid}>
-          <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Total Requests</span>
-            <span className={styles.summaryValue}>{totalRequests.toLocaleString()}</span>
-            <span className={styles.summaryPeriod}>Last {days} days</span>
+        {error && (
+          <div className={styles.error}>
+            <p>{error}</p>
           </div>
-          <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Today</span>
-            <span className={styles.summaryValue}>{todayRequests.toLocaleString()}</span>
-            <span className={styles.summaryPeriod}>Requests today</span>
-          </div>
-          <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Error Rate</span>
-            <span className={styles.summaryValue}>{errorRate}%</span>
-            <span className={styles.summaryPeriod}>{totalErrors} errors</span>
-          </div>
-        </div>
+        )}
 
-        <div className={styles.divider} />
-
-        {/* Period Selector */}
-        <div className={styles.periodSelector}>
-          <span className={styles.periodLabel}>Period:</span>
-          {[7, 30, 90].map(d => (
-            <button
-              key={d}
-              className={`${styles.periodBtn} ${days === d ? styles.periodBtnActive : ''}`}
-              onClick={() => setDays(d)}
-            >
-              {d}d
-            </button>
-          ))}
-        </div>
-
-        {/* Daily Usage Chart */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Daily Requests</h2>
-          {dailyEntries.length === 0 ? (
-            <p className={styles.emptyText}>No usage data yet. Make some API requests to see your usage here.</p>
-          ) : (
-            <div className={styles.chart}>
-              {dailyEntries.map(([date, count]) => (
-                <div key={date} className={styles.chartBar}>
-                  <div
-                    className={styles.chartBarFill}
-                    style={{ height: `${(count / maxDaily) * 100}%` }}
-                  />
-                  <span className={styles.chartBarLabel}>
-                    {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                  <span className={styles.chartBarValue}>{count}</span>
-                </div>
-              ))}
+        {quota && (
+          <div className={styles.quotaSection}>
+            <div className={styles.quotaHeader}>
+              <h2 className={styles.quotaTitle}>Monthly Quota</h2>
+              <span className={styles.quotaTier}>
+                {tierLabels[quota.tier] || quota.tier}
+              </span>
             </div>
-          )}
-        </section>
+
+            <div className={styles.quotaBar}>
+              <div
+                className={fillClass}
+                style={{ width: `${Math.min(quota.percentUsed, 100)}%` }}
+              />
+            </div>
+
+            <div className={styles.quotaStats}>
+              <span className={styles.quotaCount}>
+                <strong>{quota.used.toLocaleString()}</strong> / {quota.limit.toLocaleString()} requests used
+              </span>
+              <span className={styles.quotaPercent}>{quota.percentUsed}%</span>
+            </div>
+
+            <p className={styles.quotaReset}>
+              {quota.remaining.toLocaleString()} remaining — resets {resetDate}
+            </p>
+
+            {quota.percentUsed >= 100 && (
+              <div className={styles.quotaExhausted}>
+                <p>
+                  Your monthly quota is exhausted. API requests will be rejected until your quota resets.
+                  Upgrade your plan for more requests.
+                </p>
+              </div>
+            )}
+
+            {quota.percentUsed >= 80 && quota.percentUsed < 100 && (
+              <div className={styles.quotaWarning}>
+                <p>
+                  You have used {quota.percentUsed}% of your monthly quota.
+                  Consider upgrading your plan if you need more requests.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className={styles.divider} />
 
-        {/* Endpoint Breakdown */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>By Endpoint</h2>
-          {Object.keys(endpointTotals).length === 0 ? (
-            <p className={styles.emptyText}>No endpoint data available.</p>
-          ) : (
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Endpoint</th>
-                  <th>Requests</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(endpointTotals)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([endpoint, count]) => (
-                    <tr key={endpoint}>
-                      <td><code>{endpoint}</code></td>
-                      <td>{count.toLocaleString()}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          )}
-        </section>
+        <div className={styles.nav}>
+          <Link href="/profile" className={styles.navLink}>Account</Link>
+          <Link href="/profile/api-keys" className={styles.navLink}>API Keys</Link>
+          <Link href="/" className={styles.navLink}>Home</Link>
+        </div>
       </div>
     </main>
   )

@@ -12,7 +12,9 @@ Real Press is a search engine that surfaces human-generated content with AI dete
 
 | Version | Date | Description |
 |---------|------|-------------|
-| v1.5.0 | 2026-02-07 | Phase 5: Stripe billing, API docs, usage tracking |
+| v1.7.0 | 2026-02-07 | Phase 9: Async submission queue — SubmissionJob model, queue service, worker endpoint, status polling, progress UI |
+| v1.6.0 | 2026-02-07 | Phase 8: Malicious submission protection — domain blocklist, URL resolver, content validator, submission guard |
+| v1.5.0 | 2026-02-07 | API Usage Quotas — monthly quota enforcement, usage tracking, quota dashboard, API docs page |
 | v1.4.0 | 2026-02-07 | Phase 4: Public Verification API — API key auth, verify endpoints, key management UI |
 | v1.3.0 | 2026-02-07 | Phase 7 Wave 2: Integration — service persistence, breakdown API, backfill, content detail page |
 | v1.2.0 | 2026-02-07 | Phase 7 Wave 1: Explainability pipeline, schema, formatters, UI |
@@ -98,31 +100,32 @@ src/
 │   │   ├── page.tsx                    # Server component: article + score
 │   │   ├── ContentBreakdownSection.tsx # Client component: fetches & renders breakdown
 │   │   └── page.module.css
+│   ├── docs/page.tsx            # Public API documentation page
+│   ├── profile/usage/page.tsx   # API quota usage dashboard
 │   └── api/
 │       ├── search/route.ts   # Search endpoint
-│       ├── submit/route.ts   # Submission endpoint
+│       ├── submit/
+│       │   ├── route.ts                 # Submission endpoint (async/sync, Phase 9)
+│       │   ├── status/[id]/route.ts     # Job status polling (Phase 9)
+│       │   └── worker/route.ts          # Cron-triggered queue worker (Phase 9)
 │       ├── analyze/route.ts  # AI detection endpoint (Sprint 2)
 │       ├── content/[id]/breakdown/route.ts  # Tier-gated breakdown API (Phase 7)
-│       ├── billing/                          # Stripe billing (Phase 5)
-│       │   ├── checkout/route.ts            # POST create Checkout Session
-│       │   ├── portal/route.ts              # POST create Customer Portal session
-│       │   └── webhook/route.ts             # POST Stripe webhook handler
-│       ├── user/
-│       │   ├── api-keys/route.ts            # User API key CRUD (Phase 4)
-│       │   └── usage/route.ts               # GET usage stats (Phase 5)
+│       ├── user/api-keys/route.ts           # User API key CRUD (Phase 4)
+│       ├── user/quota/route.ts              # User quota status API
 │       ├── v1/verify/                       # Public verification API (Phase 4)
 │       │   ├── _lib/build-score-row.ts      # Detection result → AiScoreRow mapper
-│       │   ├── text/route.ts                # POST text verification
-│       │   ├── url/route.ts                 # POST URL extraction + verification
-│       │   ├── image/route.ts               # POST image verification
-│       │   └── batch/route.ts               # POST batch verification
+│       │   ├── text/route.ts                # POST text verification (+ quota)
+│       │   ├── url/route.ts                 # POST URL verification (+ blocklist + quota)
+│       │   ├── image/route.ts               # POST image verification (+ quota)
+│       │   └── batch/route.ts               # POST batch verification (+ quota)
 │       └── admin/
 │           ├── crawl/worker/route.ts  # Job worker (Vercel Cron target)
 │           ├── crawl/jobs/route.ts    # Job queue management
 │           ├── crawl/seeds/route.ts   # Seed list import
 │           ├── content/[id]/route.ts  # Content inspection
 │           ├── users/[id]/tier/route.ts     # Admin tier setter (Phase 4)
-│           └── backfill-explainability/route.ts  # Backfill JSONB data (Phase 7)
+│           ├── backfill-explainability/route.ts  # Backfill JSONB data (Phase 7)
+│           └── blocklist/route.ts     # Admin domain blocklist CRUD (Phase 8)
 ├── components/
 │   ├── SearchBar.tsx
 │   ├── SearchResults.tsx
@@ -140,13 +143,20 @@ src/
 │       └── BreakdownTeaser.tsx       # Free user upgrade CTA
 └── lib/
     ├── db/prisma.ts          # Prisma client singleton
+    ├── config/
+    │   └── quotas.ts                 # Monthly quota limits per tier
+    ├── security/                     # Phase 8: Malicious submission protection
+    │   ├── domain-blocklist.ts       # Hardcoded + DB-backed domain blocklist
+    │   ├── url-resolver.ts           # Redirect follower with hop limit
+    │   ├── content-validator.ts      # Post-extraction content quality checks
+    │   ├── submission-guard.ts       # Per-user/IP submission rate limits
+    │   └── submission-log.ts         # Structured JSON logging for forensics
     ├── services/
     │   ├── content.service.ts
     │   ├── extraction.service.ts
     │   ├── ai-detection.service.ts
     │   ├── api-key.service.ts           # API key CRUD + SHA-256 hashing (Phase 4)
-    │   ├── billing.service.ts           # Stripe customer, checkout, portal, webhooks (Phase 5)
-    │   ├── usage.service.ts             # API usage tracking + daily aggregation (Phase 5)
+    │   ├── quota.service.ts             # Monthly quota tracking + enforcement
     │   ├── media-extraction.service.ts  # Extract images/videos from URLs
     │   ├── crawl-job.service.ts         # Job queue management
     │   ├── crawl-worker.service.ts      # Job processing
@@ -154,10 +164,11 @@ src/
     │   ├── content-analysis.service.ts  # Stylometric analysis
     │   ├── metadata-extraction.service.ts # HTML metadata extraction
     │   ├── topic-extraction.service.ts  # Topic classification
-    │   └── author.service.ts            # Author tracking
+    │   ├── author.service.ts            # Author tracking
+    │   └── submission-queue.service.ts  # Async submission queue (Phase 9)
     ├── api/
-    │   ├── check-tier.ts             # Tier lookup with Stripe subscription integration (Phase 5)
-    │   └── verify-auth.ts            # Dual auth + usage tracking (Phase 4/5)
+    │   ├── check-tier.ts             # User/API key tier lookup (Phase 7)
+    │   └── verify-auth.ts            # Dual auth + quota check (Phase 4 + Quotas)
     └── ai-detection/
         ├── index.ts              # Multi-modal orchestrator
         ├── composite-score.ts    # Score calculation
@@ -248,7 +259,9 @@ Do not rely on standalone plan files — they are archived. If you find `DEVELOP
 | Phase 7 Wave 1 | Explainability pipeline, schema, formatters, UI | ✅ Complete |
 | Phase 7 Wave 2 | Integration: persistence, breakdown API, backfill, content page | ✅ Complete |
 | Phase 4 | Public Verification API, API key auth, key management UI | ✅ Complete |
-| Phase 5 | Stripe billing, API docs, usage tracking | ✅ Complete |
+| API Quotas | Monthly quota enforcement, usage tracking, quota dashboard, API docs | ✅ Complete |
+| Phase 8 | Malicious submission protection — blocklist, URL resolver, content validator, submission guard | ✅ Complete |
+| Phase 9 | Async submission queue — SubmissionJob model, worker endpoint, status polling, progress UI | ✅ Complete |
 
 ---
 
@@ -626,8 +639,8 @@ Decisions made during development that should persist across sessions.
    - All components updated to use `var(--color-*)`, `var(--font-*)`, etc.
    - Removed hardcoded colors (e.g., `#0070f3` → `var(--color-accent-primary)`)
 
-6. **Demo/Style Guide Page**
-   - `/demo` route shows all design system elements
+6. **Style Guide Page**
+   - `/styleguide` route shows all design system elements (renamed from `/demo` for clarity)
    - Color swatches, stamps, typography, buttons, cards
    - Sample search results with all classifications
    - Useful for testing and demonstrating the design
@@ -914,7 +927,7 @@ Decisions made during development that should persist across sessions.
 1. **Middleware-Based Authentication**
    - Created `src/middleware.ts` to protect `/admin/*` and `/api/admin/*` routes
    - Matches paths and checks for valid authentication before allowing access
-   - Public routes remain unprotected: `/`, `/search`, `/submit`, `/demo`
+   - Public routes remain unprotected: `/`, `/search`, `/submit`, `/styleguide`
    - Login page (`/admin/login`) explicitly excluded from protection to avoid redirect loops
 
 2. **Authentication Methods**
@@ -1159,111 +1172,342 @@ Decisions made during development that should persist across sessions.
    - `src/middleware.ts` — Added `/api/v1/*` pass-through + matcher
    - `src/app/profile/page.tsx` + `page.module.css` — Added API key management link
 
-### Phase 5: Stripe Billing, API Docs & Usage Tracking (2026-02-07)
+### Search Bugfix: Subsequent Searches Not Updating (2026-02-07)
 
-1. **Stripe SDK Lazy Initialization**
-   - Stripe SDK (`stripe` v20.3.1) fails at build time if `STRIPE_SECRET_KEY` is not set
-   - Solution: lazy singleton via `getStripe()` function — only instantiates Stripe client when first API call is made
-   - Without this, `next build` crashes during page data collection because billing API routes import billing.service.ts at module level
-   - Stripe v20 uses API version `2026-01-28.clover` (not `2025-04-30.basil` from earlier docs)
+1. **Root Cause: React `useState` Ignoring Updated Props**
+   - `SearchResultsContainer` is a client component initialized with `useState(initialResults)`
+   - `useState` only uses the initial value on first mount; subsequent renders ignore the new prop
+   - When user searches again via `router.push()`, the server re-fetches correct results but the client component keeps stale state
+   - This caused subsequent searches to show results from the first search
 
-2. **Stripe v20 API Changes**
-   - `subscription.current_period_end` moved from `Subscription` object to `SubscriptionItem`
-   - Access via `subscription.items.data[0].current_period_end` instead
-   - `invoice.customer` can be string or object — handle both with typeof check
+2. **Fix: React `key` Prop on SearchResultsContainer**
+   - Added `key={query}` to `<SearchResultsContainer>` in `src/app/search/page.tsx`
+   - When `key` changes, React unmounts the old component and mounts a new instance
+   - New instance correctly initializes `useState` with the updated `initialResults`
+   - Chosen over `useEffect` sync approach because it's simpler, more idiomatic, and avoids stale closure issues
 
-3. **Subscription Tier Resolution Priority**
-   - `getUserTier()` in `check-tier.ts` now checks Stripe status before DB tier enum
-   - Priority: active subscription → past_due (grace) → canceled-with-time-remaining → DB tier enum
-   - This allows admin-set tiers to still work (e.g., manually granting Pro to a beta tester)
-   - New `getSubscriptionStatus()` export for UI display (tier + status + periodEnd)
+3. **Files Modified**
+   - `src/app/search/page.tsx` — Added `key={query}` prop (1-line change)
 
-4. **Usage Tracking Architecture**
-   - Daily aggregation model (`ApiUsage`) with composite unique `[userId, apiKeyId, endpoint, date]`
-   - `recordUsage()` is fire-and-forget — never blocks or fails API responses
-   - Nullable `apiKeyId` in composite unique handled by using empty string `''` for upsert key lookup
-   - Usage tracking integrated into `verify-auth.ts` — every successful auth triggers a fire-and-forget record
-   - Endpoint key extracted from pathname: `/api/v1/verify/text` → `verify-text`
+### Search Page Layout & Header UX Polish (2026-02-07)
 
-5. **API Key Service Change**
-   - `validateApiKey()` now returns `apiKeyId` alongside `userId` and `tier`
-   - Needed by `verify-auth.ts` to pass to `recordUsage()` for per-key tracking
-   - Backwards compatible — just adds one field to the return object
+1. **Search Bar / Filter Panel Right-Edge Alignment**
+   - Problem: SearchBar form had `max-width: 600px` while FilterPanel fills the full container width (~800px), causing misaligned right edges
+   - Fix: Removed `max-width: 600px` from `.form` in `SearchBar.module.css`
+   - Both elements now fill their parent container equally, so left and right edges align
+   - The search input uses `flex: 1` to absorb remaining space after the Search button
 
-6. **Profile Page Billing UX**
-   - FREE tier: gold "Upgrade to Pro" button → calls `POST /api/billing/checkout` → redirects to Stripe Checkout
-   - PRO/ENTERPRISE: "Manage Subscription" button → calls `POST /api/billing/portal` → redirects to Stripe Customer Portal
-   - URL params `?billing=success` / `?billing=cancel` show green/yellow banners
-   - `useSearchParams()` requires `<Suspense>` boundary (Next.js static generation requirement)
-   - Client-side price ID via `NEXT_PUBLIC_STRIPE_PRO_PRICE_ID` env var
+2. **Header Profile Link → "Account"**
+   - Problem: The nav link after the divider displayed `session.user.name || session.user.email`, which showed "REAL PRESS" (the user's display name) — confusing because it matches the site logo
+   - Fix: Changed the link text to a static `"Account"` label
+   - The link still navigates to `/profile` for account management
+   - Clearer UX: distinguishes site branding from user navigation
 
-7. **API Documentation Page**
-   - Static server component at `/docs` (no "use client") — fully SSR, zero JS for readers
-   - 700+ lines covering all 4 endpoints, auth, rate limits, error codes, code examples (curl/JS/Python), tier comparison
-   - 1920s newspaper aesthetic with CSS Modules using design system tokens
-   - "Docs" link added to Header nav between "Submit" and auth divider
+3. **Files Modified**
+   - `src/components/SearchBar.module.css` — Removed `max-width: 600px` from `.form`
+   - `src/components/Header.tsx` — Changed profile link text from dynamic user name to "Account"
 
-8. **Webhook Security**
-   - `POST /api/billing/webhook` uses NO auth middleware — Stripe sends directly
-   - Signature verification via `stripe.webhooks.constructEvent(body, sig, secret)`
-   - Returns 200 for all events (even unhandled) to prevent Stripe retries
-   - Returns 400 only for invalid signatures
-   - Handler errors logged but still return 200 (prevents retry storms)
+### "Did You Mean?" Spell Correction for Search (2026-02-07)
 
-9. **New Prisma Models & Fields**
-   - User model: 5 new Stripe fields (`stripeCustomerId`, `stripeSubscriptionId`, `stripeSubscriptionStatus`, `stripePriceId`, `stripeCurrentPeriodEnd`) + `apiUsage` relation
-   - ApiKey model: added `usage ApiUsage[]` relation
-   - New `ApiUsage` model: daily aggregation with composite unique, date column uses `@db.Date`
-   - All new columns nullable for backwards compatibility
+1. **pg_trgm Extension for Similarity Matching**
+   - Enabled PostgreSQL `pg_trgm` extension on Neon database for trigram-based fuzzy matching
+   - Created GIN index `idx_content_title_trgm` on `lower(title)` for fast similarity lookups
+   - Similarity threshold set to 0.2 (pg_trgm default is 0.3 — lowered to catch more candidates)
+   - Combined with Levenshtein distance ranking (max 3 edits) for best match selection
+
+2. **Pre-Search Spell Check (Intercept Before Navigation)**
+   - Spell check runs in the SearchBar *before* navigating to the search results page
+   - Dedicated `/api/spell-check?q=...` endpoint returns suggestions without executing the full search
+   - On submit, SearchBar calls spell-check API; if a suggestion exists, shows a two-option prompt
+   - User must choose "Did you mean: **corrected**?" or "Or search for: **original**" before navigation proceeds
+   - If no suggestion, navigates directly — no delay for correctly spelled queries
+   - Wrapped in try/catch so spell check failures fall through to normal search
+
+3. **Word-Level Correction Strategy**
+   - Query tokenized into words; words <= 2 chars skipped (too short for meaningful correction)
+   - Each word matched independently against words extracted from content titles via `unnest(regexp_split_to_array(...))`
+   - Candidates ranked by Levenshtein distance first, then pg_trgm similarity as tiebreaker
+   - Corrected query reconstructed by replacing only the words that had better matches
+
+4. **fast-levenshtein Package**
+   - Added `fast-levenshtein` as explicit dependency (was only a transitive dep in lock file)
+   - Created TypeScript declaration at `src/types/fast-levenshtein.d.ts` (no `@types` package exists)
+   - Used for candidate ranking and confidence scoring
+
+5. **UI: Two-Option Prompt in SearchBar**
+   - `SpellSuggestion` component renders below the search bar input, not in results
+   - Two clickable options: corrected query (green, headline font, prominent) and original query (muted, body font)
+   - Retro newspaper aesthetic: cream background, green left border, Caudex headline font for suggestion
+   - Search button shows "Checking..." state while spell-check API is in-flight
+   - Input clears suggestion when user types a new query
+   - Mobile responsive with smaller font sizes at 480px breakpoint
+
+6. **SearchBar State Machine**
+   - Three states: idle (normal), checking (spell-check API in-flight), prompted (showing two options)
+   - In "checking" state: input and button disabled, button text changes to "Checking..."
+   - In "prompted" state: SpellSuggestion banner visible below search bar
+   - Selecting either option clears the prompt and navigates to `/search?q=<chosen>`
+   - Typing new text resets back to idle state
+
+7. **Files Created**
+   - `src/lib/services/spell-check.service.ts` — Core spell correction logic
+   - `src/types/fast-levenshtein.d.ts` — TypeScript declaration
+   - `src/app/api/spell-check/route.ts` — Dedicated spell-check API endpoint
+   - `src/components/SpellSuggestion.tsx` — Two-option prompt component
+   - `src/components/SpellSuggestion.module.css` — Prompt styles
+
+8. **Files Modified**
+   - `src/components/SearchBar.tsx` — Intercepts submit, calls spell-check API, shows prompt
+   - `src/components/SearchBar.module.css` — Added wrapper class for layout
+   - `src/app/api/search/route.ts` — Removed spell check (moved to dedicated endpoint)
+   - `src/components/SearchResultsContainer.tsx` — Removed suggestion prop (no longer needed)
+
+### API Usage Quotas (2026-02-07)
+
+1. **Monthly Quota Limits by Tier**
+   - Free: 100 requests/month
+   - Pro: 5,000 requests/month
+   - Enterprise: 50,000 requests/month
+   - Quota resets on the 1st of each month (UTC)
+   - Batch endpoint: each item counts as one request toward quota
+
+2. **Quota Enforcement in `verify-auth.ts`**
+   - `verifyAuth()` now checks `checkQuota()` after authentication, before processing
+   - Returns `429` with `X-Quota-*` headers when monthly quota exceeded
+   - All verify endpoints return `X-Quota-Limit`, `X-Quota-Remaining`, `X-Quota-Used`, `X-Quota-Reset` headers
+   - `quotaHeaders()` utility builds standard header object from `QuotaStatus`
+
+3. **ApiUsage Model (Schema)**
+   - New `ApiUsage` model in `prisma/schema.prisma` tracks individual API requests
+   - Fields: `userId`, `apiKeyId` (nullable), `endpoint`, `createdAt`
+   - Indexed on `[userId, createdAt]` for efficient monthly count queries
+   - `recordApiUsage()` is fire-and-forget (`.catch(() => {})`) to avoid blocking responses
+
+4. **Quota Dashboard (`/profile/usage`)**
+   - Visual progress bar with color-coded states (green → orange at 80% → red at 100%)
+   - Shows used/limit counts, percentage, remaining, and reset date
+   - Fetches from `GET /api/user/quota` endpoint (NextAuth session auth)
+
+5. **API Documentation Page (`/docs`)**
+   - Public page documenting all verification endpoints with curl examples
+   - Documents authentication, quotas, response formats, classifications, error codes
+   - Links to API key management and usage dashboard
+
+6. **Batch Quota Pre-Check**
+   - Batch endpoint checks `authResult.quotaStatus.remaining < itemCount` before processing
+   - Returns descriptive error with remaining vs. requested counts
+
+7. **New Files Created**
+   - `src/lib/config/quotas.ts` — Quota constants and `QuotaStatus` interface
+   - `src/lib/services/quota.service.ts` — `getQuotaStatus()`, `checkQuota()`, `recordApiUsage()`
+   - `src/app/api/user/quota/route.ts` — User quota status API
+   - `src/app/profile/usage/page.tsx` + `page.module.css` — Quota dashboard UI
+   - `src/app/docs/page.tsx` + `page.module.css` — Public API documentation
+
+8. **Files Modified**
+   - `prisma/schema.prisma` — Added `ApiUsage` model, added `apiUsage` relation on `User`
+   - `src/lib/api/verify-auth.ts` — Integrated quota check, added `apiKeyId`/`quotaStatus` to result, added `quotaHeaders()`
+   - `src/app/api/v1/verify/{text,url,image,batch}/route.ts` — Added quota headers and usage recording
+   - `src/app/profile/page.tsx` — Added "View API Usage" link
+   - `src/lib/services/api-key.service.ts` — Returns `apiKeyId` from validation
+
+### Phase 8: Malicious Submission Protection (2026-02-07)
+
+1. **Domain Blocklist Architecture**
+   - Two-layer approach: hardcoded blocklists (URL shorteners, spam TLDs) + dynamic database table (`BlockedDomain`)
+   - `isDomainBlocked()` checks hardcoded list first, then queries DB — fail-open on database errors
+   - Pattern matching supports exact domain, wildcard prefix (`*.example.com`), and suffix match
+   - `isSuspiciousUrl()` runs heuristic checks: TLD, URL length, encoding density, subdomain depth, query string length
+   - URL shorteners detected by hostname against a curated set of 22 known shortener domains
+
+2. **URL Redirect Resolution**
+   - `resolveUrl()` follows HTTP redirects with configurable hop limit (default 5)
+   - Each hop validated against SSRF protection AND domain blocklist
+   - Uses `HEAD` requests with `redirect: 'manual'` to avoid downloading content
+   - 10-second timeout per resolution attempt
+   - Only triggered when `isUrlShortener()` returns true (not for all URLs)
+
+3. **Content Validation**
+   - Minimum 200 characters of meaningful text (up from 100 in extraction service)
+   - Maximum 500,000 characters to prevent memory abuse
+   - Pattern matching detects login/paywall/cookie-consent pages (10 patterns)
+   - Index/listing page detection (4 patterns) on first line
+   - Non-text content rejection (HTML-only, numbers/punctuation-only)
+   - TypeScript regex compatibility: avoided `s` (dotAll) and `u` (unicode) flags since tsconfig has no explicit target
+
+4. **Per-User Submission Guard**
+   - Authenticated users: 20 submissions/day, 100/week
+   - Burst detection: 3+ submissions in 5 minutes triggers temporary cooldown
+   - Anonymous: global safety valve (50/day across all anonymous users)
+   - Uses `Content` table counts (sourceType='user_submitted') — no additional tables needed
+   - Fail-open on database errors to avoid blocking legitimate users
+
+5. **Structured Submission Logging**
+   - `logSubmission()` writes JSON to stdout (captured by Vercel logs)
+   - Fields: type, timestamp, userId, ip, url, outcome (success/blocked/failed), reason
+   - Fire-and-forget, wrapped in try/catch — never throws
+   - All blocked and successful submissions logged for abuse forensics
+
+6. **Admin Blocklist API**
+   - `GET /api/admin/blocklist` — List all blocked domains (sorted by createdAt desc)
+   - `POST /api/admin/blocklist` — Add domain pattern with optional reason (409 on duplicate)
+   - `DELETE /api/admin/blocklist` — Remove domain pattern (404 if not found)
+   - Protected by existing admin middleware (ADMIN_SECRET)
+   - Patterns stored lowercase, trimmed
+
+7. **Submit Endpoint Security Pipeline**
+   - After SSRF check, new pipeline runs: blocklist → suspicious URL → URL shortener resolution → submission guard → (extraction) → content validation
+   - Suspicious URLs blocked with 403 (not just logged)
+   - URL shorteners resolved to final destination before processing
+   - Content validation runs post-extraction, before database insert
+
+8. **Verify URL Endpoint Protection**
+   - `isDomainBlocked()` check added to `/api/v1/verify/url` before content extraction
+   - Returns 403 "This URL cannot be verified" for blocked domains
+
+9. **Schema Changes**
+   - `BlockedDomain` model: `pattern` (unique), `reason`, `addedBy`, `createdAt`
+   - Mapped to `blocked_domains` table
+   - Pushed to Neon production database
 
 10. **New Files Created**
-    - `src/lib/services/billing.service.ts` — Stripe customer, checkout, portal, webhook handlers
-    - `src/lib/services/usage.service.ts` — Usage recording + querying
-    - `src/app/api/billing/{checkout,portal,webhook}/route.ts` — 3 billing API routes
-    - `src/app/api/user/usage/route.ts` — Usage stats API
-    - `src/app/docs/page.tsx` + `page.module.css` — API documentation
-    - `src/app/profile/usage/page.tsx` + `page.module.css` — Usage dashboard
+    - `src/lib/security/domain-blocklist.ts` — Hardcoded + DB-backed domain blocklist
+    - `src/lib/security/url-resolver.ts` — Redirect follower with hop limit
+    - `src/lib/security/content-validator.ts` — Post-extraction content quality checks
+    - `src/lib/security/submission-guard.ts` — Per-user/IP submission rate limits
+    - `src/lib/security/submission-log.ts` — Structured JSON logging for forensics
+    - `src/app/api/admin/blocklist/route.ts` — Admin CRUD for domain blocklist
 
 11. **Files Modified**
-    - `prisma/schema.prisma` — User billing fields, ApiKey usage relation, ApiUsage model
-    - `src/lib/api/check-tier.ts` — Stripe subscription integration + `getSubscriptionStatus()`
-    - `src/lib/api/verify-auth.ts` — Usage tracking + `apiKeyId` in result
-    - `src/lib/services/api-key.service.ts` — `apiKeyId` in return
-    - `src/app/profile/page.tsx` + `page.module.css` — Billing CTAs, usage link, banners
-    - `src/components/Header.tsx` — "Docs" nav link
+    - `prisma/schema.prisma` — Added `BlockedDomain` model
+    - `src/app/api/submit/route.ts` — Full security pipeline integration
+    - `src/app/api/v1/verify/url/route.ts` — Domain blocklist check
+
+### Phase 9: Async Submission Queue (2026-02-07)
+
+1. **Async/Sync Hybrid Architecture**
+   - Not a full cutover: submit endpoint dynamically chooses sync vs async per-request
+   - Decision based on queue depth: if < 3 items queued and nothing processing → sync (instant results)
+   - If ≥ 3 queued or any jobs processing → async (enqueue + return job ID)
+   - Rationale: avoids degrading UX during light load while scaling under heavy load
+   - Threshold constant `SYNC_THRESHOLD = 3` is tunable without code changes
+
+2. **Separate Queue from Crawler**
+   - Created `SubmissionJob` model separate from `CrawlJob` — different lifecycle and fields
+   - User submissions need: userId, tier-based priority, stage progress, media options
+   - Crawl jobs need: domain rate limiting, robots.txt, source tracking, metadata
+   - Shared infrastructure would over-couple two distinct use cases
+   - Both share the same `Content` + `AiScore` tables as output
+
+3. **Priority Queue Design**
+   - Priority is an integer column: FREE=0, PRO=10, ENTERPRISE=20
+   - Query orders by `priority DESC, createdAt ASC` (highest priority first, then FIFO)
+   - Gap between tiers (0, 10, 20) leaves room for future granularity (e.g., priority boosts)
+   - Claim uses `updateMany` with status guard for atomic job acquisition (prevents double-processing)
+
+4. **Retry Strategy**
+   - Jobs retry up to 3 times on transient failures (network errors, timeouts, 5xx)
+   - Permanent errors (403 Forbidden, 404 Not Found, 401 Unauthorized) fail immediately
+   - On retry: job returns to QUEUED with `startedAt` cleared, `attempts` incremented
+   - On permanent fail: job set to FAILED with `completedAt` and error message preserved
+
+5. **Progress Tracking Stages**
+   - Three stages tracked in `stage` column: `'extracting'` → `'analyzing'` → `'complete'`
+   - `progress` column (0-100) updated at key milestones: 10 (start), 40 (extracted), 50 (analyzing), 70 (detection running), 100 (done)
+   - Frontend maps stages to human-readable labels: "Extracting content..." → "Running AI detection..." → "Complete!"
+   - Stage + progress cleared on retry to reset UI state
+
+6. **Duplicate Detection During Queue Wait**
+   - Worker checks `getContentByUrl()` before extracting, in case another submission or crawl job analyzed the same URL while this job waited
+   - If duplicate found: marks job as COMPLETED linking to existing content, skips extraction + detection
+   - Prevents wasted processing for popular URLs submitted by multiple users
+
+7. **Frontend Polling State Machine**
+   - Five states: `idle → submitting → queued → processing → complete/error`
+   - Polling interval: 2 seconds via `setInterval` (cleared on completion, error, or unmount)
+   - Sync submissions skip polling entirely — result displayed immediately
+   - Error state shows retry button that resets to idle
+   - Progress bar width transitions smoothly via CSS `transition: width 0.4s ease`
+
+8. **Worker Authentication**
+   - Reuses same `CRON_SECRET` pattern as crawl worker
+   - Both dev mode (no secret = allow all) and production (Bearer token required)
+   - No need for a separate secret — worker is non-admin, same trust level as crawl
+   - Worker route is under `/api/submit/worker` (not `/api/admin/`) so admin middleware doesn't intercept
+
+9. **Status Endpoint Design**
+   - Job ID is a CUID (unguessable), so no auth required for polling — avoids session dependency
+   - Terminal states (completed/failed) return `Cache-Control: public, max-age=60`
+   - Active states (queued/processing) return `Cache-Control: no-cache, no-store`
+   - Queue position calculated on each poll for accuracy (not cached from enqueue time)
+
+10. **Schema Decisions**
+    - `contentId` is `@unique` on SubmissionJob — a URL can only produce one content record per job
+    - `userId` uses `onDelete: SetNull` (not Cascade) — job history preserved even if user deleted
+    - `imageUrls` stored as `String[]` array — simpler than separate table for MVP
+    - Composite index `[status, priority, createdAt]` optimizes the claim query directly
+
+11. **New Files Created**
+    - `prisma/schema.prisma` — `SubmissionJob` model + `SubmissionStatus` enum
+    - `src/lib/services/submission-queue.service.ts` — Queue operations (enqueue, process, status, stats)
+    - `src/app/api/submit/worker/route.ts` — Cron-triggered worker endpoint
+    - `src/app/api/submit/status/[id]/route.ts` — Job status polling endpoint
+
+12. **Files Modified**
+    - `src/app/api/submit/route.ts` — Added async/sync decision logic, enqueue path
+    - `src/components/SubmitForm.tsx` — Polling state machine, progress bar, retry button
+    - `src/components/SubmitForm.module.css` — Progress bar, stage label, retry button styles
 
 ---
 
 ## Future TODOs
 
 ### Recently Completed
-- [x] **Phase 5: Stripe Billing, API Docs & Usage Tracking** - Stripe checkout/portal/webhooks, API documentation page, usage tracking, profile billing UI (2026-02-07)
+- [x] **Phase 9: Async submission queue** - SubmissionJob model, queue service, worker, status polling, progress UI (2026-02-07)
+- [x] **Phase 8: Malicious submission protection** - Domain blocklist, URL resolver, content validator, submission guard, admin blocklist API (2026-02-07)
+- [x] **API Usage Quotas** - Monthly quota enforcement, usage tracking, quota dashboard, API docs page (2026-02-07)
+- [x] **API documentation page** - Public docs at `/docs` with code examples (2026-02-07)
+- [x] **API key usage tracking** - `ApiUsage` model + `/profile/usage` dashboard (2026-02-07)
+- [x] **Malicious submission protection** - Blocklist, URL shortener resolution, content validation, per-user rate limits (2026-02-07)
+- [x] **"Did You Mean?" spell correction** - Pre-search spell check in SearchBar with two-option prompt before navigation (2026-02-07)
 - [x] **Phase 4: Public Verification API** - API key auth, verify endpoints (text/url/image/batch), key management UI, admin tier setter (2026-02-07)
 - [x] **Phase 7 Wave 2 (Agent E)** - Integration: service persistence, breakdown API, backfill endpoint, content detail page (2026-02-07)
 - [x] **Phase 7 Wave 1** - Explainability pipeline, schema, formatters, UI components (2026-02-07)
 - [x] **Admin route protection** - Middleware authentication for `/admin/*` routes (2026-02-05)
-- [x] **Admin login page** - Token-based login at `/admin/login` (2026-02-05)
-- [x] **Content source integrations** - Hacker News, DEV.to, YouTube, RSS feeds (2026-02-05)
-- [x] **Admin URL import page** - Bulk import and topic discovery at `/admin/import` (2026-02-05)
-- [x] **External cron setup** - cron-job.org triggers scraper worker every 5 min (2026-02-05)
-- [x] **Cross-browser styling fixes** - Safari/Brave compatibility for AI badges (2026-02-05)
 
 ### High Priority (Pre-Funding)
+- [ ] **Push ApiUsage schema to Neon** - Run `npx prisma db push` to create the `api_usage` table in production. Without this, quota tracking will fail at runtime.
 - [ ] **Run backfill on production** - Call `POST /api/admin/backfill-explainability` to populate JSONB data for existing content
 - [ ] **Fix `sentenceVariation` key mismatch** - `explain-score.ts` describeMetric() lookup mismatches output key (minor bug, falls back to generic text)
-- [x] **Implement check-tier.ts** - ~~Replace stub with actual billing tier lookup~~ Done in Phase 5 with Stripe integration (2026-02-07)
+- [x] ~~**Implement check-tier.ts**~~ - Done in Phase 5 with Stripe integration (2026-02-07)
 - [ ] **Link search results to content detail page** - Add `/content/[id]` links from search result items
-- [x] **API documentation page** - ~~Public docs for `/api/v1/verify/*` with code examples~~ Done at `/docs` (2026-02-07)
-- [x] **API key usage tracking** - ~~Track request counts per key for billing/analytics~~ Done with ApiUsage model + `/profile/usage` dashboard (2026-02-07)
-- [ ] **Configure Stripe products** - Create Pro and Enterprise products/prices in Stripe Dashboard, set env vars
-- [ ] **Configure Stripe Customer Portal** - Enable portal in Stripe Dashboard for subscription management
-- [ ] **Configure Stripe webhook endpoint** - Add `https://www.real.press/api/billing/webhook` in Stripe Dashboard, set `STRIPE_WEBHOOK_SECRET`
-- [ ] **Add usage-based rate limiting** - Enforce monthly request quotas per tier (currently only per-minute rate limits)
-- [ ] **Malicious submission protection** - Validate URLs, block known bad actors
-- [ ] **Scale user submissions** - Queue system if concurrent submissions become bottleneck
+- [ ] **Per-IP submission tracking** - Submission guard uses global Content table counts; a dedicated SubmissionLog table would enable true per-IP anonymous rate limiting
+- [ ] **Blocklist cache layer** - `isDomainBlocked()` queries DB on every call; add in-memory cache with TTL to reduce DB load
+- [ ] **Admin blocklist UI** - Build admin panel page for managing blocked domains (currently API-only via curl)
+- [ ] **URL shortener resolution for verify endpoint** - Currently only submit endpoint resolves shorteners; verify/url should too
+- [x] **Scale user submissions** - Async queue system with SubmissionJob model, worker, polling (2026-02-07)
+
+### Phase 6 Known Gaps & Limitations
+- [ ] **Quota race condition** - Concurrent requests can slightly exceed the monthly limit because usage is recorded after processing (fire-and-forget), not atomically with the check. Acceptable for MVP traffic; fix with atomic counter or Redis at scale.
+- [ ] **Quota status off-by-one in response headers** - The `X-Quota-Used`/`X-Quota-Remaining` headers reflect the count at check time, not after the current request is recorded. Slightly stale for the in-flight request.
+- [ ] **No quota info in 429 JSON body** - When quota is exceeded, the error response includes quota headers but the JSON body only has a generic error message. Could add a `quota` field to the 429 body for easier programmatic handling.
+- [ ] **Quota cache** - `getQuotaStatus()` runs a `COUNT(*)` query on every API request. At high volume, add an in-memory or Redis cache with short TTL (e.g. 30s) to reduce DB pressure.
+- [ ] **Per-key usage breakdown** - `ApiUsage` records `apiKeyId` but there's no endpoint or dashboard to view per-key breakdowns. Users with multiple keys can't see which key is consuming their quota.
+
+### Phase 9 Known Gaps & Limitations
+- [ ] **User tier not looked up from session** - Submit route currently hardcodes `tier: 'free'` when enqueuing. Should look up the authenticated user's tier from NextAuth session for proper priority assignment. PRO/ENTERPRISE users currently get no priority boost.
+- [ ] **Cron job not yet configured for submission worker** - The `/api/submit/worker` endpoint exists but no external cron is triggering it. Need to add a second cron job at cron-job.org (like the crawl worker) to call `POST https://www.real.press/api/submit/worker` with `Authorization: Bearer <CRON_SECRET>`. Recommended schedule: every 1 minute during peak, every 5 minutes otherwise.
+- [ ] **No content validation in async path** - The sync path runs `validateContent()` post-extraction to reject paywalls/login pages/thin content. The async worker skips this check. Should add content validation to `processSubmissionJob()` before AI detection.
+- [ ] **No stale job cleanup** - Jobs stuck in PROCESSING (e.g., worker crashed mid-process) are never reclaimed. Need a cleanup sweep that resets PROCESSING jobs older than 5 minutes back to QUEUED.
+- [ ] **No estimated wait time** - Status endpoint returns queue position but not estimated wait time. Could calculate from average processing duration of recent completed jobs.
+- [ ] **Sequential job processing in worker** - Worker processes jobs one-at-a-time in a loop (`processNextJob` called sequentially). Could parallelize with `Promise.all` for a concurrency of 2-3 to process faster within the 60s function limit.
+- [ ] **No WebSocket/SSE for real-time updates** - Polling every 2 seconds works but adds latency and unnecessary requests. WebSocket or Server-Sent Events would provide instant updates. Acceptable for MVP; consider for post-funding.
+- [ ] **Job history cleanup** - Completed/failed jobs accumulate in `submission_jobs` table forever. Need a periodic cleanup to delete old terminal jobs (e.g., older than 7 days).
+- [ ] **No admin visibility into submission queue** - Unlike crawl jobs (which have `/api/admin/crawl/jobs`), there's no admin endpoint to view, inspect, or cancel submission jobs.
 
 ### Post-Funding Scale
 - [ ] Migrate scraper queue from PostgreSQL to Redis/BullMQ
+- [ ] Migrate submission queue from PostgreSQL to Redis/BullMQ
 - [ ] Deploy dedicated worker on Railway (vs Vercel Cron)
 - [ ] Bloom filter for fast URL deduplication
 - [ ] OpenTelemetry metrics and Grafana dashboards

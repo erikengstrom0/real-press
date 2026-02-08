@@ -64,10 +64,12 @@ export const ModelName = {
   ContentTopic: 'ContentTopic',
   DomainStats: 'DomainStats',
   User: 'User',
+  ApiUsage: 'ApiUsage',
   ApiKey: 'ApiKey',
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
+  BlockedDomain: 'BlockedDomain',
   SavedSearch: 'SavedSearch',
   SearchHistory: 'SearchHistory',
   ApiUsage: 'ApiUsage'
@@ -334,6 +336,17 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const ApiUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  apiKeyId: 'apiKeyId',
+  endpoint: 'endpoint',
+  createdAt: 'createdAt'
+} as const
+
+export type ApiUsageScalarFieldEnum = (typeof ApiUsageScalarFieldEnum)[keyof typeof ApiUsageScalarFieldEnum]
+
+
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -383,6 +396,17 @@ export const VerificationTokenScalarFieldEnum = {
 } as const
 
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
+
+
+export const BlockedDomainScalarFieldEnum = {
+  id: 'id',
+  pattern: 'pattern',
+  reason: 'reason',
+  addedBy: 'addedBy',
+  createdAt: 'createdAt'
+} as const
+
+export type BlockedDomainScalarFieldEnum = (typeof BlockedDomainScalarFieldEnum)[keyof typeof BlockedDomainScalarFieldEnum]
 
 
 export const SavedSearchScalarFieldEnum = {

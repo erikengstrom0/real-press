@@ -42,7 +42,7 @@ export default function Header() {
           ) : session?.user ? (
             <>
               <Link href="/profile" className={styles.navLink} onClick={() => setMenuOpen(false)}>
-                {session.user.name || session.user.email}
+                Account
               </Link>
               <button
                 className={styles.logoutBtn}

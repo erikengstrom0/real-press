@@ -83,6 +83,11 @@ export type DomainStats = Prisma.DomainStatsModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model ApiUsage
+ * 
+ */
+export type ApiUsage = Prisma.ApiUsageModel
+/**
  * Model ApiKey
  * 
  */
@@ -102,6 +107,11 @@ export type Session = Prisma.SessionModel
  * 
  */
 export type VerificationToken = Prisma.VerificationTokenModel
+/**
+ * Model BlockedDomain
+ * 
+ */
+export type BlockedDomain = Prisma.BlockedDomainModel
 /**
  * Model SavedSearch
  * 

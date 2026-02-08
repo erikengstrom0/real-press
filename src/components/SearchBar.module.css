@@ -1,6 +1,9 @@
+.wrapper {
+  width: 100%;
+}
+
 .form {
   width: 100%;
-  max-width: 600px;
   display: flex;
   gap: 0.5rem;
 }

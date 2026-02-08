@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { SearchResults, type SearchResult } from './SearchResults'
 import { FilterPanel } from './FilterPanel'
 import { LoadingSpinner } from './LoadingSpinner'

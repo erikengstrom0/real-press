@@ -392,6 +392,7 @@ export const ModelName = {
   CrawlDomain: 'CrawlDomain',
   CrawlSource: 'CrawlSource',
   CrawlMetric: 'CrawlMetric',
+  SubmissionJob: 'SubmissionJob',
   Author: 'Author',
   Topic: 'Topic',
   ContentTopic: 'ContentTopic',
@@ -404,7 +405,9 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   BlockedDomain: 'BlockedDomain',
   SavedSearch: 'SavedSearch',
-  SearchHistory: 'SearchHistory'
+  SearchHistory: 'SearchHistory',
+  AdminAuditLog: 'AdminAuditLog',
+  SubmissionLog: 'SubmissionLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore" | "crawlJob" | "crawlDomain" | "crawlSource" | "crawlMetric" | "author" | "topic" | "contentTopic" | "domainStats" | "user" | "apiUsage" | "apiKey" | "account" | "session" | "verificationToken" | "blockedDomain" | "savedSearch" | "searchHistory"
+    modelProps: "content" | "aiScore" | "contentMedia" | "mediaScore" | "crawlJob" | "crawlDomain" | "crawlSource" | "crawlMetric" | "submissionJob" | "author" | "topic" | "contentTopic" | "domainStats" | "user" | "apiUsage" | "apiKey" | "account" | "session" | "verificationToken" | "blockedDomain" | "savedSearch" | "searchHistory" | "adminAuditLog" | "submissionLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1013,6 +1016,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CrawlMetricCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CrawlMetricCountAggregateOutputType> | number
+        }
+      }
+    }
+    SubmissionJob: {
+      payload: Prisma.$SubmissionJobPayload<ExtArgs>
+      fields: Prisma.SubmissionJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SubmissionJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SubmissionJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>
+        }
+        findFirst: {
+          args: Prisma.SubmissionJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SubmissionJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>
+        }
+        findMany: {
+          args: Prisma.SubmissionJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>[]
+        }
+        create: {
+          args: Prisma.SubmissionJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>
+        }
+        createMany: {
+          args: Prisma.SubmissionJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SubmissionJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>[]
+        }
+        delete: {
+          args: Prisma.SubmissionJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>
+        }
+        update: {
+          args: Prisma.SubmissionJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.SubmissionJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SubmissionJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SubmissionJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.SubmissionJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionJobPayload>
+        }
+        aggregate: {
+          args: Prisma.SubmissionJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubmissionJob>
+        }
+        groupBy: {
+          args: Prisma.SubmissionJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SubmissionJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionJobCountAggregateOutputType> | number
         }
       }
     }
@@ -1978,6 +2055,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AdminAuditLog: {
+      payload: Prisma.$AdminAuditLogPayload<ExtArgs>
+      fields: Prisma.AdminAuditLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdminAuditLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdminAuditLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+        }
+        findFirst: {
+          args: Prisma.AdminAuditLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdminAuditLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+        }
+        findMany: {
+          args: Prisma.AdminAuditLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>[]
+        }
+        create: {
+          args: Prisma.AdminAuditLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+        }
+        createMany: {
+          args: Prisma.AdminAuditLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdminAuditLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>[]
+        }
+        delete: {
+          args: Prisma.AdminAuditLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+        }
+        update: {
+          args: Prisma.AdminAuditLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdminAuditLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdminAuditLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdminAuditLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdminAuditLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminAuditLogPayload>
+        }
+        aggregate: {
+          args: Prisma.AdminAuditLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdminAuditLog>
+        }
+        groupBy: {
+          args: Prisma.AdminAuditLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminAuditLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdminAuditLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminAuditLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    SubmissionLog: {
+      payload: Prisma.$SubmissionLogPayload<ExtArgs>
+      fields: Prisma.SubmissionLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SubmissionLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SubmissionLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        findFirst: {
+          args: Prisma.SubmissionLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SubmissionLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        findMany: {
+          args: Prisma.SubmissionLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>[]
+        }
+        create: {
+          args: Prisma.SubmissionLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        createMany: {
+          args: Prisma.SubmissionLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SubmissionLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>[]
+        }
+        delete: {
+          args: Prisma.SubmissionLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        update: {
+          args: Prisma.SubmissionLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.SubmissionLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SubmissionLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SubmissionLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.SubmissionLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        aggregate: {
+          args: Prisma.SubmissionLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubmissionLog>
+        }
+        groupBy: {
+          args: Prisma.SubmissionLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SubmissionLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionLogCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2187,6 +2412,29 @@ export const CrawlMetricScalarFieldEnum = {
 export type CrawlMetricScalarFieldEnum = (typeof CrawlMetricScalarFieldEnum)[keyof typeof CrawlMetricScalarFieldEnum]
 
 
+export const SubmissionJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  url: 'url',
+  status: 'status',
+  priority: 'priority',
+  stage: 'stage',
+  progress: 'progress',
+  extractMedia: 'extractMedia',
+  imageUrls: 'imageUrls',
+  videoUrl: 'videoUrl',
+  contentId: 'contentId',
+  error: 'error',
+  attempts: 'attempts',
+  maxAttempts: 'maxAttempts',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type SubmissionJobScalarFieldEnum = (typeof SubmissionJobScalarFieldEnum)[keyof typeof SubmissionJobScalarFieldEnum]
+
+
 export const AuthorScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -2356,6 +2604,28 @@ export const SearchHistoryScalarFieldEnum = {
 export type SearchHistoryScalarFieldEnum = (typeof SearchHistoryScalarFieldEnum)[keyof typeof SearchHistoryScalarFieldEnum]
 
 
+export const AdminAuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  resourceType: 'resourceType',
+  resourceId: 'resourceId',
+  adminId: 'adminId',
+  metadata: 'metadata',
+  timestamp: 'timestamp'
+} as const
+
+export type AdminAuditLogScalarFieldEnum = (typeof AdminAuditLogScalarFieldEnum)[keyof typeof AdminAuditLogScalarFieldEnum]
+
+
+export const SubmissionLogScalarFieldEnum = {
+  id: 'id',
+  ipAddress: 'ipAddress',
+  timestamp: 'timestamp'
+} as const
+
+export type SubmissionLogScalarFieldEnum = (typeof SubmissionLogScalarFieldEnum)[keyof typeof SubmissionLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2516,6 +2786,20 @@ export type ListEnumCrawlSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'SubmissionStatus'
+ */
+export type EnumSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubmissionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SubmissionStatus[]'
+ */
+export type ListEnumSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubmissionStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'UserTier'
  */
 export type EnumUserTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserTier'>
@@ -2631,6 +2915,7 @@ export type GlobalOmitConfig = {
   crawlDomain?: Prisma.CrawlDomainOmit
   crawlSource?: Prisma.CrawlSourceOmit
   crawlMetric?: Prisma.CrawlMetricOmit
+  submissionJob?: Prisma.SubmissionJobOmit
   author?: Prisma.AuthorOmit
   topic?: Prisma.TopicOmit
   contentTopic?: Prisma.ContentTopicOmit
@@ -2644,6 +2929,8 @@ export type GlobalOmitConfig = {
   blockedDomain?: Prisma.BlockedDomainOmit
   savedSearch?: Prisma.SavedSearchOmit
   searchHistory?: Prisma.SearchHistoryOmit
+  adminAuditLog?: Prisma.AdminAuditLogOmit
+  submissionLog?: Prisma.SubmissionLogOmit
 }
 
 /* Types for Logging */

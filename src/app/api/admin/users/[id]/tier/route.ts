@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/db/prisma'
+import { logAdminAction } from '@/lib/services/audit.service'
 
 const patchSchema = z.object({
   tier: z.enum(['FREE', 'PRO', 'ENTERPRISE']),
@@ -36,12 +37,14 @@ export async function PATCH(
 
   const user = await prisma.user.findUnique({
     where: { id },
-    select: { id: true },
+    select: { id: true, tier: true, email: true },
   })
 
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
+
+  const oldTier = user.tier
 
   const updated = await prisma.user.update({
     where: { id },
@@ -51,6 +54,18 @@ export async function PATCH(
       email: true,
       name: true,
       tier: true,
+    },
+  })
+
+  // Log the action (fire-and-forget)
+  void logAdminAction({
+    action: 'user.tier_change',
+    resourceType: 'user',
+    resourceId: updated.id,
+    metadata: {
+      email: user.email,
+      oldTier,
+      newTier: updated.tier,
     },
   })
 

@@ -30,6 +30,16 @@ export const CrawlSourceType = {
 export type CrawlSourceType = (typeof CrawlSourceType)[keyof typeof CrawlSourceType]
 
 
+export const SubmissionStatus = {
+  QUEUED: 'QUEUED',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type SubmissionStatus = (typeof SubmissionStatus)[keyof typeof SubmissionStatus]
+
+
 export const UserTier = {
   FREE: 'FREE',
   PRO: 'PRO',

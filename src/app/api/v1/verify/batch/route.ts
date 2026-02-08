@@ -17,6 +17,7 @@ import { formatFreeResponse, formatPaidResponse } from '@/lib/ai-detection/forma
 import { extractContent } from '@/lib/services/extraction.service'
 import { buildAiScoreRowFromComposite, buildAiScoreRowFromMultiModal } from '../_lib/build-score-row'
 import { recordApiUsage } from '@/lib/services/quota.service'
+import { isDomainBlocked } from '@/lib/security/domain-blocklist'
 
 const batchItemSchema = z.discriminatedUnion('type', [
   z.object({
@@ -64,6 +65,21 @@ async function processItem(
     }
 
     if (item.type === 'url') {
+      // Parse URL to get hostname
+      let hostname: string
+      try {
+        hostname = new URL(item.url).hostname
+      } catch {
+        return { error: 'Invalid URL format' }
+      }
+
+      // Check if domain is blocked
+      const blockCheck = await isDomainBlocked(hostname)
+      if (blockCheck.blocked) {
+        return { error: blockCheck.reason || 'This URL cannot be verified' }
+      }
+
+      // Continue with extraction and detection
       const extracted = await extractContent(item.url)
       const result = await detectAIContent(extracted.contentText)
       const scoreRow = buildAiScoreRowFromComposite(result)

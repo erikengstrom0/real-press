@@ -16,7 +16,7 @@ import { isDomainBlocked, isSuspiciousUrl, isUrlShortener } from '@/lib/security
 import { resolveUrl } from '@/lib/security/url-resolver'
 import { validateContent } from '@/lib/security/content-validator'
 import { logSubmission } from '@/lib/security/submission-log'
-import { checkSubmissionAllowed } from '@/lib/security/submission-guard'
+import { checkSubmissionAllowed, recordSubmission } from '@/lib/security/submission-guard'
 import { enqueueSubmission, getQueueStats } from '@/lib/services/submission-queue.service'
 
 const submitSchema = z.object({
@@ -115,6 +115,9 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       )
     }
+
+    // Record submission in log (fire-and-forget)
+    recordSubmission(ip)
 
     // Also validate any explicit media URLs
     if (validation.data.imageUrls) {

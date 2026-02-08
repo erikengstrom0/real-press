@@ -10,6 +10,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db/prisma'
+import { logAdminAction } from '@/lib/services/audit.service'
+import { invalidateBlocklistCache } from '@/lib/security/domain-blocklist'
 
 export async function GET() {
   const domains = await prisma.blockedDomain.findMany({
@@ -56,6 +58,20 @@ export async function POST(request: NextRequest) {
     },
   })
 
+  // Invalidate cache after adding domain
+  invalidateBlocklistCache()
+
+  // Log the action (fire-and-forget)
+  void logAdminAction({
+    action: 'blocklist.add',
+    resourceType: 'domain',
+    resourceId: created.id,
+    metadata: {
+      pattern: created.pattern,
+      reason: created.reason,
+    },
+  })
+
   return NextResponse.json({ domain: created }, { status: 201 })
 }
 
@@ -79,8 +95,21 @@ export async function DELETE(request: NextRequest) {
   const pattern = domain.trim().toLowerCase()
 
   try {
-    await prisma.blockedDomain.delete({
+    const deleted = await prisma.blockedDomain.delete({
       where: { pattern },
+    })
+
+    // Invalidate cache after removing domain
+    invalidateBlocklistCache()
+
+    // Log the action (fire-and-forget)
+    void logAdminAction({
+      action: 'blocklist.remove',
+      resourceType: 'domain',
+      resourceId: deleted.id,
+      metadata: {
+        pattern: deleted.pattern,
+      },
     })
   } catch {
     return NextResponse.json(

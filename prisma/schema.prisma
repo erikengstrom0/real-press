@@ -534,3 +534,31 @@ model SearchHistory {
   @@index([userId, createdAt])
   @@map("search_history")
 }
+
+// ============================================
+// ADMIN AUDIT LOG
+// ============================================
+
+model AdminAuditLog {
+  id           String   @id @default(cuid())
+  action       String   // 'blocklist.add', 'blocklist.remove', 'content.delete', 'user.tier_change', etc.
+  resourceType String   @map("resource_type") // 'domain', 'content', 'user', etc.
+  resourceId   String?  @map("resource_id") // ID of affected resource (nullable for bulk actions)
+  adminId      String?  @map("admin_id") // Admin user ID if authenticated via session, null if via ADMIN_SECRET
+  metadata     Json?    // Additional context: old values, new values, reason, etc.
+  timestamp    DateTime @default(now())
+
+  @@index([action, timestamp])
+  @@index([resourceType, resourceId])
+  @@index([adminId, timestamp])
+  @@map("admin_audit_logs")
+}
+
+model SubmissionLog {
+  id        String   @id @default(cuid())
+  ipAddress String   @map("ip_address")
+  timestamp DateTime @default(now())
+
+  @@index([ipAddress, timestamp])
+  @@map("submission_logs")
+}

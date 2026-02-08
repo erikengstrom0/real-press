@@ -4,7 +4,7 @@
  * Enforces daily and weekly caps on submissions, and detects burst
  * behavior (too many submissions in a short window).
  *
- * Uses the Content table (sourceType='user_submitted') for counting.
+ * Uses the SubmissionLog table for per-IP tracking.
  */
 
 import prisma from '@/lib/db/prisma'
@@ -101,27 +101,25 @@ async function checkAuthenticatedUser(
 }
 
 async function checkAnonymousIp(
-  _ip: string,
+  ip: string,
   now: Date
 ): Promise<SubmissionGuardResult> {
   const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const burstWindow = new Date(now.getTime() - BURST_WINDOW_MINUTES * 60 * 1000)
 
   try {
-    // For anonymous users we count all recent user_submitted content globally.
-    // Per-IP tracking would require a separate log table — for now this provides
-    // a global safety valve against bulk anonymous abuse.
+    // Query SubmissionLog for this specific IP
     const [dailyCount, burstCount] = await Promise.all([
-      prisma.content.count({
+      prisma.submissionLog.count({
         where: {
-          sourceType: 'user_submitted',
-          createdAt: { gte: dayAgo },
+          ipAddress: ip,
+          timestamp: { gte: dayAgo },
         },
       }),
-      prisma.content.count({
+      prisma.submissionLog.count({
         where: {
-          sourceType: 'user_submitted',
-          createdAt: { gte: burstWindow },
+          ipAddress: ip,
+          timestamp: { gte: burstWindow },
         },
       }),
     ])
@@ -133,11 +131,10 @@ async function checkAnonymousIp(
       }
     }
 
-    // Apply a more generous global cap for anonymous (since it's not per-IP)
-    if (dailyCount >= ANON_DAILY_LIMIT * 10) {
+    if (dailyCount >= ANON_DAILY_LIMIT) {
       return {
         allowed: false,
-        reason: `Submission limit reached. Please try again later.`,
+        reason: `Daily submission limit reached (${ANON_DAILY_LIMIT} per day). Try again tomorrow.`,
       }
     }
 
@@ -145,5 +142,41 @@ async function checkAnonymousIp(
   } catch (error) {
     console.error('Submission guard DB check failed:', error)
     return { allowed: true }
+  }
+}
+
+/**
+ * Record a submission attempt in the log.
+ * Fire-and-forget, never throws.
+ */
+export function recordSubmission(ip: string): void {
+  prisma.submissionLog
+    .create({
+      data: {
+        ipAddress: ip,
+      },
+    })
+    .catch((error) => {
+      console.error('Failed to record submission log:', error)
+    })
+}
+
+/**
+ * Clean up submission logs older than 7 days.
+ * Returns count of deleted records.
+ */
+export async function cleanupOldLogs(): Promise<number> {
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+
+  try {
+    const result = await prisma.submissionLog.deleteMany({
+      where: {
+        timestamp: { lt: sevenDaysAgo },
+      },
+    })
+    return result.count
+  } catch (error) {
+    console.error('Failed to cleanup old submission logs:', error)
+    return 0
   }
 }

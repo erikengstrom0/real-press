@@ -17,6 +17,7 @@ type EndpointKey =
   | 'verify-url'
   | 'verify-image'
   | 'verify-batch'
+  | 'register'
 
 // Limits per endpoint (requests per sliding window)
 const LIMITS: Record<EndpointKey, { requests: number; window: `${number} s` | `${number} m` }> = {
@@ -27,6 +28,7 @@ const LIMITS: Record<EndpointKey, { requests: number; window: `${number} s` | `$
   'verify-url': { requests: 10, window: '1 m' },
   'verify-image': { requests: 10, window: '1 m' },
   'verify-batch': { requests: 5, window: '1 m' },
+  register: { requests: 5, window: '1 m' },
 }
 
 // Lazy-initialized limiters (one per endpoint)

@@ -59,6 +59,7 @@ export const ModelName = {
   CrawlDomain: 'CrawlDomain',
   CrawlSource: 'CrawlSource',
   CrawlMetric: 'CrawlMetric',
+  SubmissionJob: 'SubmissionJob',
   Author: 'Author',
   Topic: 'Topic',
   ContentTopic: 'ContentTopic',
@@ -71,7 +72,9 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   BlockedDomain: 'BlockedDomain',
   SavedSearch: 'SavedSearch',
-  SearchHistory: 'SearchHistory'
+  SearchHistory: 'SearchHistory',
+  AdminAuditLog: 'AdminAuditLog',
+  SubmissionLog: 'SubmissionLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -260,6 +263,29 @@ export const CrawlMetricScalarFieldEnum = {
 export type CrawlMetricScalarFieldEnum = (typeof CrawlMetricScalarFieldEnum)[keyof typeof CrawlMetricScalarFieldEnum]
 
 
+export const SubmissionJobScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  url: 'url',
+  status: 'status',
+  priority: 'priority',
+  stage: 'stage',
+  progress: 'progress',
+  extractMedia: 'extractMedia',
+  imageUrls: 'imageUrls',
+  videoUrl: 'videoUrl',
+  contentId: 'contentId',
+  error: 'error',
+  attempts: 'attempts',
+  maxAttempts: 'maxAttempts',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type SubmissionJobScalarFieldEnum = (typeof SubmissionJobScalarFieldEnum)[keyof typeof SubmissionJobScalarFieldEnum]
+
+
 export const AuthorScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -427,6 +453,28 @@ export const SearchHistoryScalarFieldEnum = {
 } as const
 
 export type SearchHistoryScalarFieldEnum = (typeof SearchHistoryScalarFieldEnum)[keyof typeof SearchHistoryScalarFieldEnum]
+
+
+export const AdminAuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  resourceType: 'resourceType',
+  resourceId: 'resourceId',
+  adminId: 'adminId',
+  metadata: 'metadata',
+  timestamp: 'timestamp'
+} as const
+
+export type AdminAuditLogScalarFieldEnum = (typeof AdminAuditLogScalarFieldEnum)[keyof typeof AdminAuditLogScalarFieldEnum]
+
+
+export const SubmissionLogScalarFieldEnum = {
+  id: 'id',
+  ipAddress: 'ipAddress',
+  timestamp: 'timestamp'
+} as const
+
+export type SubmissionLogScalarFieldEnum = (typeof SubmissionLogScalarFieldEnum)[keyof typeof SubmissionLogScalarFieldEnum]
 
 
 export const SortOrder = {

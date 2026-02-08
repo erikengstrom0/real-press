@@ -8,6 +8,16 @@
 
 import prisma from '@/lib/db/prisma'
 
+// ── Cache configuration ──────────────────────────────────────
+interface CacheEntry {
+  patterns: Array<{ pattern: string; reason: string | null }>
+  expiry: number
+}
+
+const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
+
+let blocklistCache: CacheEntry | null = null
+
 // ── Hardcoded URL shortener domains ──────────────────────────
 const URL_SHORTENERS = new Set([
   'bit.ly',
@@ -78,6 +88,48 @@ export interface SuspicionResult {
 }
 
 /**
+ * Get cached blocklist or fetch from database.
+ * Returns array of pattern entries with expiry check.
+ */
+async function getCachedBlocklist(): Promise<
+  Array<{ pattern: string; reason: string | null }>
+> {
+  const now = Date.now()
+
+  // Return cached data if still valid
+  if (blocklistCache && blocklistCache.expiry > now) {
+    return blocklistCache.patterns
+  }
+
+  // Fetch fresh data from database
+  try {
+    const blockedDomains = await prisma.blockedDomain.findMany({
+      select: { pattern: true, reason: true },
+    })
+
+    // Update cache
+    blocklistCache = {
+      patterns: blockedDomains,
+      expiry: now + CACHE_TTL_MS,
+    }
+
+    return blockedDomains
+  } catch (error) {
+    // Database error — return empty list (fail open)
+    console.error('Failed to fetch blocklist from database:', error)
+    return []
+  }
+}
+
+/**
+ * Invalidate the blocklist cache.
+ * Call this after adding or removing domains from the blocklist.
+ */
+export function invalidateBlocklistCache(): void {
+  blocklistCache = null
+}
+
+/**
  * Check if a domain is blocked (hardcoded list + database).
  */
 export async function isDomainBlocked(url: string): Promise<BlockCheckResult> {
@@ -93,23 +145,16 @@ export async function isDomainBlocked(url: string): Promise<BlockCheckResult> {
     return { blocked: true, reason: 'Domain is on the blocklist' }
   }
 
-  // Check dynamic blocklist in database
-  try {
-    const blockedDomains = await prisma.blockedDomain.findMany({
-      select: { pattern: true, reason: true },
-    })
+  // Check dynamic blocklist in database (cached)
+  const blockedDomains = await getCachedBlocklist()
 
-    for (const entry of blockedDomains) {
-      if (domainMatchesPattern(hostname, entry.pattern)) {
-        return {
-          blocked: true,
-          reason: entry.reason || 'Domain is on the blocklist',
-        }
+  for (const entry of blockedDomains) {
+    if (domainMatchesPattern(hostname, entry.pattern)) {
+      return {
+        blocked: true,
+        reason: entry.reason || 'Domain is on the blocklist',
       }
     }
-  } catch (error) {
-    // Database error — fail open (don't block legitimate users)
-    console.error('Blocklist DB check failed:', error)
   }
 
   return { blocked: false }

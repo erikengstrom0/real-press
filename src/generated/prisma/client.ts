@@ -80,6 +80,11 @@ export type CrawlSource = Prisma.CrawlSourceModel
  */
 export type CrawlMetric = Prisma.CrawlMetricModel
 /**
+ * Model SubmissionJob
+ * 
+ */
+export type SubmissionJob = Prisma.SubmissionJobModel
+/**
  * Model Author
  * 
  */
@@ -144,3 +149,13 @@ export type SavedSearch = Prisma.SavedSearchModel
  * 
  */
 export type SearchHistory = Prisma.SearchHistoryModel
+/**
+ * Model AdminAuditLog
+ * 
+ */
+export type AdminAuditLog = Prisma.AdminAuditLogModel
+/**
+ * Model SubmissionLog
+ * 
+ */
+export type SubmissionLog = Prisma.SubmissionLogModel

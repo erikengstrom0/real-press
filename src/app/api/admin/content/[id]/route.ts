@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db/prisma'
+import { logAdminAction } from '@/lib/services/audit.service'
 
 export async function GET(
   request: NextRequest,
@@ -34,9 +35,36 @@ export async function DELETE(
   const { id } = await params
 
   try {
+    // Fetch content details before deletion for audit log
+    const contentToDelete = await prisma.content.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        url: true,
+        title: true,
+        domain: true,
+      },
+    })
+
+    if (!contentToDelete) {
+      return NextResponse.json({ error: 'Content not found' }, { status: 404 })
+    }
+
     // Prisma cascade deletes handle AiScore, ContentMedia, MediaScore, ContentTopic
     const deleted = await prisma.content.delete({
       where: { id },
+    })
+
+    // Log the action (fire-and-forget)
+    void logAdminAction({
+      action: 'content.delete',
+      resourceType: 'content',
+      resourceId: deleted.id,
+      metadata: {
+        url: contentToDelete.url,
+        title: contentToDelete.title,
+        domain: contentToDelete.domain,
+      },
     })
 
     return NextResponse.json({ deleted: true, id: deleted.id })

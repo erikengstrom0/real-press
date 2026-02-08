@@ -105,6 +105,11 @@ export type DomainStats = Prisma.DomainStatsModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model ApiKey
+ * 
+ */
+export type ApiKey = Prisma.ApiKeyModel
+/**
  * Model Account
  * 
  */
@@ -129,3 +134,8 @@ export type SavedSearch = Prisma.SavedSearchModel
  * 
  */
 export type SearchHistory = Prisma.SearchHistoryModel
+/**
+ * Model ApiUsage
+ * 
+ */
+export type ApiUsage = Prisma.ApiUsageModel
